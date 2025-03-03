@@ -3,14 +3,30 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\App;
+use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, HasApiTokens, Notifiable;
+
+	public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
+	protected $keyType = 'string'; // Kiểu khóa chính là string
+
+	protected static function boot(): void
+	{
+		parent::boot();
+
+		static::creating(function ($model) {
+			$model->{$model->getKeyName()} = App::make('snowflake')->id();
+		});
+	}
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +34,13 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+		'last_name',
+		'phone',
         'email',
         'password',
+		'is_customer',
+		'last_login'
     ];
 
     /**
@@ -30,7 +50,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
@@ -41,8 +60,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
+			'is_customer' => 'boolean',
+			'last_login' => 'datetime',
+			'created_at' => 'datetime',
+			'updated_at' => 'datetime',
+			'deleted_at' => 'datetime'
         ];
     }
 }

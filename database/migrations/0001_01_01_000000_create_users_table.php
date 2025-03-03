@@ -12,12 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+			$table->bigInteger('id')->unsigned()->primary(); // Snowflake ID (64 bit)
+            $table->string('first_name', 30);
+            $table->string('last_name', 30);
+			$table->string('phone', 10)->unique();
+            $table->string('email', 50)->unique();
             $table->string('password');
-            $table->rememberToken();
+			$table->boolean('is_customer')->default(true);
+			$table->timestamp('last_login')->nullable();
             $table->timestamps();
+			$table->softDeletes();
         });
     }
 
