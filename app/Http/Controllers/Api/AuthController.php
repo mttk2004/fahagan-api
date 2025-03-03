@@ -26,10 +26,13 @@ class AuthController extends Controller
 			'phone' => $request->phone,
 			'email' => $request->email,
 			'password' => bcrypt($request->password),
-			'is_customer' => $request->is_customer ?? false,
+			'is_customer' => isset($request->is_customer) ? $request->is_customer : true,
 		]);
 
-		return $this->ok('Register Successfully!');
+		return $this->ok(
+			'Register Successfully!',
+			['user' => $user]
+		);
 	}
 
 	public function login(LoginRequest $request)
