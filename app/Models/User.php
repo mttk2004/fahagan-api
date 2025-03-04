@@ -9,12 +9,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\App;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasApiTokens, Notifiable;
+    use HasFactory, HasApiTokens, HasRoles, Notifiable;
 
 	public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 	protected $keyType = 'string'; // Kiểu khóa chính là string
