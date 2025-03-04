@@ -38,7 +38,7 @@ class AuthController extends Controller
 		]);
 
 		return $this->ok(
-			'Register Successfully.',
+			'Đăng ký thành công.',
 			['user' => $user]
 		);
 	}
@@ -48,7 +48,7 @@ class AuthController extends Controller
 		$request->validated($request->only(['email', 'password']));
 
 		if (!Auth::attempt($request->only('email', 'password'))) {
-			return $this->error('Invalid Credentials!', 401);
+			return $this->error('Thông tin đăng nhập không đúng! Vui lòng kiểm tra lại', 401);
 		}
 
 		$user = User::firstWhere('email', $request->email);
@@ -58,13 +58,16 @@ class AuthController extends Controller
 			now()->addHour()
 		)->plainTextToken;
 
-		return $this->ok('Authenticated!', ['token' => $token]);
+		return $this->ok('Đăng nhập thành công!', [
+			'token' => $token,
+			'user' => $user
+		]);
 	}
 
 	public function logout(Request $request)
 	{
 		$request->user()->currentAccessToken()->delete();
 
-		return $this->ok('Logout Successfully.');
+		return $this->ok('Đăng xuất thành công.');
 	}
 }

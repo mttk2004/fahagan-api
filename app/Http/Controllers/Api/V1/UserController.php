@@ -15,8 +15,8 @@ class UserController extends Controller
 
 	public function index()
 	{
-		return $this->ok('Success', [
-			'data' => User::all()
+		return $this->ok('Thành công.', [
+			'users' => User::all()
 		]);
 	}
 
