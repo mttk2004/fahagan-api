@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Auth;
+use Illuminate\Http\Request;
 
 
 class AuthController extends Controller
@@ -18,7 +19,14 @@ class AuthController extends Controller
 
 	public function register(RegisterRequest $request)
 	{
-		$request->validated();
+		$request->validated($request->only([
+			'first_name',
+			'last_name',
+			'phone',
+			'email',
+			'password',
+			'password_confirmation',
+		]));
 
 		$user = User::create([
 			'first_name' => $request->first_name,
@@ -30,14 +38,14 @@ class AuthController extends Controller
 		]);
 
 		return $this->ok(
-			'Register Successfully!',
+			'Register Successfully.',
 			['user' => $user]
 		);
 	}
 
 	public function login(LoginRequest $request)
 	{
-		$request->validated();
+		$request->validated($request->only(['email', 'password']));
 
 		if (!Auth::attempt($request->only('email', 'password'))) {
 			return $this->error('Invalid Credentials!', 401);
@@ -51,5 +59,12 @@ class AuthController extends Controller
 		)->plainTextToken;
 
 		return $this->ok('Authenticated!', ['token' => $token]);
+	}
+
+	public function logout(Request $request)
+	{
+		$request->user()->currentAccessToken()->delete();
+
+		return $this->ok('Logout Successfully.');
 	}
 }
