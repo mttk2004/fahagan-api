@@ -3,4 +3,7 @@
 use App\Http\Controllers\Api\V1\UserController;
 
 
-Route::get('/users', [UserController::class, 'index']);
+//Route::middleware('auth:sanctum')->group(function() {
+	Route::apiResource('users', UserController::class)
+		 ->except('store');
+//});
