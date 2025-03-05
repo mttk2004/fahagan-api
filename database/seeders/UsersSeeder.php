@@ -12,7 +12,7 @@ class UsersSeeder extends Seeder
 	public function run(): void
 	{
 		// 20 customers
-		User::factory(20)->create();
+		User::factory(30)->create();
 
 		// 1 admin
 		$admin = User::create([
