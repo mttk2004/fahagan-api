@@ -40,7 +40,7 @@ class AuthController extends Controller
 
 		return $this->ok(
 			'Đăng ký thành công.',
-			['user' => $user]
+			['user' => new UserResource($user)]
 		);
 	}
 
