@@ -3,19 +3,19 @@
 namespace Database\Factories;
 
 
-use App\Models\Publisher;
+use App\Models\Author;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
-class PublisherFactory extends Factory
+class AuthorFactory extends Factory
 {
-	protected $model = Publisher::class;
+	protected $model = Author::class;
 
 	public function definition(): array
 	{
 		return [
-			'name' => fake('vi_VN')->company(),
-			'biography' => fake('vi_VN')->paragraphs(
+			'name' => fake('vi_VN')->name(),
+			'biography' => fake()->paragraphs(
 				fake()->numberBetween(3, 6),
 				true
 			),
