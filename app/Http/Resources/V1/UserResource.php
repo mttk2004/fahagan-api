@@ -17,20 +17,25 @@ class UserResource extends JsonResource
 			'type' => 'users',
 			'id' => $this->id,
 			'attributes' => [
-				'full_name' => $this->full_name,
 				'first_name' => $this->first_name,
 				'last_name' => $this->last_name,
-				'phone' => $this->phone,
 				'email' => $this->email,
+				'is_customer' => $this->is_customer,
 				$this->mergeWhen($request->routeIs('users.*'), [
-					'is_customer' => $this->is_customer,
+					'full_name' => $this->full_name,
+					'phone' => $this->phone,
 					'last_login' => $this->last_login,
 					'created_at' => $this->created_at,
 					'updated_at' => $this->updated_at,
 					'deleted_at' => $this->deleted_at,
 				]),
 			],
-			'relationships' => [],
+			'relationships' => $this->when(
+				$request->routeIs('users.*'),
+				[
+					'cart_items' => '',
+				]
+			),
 			'links' => [
 				'self' => route('users.show', ['user' => $this->id]),
 			],
