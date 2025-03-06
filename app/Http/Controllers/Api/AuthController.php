@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Auth;
@@ -60,7 +61,7 @@ class AuthController extends Controller
 
 		return $this->ok('Đăng nhập thành công!', [
 			'token' => $token,
-			'user' => $user
+			'user' => new UserResource($user)
 		]);
 	}
 
