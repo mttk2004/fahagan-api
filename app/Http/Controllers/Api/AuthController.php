@@ -20,39 +20,27 @@ class AuthController extends Controller
 
 	public function register(RegisterRequest $request)
 	{
-		$request->validated($request->only([
-			'first_name',
-			'last_name',
-			'phone',
-			'email',
-			'password',
-			'password_confirmation',
+		$data = $request->validated();
+
+		$user = User::create(array_merge($data, [
+			'password' => bcrypt($data['password']),
+			'is_customer' => $data['is_customer'] ?? true,
 		]));
 
-		$user = User::create([
-			'first_name' => $request->first_name,
-			'last_name' => $request->last_name,
-			'phone' => $request->phone,
-			'email' => $request->email,
-			'password' => bcrypt($request->password),
-			'is_customer' => isset($request->is_customer) ? $request->is_customer : true,
+		return $this->ok('Đăng ký thành công.', [
+			'user' => new UserResource($user),
 		]);
-
-		return $this->ok(
-			'Đăng ký thành công.',
-			['user' => new UserResource($user)]
-		);
 	}
 
 	public function login(LoginRequest $request)
 	{
 		$request->validated($request->only(['email', 'password']));
 
-		if (!Auth::attempt($request->only('email', 'password'))) {
+		if (!Auth::attempt($request->only(['email', 'password']))) {
 			return $this->error('Thông tin đăng nhập không đúng! Vui lòng kiểm tra lại', 401);
 		}
 
-		$user = User::firstWhere('email', $request->email);
+		$user = User::where('email', $request->email)->first();
 		$token = $user->createToken(
 			'API token for ' . $request->email,
 			['*'],
@@ -61,7 +49,7 @@ class AuthController extends Controller
 
 		return $this->ok('Đăng nhập thành công!', [
 			'token' => $token,
-			'user' => new UserResource($user)
+			'user' => new UserResource($user),
 		]);
 	}
 
