@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\BookRequest;
-use App\Http\Resources\BookResource;
+use App\Http\Resources\V1\BookCollection;
+use App\Http\Resources\V1\BookResource;
 use App\Models\Book;
 
 
@@ -13,7 +14,7 @@ class BookController extends Controller
 {
 	public function index()
 	{
-		return BookResource::collection(Book::all());
+		return new BookCollection(Book::paginate());
 	}
 
 	public function store(BookRequest $request)
