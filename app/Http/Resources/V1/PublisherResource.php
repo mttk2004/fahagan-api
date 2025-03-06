@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\V1;
 
 
 use App\Models\Publisher;
@@ -14,9 +14,24 @@ class PublisherResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
+			'type' => 'publishers',
 			'id' => $this->id,
-			'name' => $this->name,
-			'biography' => $this->biography,
+			'attributes' => [
+				'name' => $this->name,
+				'biography' => $this->when(
+					$request->routeIs('publishers.*'),
+					$this->biography
+				),
+			],
+			'relationships' => $this->when(
+				$request->routeIs('publishers.*'),
+				[
+					'books' => new BookCollection($this->books),
+				]
+			),
+			'links' => [
+				'self' => route('publishers.show', ['publisher' => $this->id]),
+			],
 		];
 	}
 }

@@ -14,6 +14,7 @@ class PublisherCollection extends ResourceCollection
 	{
 		return [
 			'data' => $this->collection,
+			'included' => []
 		];
 	}
 }

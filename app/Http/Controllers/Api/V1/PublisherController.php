@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\PublisherRequest;
-use App\Http\Resources\PublisherResource;
+use App\Http\Resources\V1\PublisherCollection;
+use App\Http\Resources\V1\PublisherResource;
 use App\Models\Publisher;
 
 
@@ -13,7 +14,7 @@ class PublisherController extends Controller
 {
 	public function index()
 	{
-		return PublisherResource::collection(Publisher::all());
+		return new PublisherCollection(Publisher::paginate());
 	}
 
 	public function store(PublisherRequest $request)
