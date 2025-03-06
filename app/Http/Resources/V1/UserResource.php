@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\V1;
 
 
 use App\Models\User;
@@ -14,9 +14,9 @@ class UserResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			'type' => 'user',
+			'type' => 'users',
 			'id' => $this->id,
-			'data' => [
+			'attributes' => [
 				'full_name' => $this->full_name,
 				'first_name' => $this->first_name,
 				'last_name' => $this->last_name,
@@ -30,6 +30,7 @@ class UserResource extends JsonResource
 					'deleted_at' => $this->deleted_at,
 				]),
 			],
+			'relationships' => [],
 			'links' => [
 				'self' => route('users.show', ['user' => $this->id]),
 			],

@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\V1\UserCollection;
+use App\Http\Resources\V1\UserResource;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use App\Traits\ApiResponses;
@@ -20,7 +21,7 @@ class UserController extends Controller
 		$userSort = new UserSort($request);
 		$users = $userSort->apply(User::query())->paginate();
 
-		return UserResource::collection($users);
+		return new UserCollection($users);
 	}
 
 	public function show(User $user)
