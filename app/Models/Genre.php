@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 
 class Genre extends Model
@@ -19,5 +20,10 @@ class Genre extends Model
 	public function books(): BelongsToMany
 	{
 		return $this->belongsToMany(Book::class, 'book_genre');
+	}
+
+	public function discounts(): MorphMany
+	{
+		return $this->morphMany(DiscountTarget::class, 'target');
 	}
 }

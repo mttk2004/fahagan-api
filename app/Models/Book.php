@@ -3,10 +3,12 @@
 namespace App\Models;
 
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\App;
 
@@ -63,5 +65,65 @@ class Book extends Model
 	public function genres(): BelongsToMany
 	{
 		return $this->belongsToMany(Genre::class, 'book_genre');
+	}
+
+	public function discounts(): MorphMany
+	{
+		return $this->morphMany(DiscountTarget::class, 'target');
+	}
+
+	/**
+	 * Lấy tất cả giảm giá hợp lệ của sách (trực tiếp và gián tiếp)
+	 */
+	public function getAllActiveDiscounts()
+	{
+		$now = Carbon::now();
+		$discounts = collect(); // Tạo Collection rỗng để chứa danh sách giảm giá
+
+		// Lấy giảm giá trực tiếp của sách
+		$discounts = $discounts->merge($this->getActiveDiscounts($this->discounts(), $now));
+
+		// Kiểm tra giảm giá từ Author
+		if ($this->author) {
+			$discounts = $discounts->merge($this->getActiveDiscounts($this->author->discounts(), $now));
+		}
+
+		// Kiểm tra giảm giá từ Publisher
+		if ($this->publisher) {
+			$discounts = $discounts->merge($this->getActiveDiscounts($this->publisher->discounts(), $now));
+		}
+
+		// Kiểm tra giảm giá từ tất cả Genres mà sách thuộc về
+		foreach ($this->genres as $genre) {
+			$discounts = $discounts->merge($this->getActiveDiscounts($genre->discounts(), $now));
+		}
+
+		return $discounts->unique('id'); // Loại bỏ trùng lặp nếu có
+	}
+
+	/**
+	 * Tìm giảm giá cao nhất để áp dụng
+	 */
+	public function getBestDiscount()
+	{
+		return $this->getAllActiveDiscounts()->sortByDesc(function ($discount) {
+			return $discount->discount_type === 'percent'
+				? $discount->discount_value
+				: $discount->discount_value / $this->price; // Chuyển fixed discount thành tỷ lệ %
+		})->first();
+	}
+
+	/**
+	 * Lấy giảm giá hợp lệ từ một nguồn cụ thể
+	 */
+	private function getActiveDiscounts($query, $now)
+	{
+		return $query->whereHas('discount', function ($query) use ($now) {
+			$query->where('start_date', '<=', $now)
+				  ->where('end_date', '>=', $now);
+		})
+					 ->with('discount')
+					 ->get()
+					 ->pluck('discount');
 	}
 }
