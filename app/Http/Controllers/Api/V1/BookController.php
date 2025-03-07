@@ -7,14 +7,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\BookRequest;
 use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
+use App\Http\Sorts\V1\BookSort;
 use App\Models\Book;
+use Illuminate\Http\Request;
 
 
 class BookController extends Controller
 {
-	public function index()
+	public function index(Request $request)
 	{
-		return new BookCollection(Book::paginate());
+		$bookSort = new BookSort($request);
+		$books = $bookSort->apply(Book::query())->paginate();
+
+		return new BookCollection($books);
 	}
 
 	public function store(BookRequest $request)
