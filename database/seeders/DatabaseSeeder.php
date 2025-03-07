@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
 			PublishersSeeder::class,
 			GenresSeeder::class,
 			BooksSeeder::class,
-			AuthorsSeeder::class
+			AuthorsSeeder::class,
+			DiscountsSeeder::class
 		]);
     }
 }
