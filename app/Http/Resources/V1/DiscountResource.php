@@ -3,10 +3,7 @@
 namespace App\Http\Resources\V1;
 
 
-use App\Models\Author;
-use App\Models\Book;
 use App\Models\Discount;
-use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
