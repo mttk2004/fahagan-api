@@ -14,7 +14,7 @@ class PublisherResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			'type' => 'publishers',
+			'type' => 'publisher',
 			'id' => $this->id,
 			'attributes' => [
 				'name' => $this->name,
