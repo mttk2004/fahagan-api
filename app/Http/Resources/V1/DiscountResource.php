@@ -3,7 +3,10 @@
 namespace App\Http\Resources\V1;
 
 
+use App\Models\Author;
+use App\Models\Book;
 use App\Models\Discount;
+use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,7 +31,17 @@ class DiscountResource extends JsonResource
 			'relationships' => $this->when(
 				$request->routeIs('discounts.*'),
 				[
-					'books' => 'todo',
+					'targets' => $this->targets->map(function($target) {
+							if ($target->target_type === 'App\Models\Book') {
+								return new BookResource($target->target);
+							} elseif ($target->target_type === 'App\Models\Author') {
+								return new AuthorResource($target->target);
+							} elseif ($target->target_type === 'App\Models\Publisher') {
+								return new PublisherResource($target->target);
+							}
+
+							return null;
+						}),
 				]),
 			'links' => [
 				'self' => route('discounts.show', ['discount' => $this->id]),
