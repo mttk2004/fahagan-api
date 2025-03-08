@@ -14,7 +14,7 @@ class DiscountResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			'type' => 'discounts',
+			'type' => 'discount',
 			'id' => $this->id,
 			'attributes' => [
 				'name' => $this->name,
@@ -22,8 +22,11 @@ class DiscountResource extends JsonResource
 				'discount_value' => $this->discount_value,
 				'start_date' => $this->start_date,
 				'end_date' => $this->end_date,
-				'created_at' => $this->created_at,
-				'updated_at' => $this->updated_at,
+				$this->mergeWhen($request->routeIs('discounts.*'), [
+					'created_at' => $this->created_at,
+					'updated_at' => $this->updated_at,
+					'deleted_at' => $this->deleted_at,
+				]),
 			],
 			'relationships' => $this->when(
 				$request->routeIs('discounts.*'),
@@ -35,6 +38,8 @@ class DiscountResource extends JsonResource
 								return new AuthorResource($target->target);
 							} elseif ($target->target_type === 'App\Models\Publisher') {
 								return new PublisherResource($target->target);
+							} elseif ($target->target_type === 'App\Models\Genre') {
+								return new GenreResource($target->target);
 							}
 
 							return null;
