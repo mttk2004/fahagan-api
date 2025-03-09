@@ -41,6 +41,11 @@ class AuthController extends Controller
 		}
 
 		$user = User::where('email', $request->email)->first();
+
+		// Update last login
+		$user->update(['last_login' => now()]);
+
+		// Create token
 		$token = $user->createToken(
 			'API token for ' . $request->email,
 			['*'],
