@@ -11,15 +11,15 @@ class BookStoreRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'title' => ['required'],
-			'description' => ['required'],
-			'price' => ['required', 'numeric'],
-			'edition' => ['required', 'integer'],
-			'pages' => ['required', 'integer'],
-			'publication_date' => ['required', 'date'],
-			'available_count' => ['required', 'integer'],
-			'sold_count' => ['required', 'integer'],
-			'publisher_id' => ['required', 'exists:publishers'],
+			'data.attributes.title' => ['required', 'string', 'max:255', 'unique:books,title,NULL,id,edition,' . $this->input('data.attributes.edition')],
+			'data.attributes.description' => ['required', 'string'],
+			'data.attributes.price' => ['required', 'numeric', 'min:200000', 'max:10000000'],
+			'data.attributes.edition' => ['required', 'integer', 'min:1', 'max:30'],
+			'data.attributes.pages' => ['required', 'integer', 'min:50', 'max:5000'],
+			'data.attributes.publication_date' => ['required', 'date', 'before:today'],
+			'data.relationships.authors.data.*.id' => ['required', 'integer', 'exists:authors,id'],
+			'data.relationships.genres.data.*.id' => ['required', 'integer', 'exists:genres,id'],
+			'data.relationships.publisher.id' => ['required', 'integer', 'exists:publishers,id'],
 		];
 	}
 
