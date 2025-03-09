@@ -28,6 +28,9 @@ return new class extends Migration {
 				  ->on('publishers')
 				  ->onDelete('cascade')
 				  ->onUpdate('cascade');
+
+			// Unique constraint on title and edition
+            $table->unique(['title', 'edition']);
 		});
 	}
 
