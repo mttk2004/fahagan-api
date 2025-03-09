@@ -17,6 +17,7 @@ class Book extends Model
 {
 	use HasFactory, SoftDeletes;
 
+
 	public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 	protected $keyType = 'string'; // Kiểu khóa chính là string
 
@@ -24,14 +25,13 @@ class Book extends Model
 	{
 		parent::boot();
 
-		static::creating(function ($model) {
+		static::creating(function($model) {
 			$model->{$model->getKeyName()} = App::make('snowflake')->id();
 		});
 	}
 
 	protected $fillable
 		= [
-			'publisher_id',
 			'title',
 			'description',
 			'price',
@@ -40,6 +40,7 @@ class Book extends Model
 			'publication_date',
 			'available_count',
 			'sold_count',
+			'publisher_id',
 		];
 
 	protected function casts(): array
@@ -85,12 +86,14 @@ class Book extends Model
 
 		// Kiểm tra giảm giá từ Author
 		if ($this->author) {
-			$discounts = $discounts->merge($this->getActiveDiscounts($this->author->discounts(), $now));
+			$discounts = $discounts->merge($this->getActiveDiscounts($this->author->discounts(),
+				$now));
 		}
 
 		// Kiểm tra giảm giá từ Publisher
 		if ($this->publisher) {
-			$discounts = $discounts->merge($this->getActiveDiscounts($this->publisher->discounts(), $now));
+			$discounts = $discounts->merge($this->getActiveDiscounts($this->publisher->discounts(),
+				$now));
 		}
 
 		// Kiểm tra giảm giá từ tất cả Genres mà sách thuộc về
@@ -106,7 +109,7 @@ class Book extends Model
 	 */
 	public function getBestDiscount()
 	{
-		return $this->getAllActiveDiscounts()->sortByDesc(function ($discount) {
+		return $this->getAllActiveDiscounts()->sortByDesc(function($discount) {
 			return $discount->discount_type === 'percent'
 				? $discount->discount_value
 				: $discount->discount_value / $this->price; // Chuyển fixed discount thành tỷ lệ %
@@ -118,7 +121,7 @@ class Book extends Model
 	 */
 	private function getActiveDiscounts($query, $now)
 	{
-		return $query->whereHas('discount', function ($query) use ($now) {
+		return $query->whereHas('discount', function($query) use ($now) {
 			$query->where('start_date', '<=', $now)
 				  ->where('end_date', '>=', $now);
 		})
