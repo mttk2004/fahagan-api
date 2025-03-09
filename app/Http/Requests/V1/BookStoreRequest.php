@@ -6,7 +6,7 @@ namespace App\Http\Requests\V1;
 use Illuminate\Foundation\Http\FormRequest;
 
 
-class BookRequest extends FormRequest
+class BookStoreRequest extends FormRequest
 {
 	public function rules(): array
 	{
@@ -17,7 +17,9 @@ class BookRequest extends FormRequest
 			'edition' => ['required', 'integer'],
 			'pages' => ['required', 'integer'],
 			'publication_date' => ['required', 'date'],
+			'available_count' => ['required', 'integer'],
 			'sold_count' => ['required', 'integer'],
+			'publisher_id' => ['required', 'exists:publishers'],
 		];
 	}
 

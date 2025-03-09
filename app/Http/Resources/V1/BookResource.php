@@ -35,6 +35,7 @@ class BookResource extends JsonResource
 				$request->routeIs('books.*'),
 				[
 					'authors' => new AuthorCollection($this->authors),
+					'genres' => new GenreCollection($this->genres),
 					'publisher' => new PublisherResource($this->publisher),
 				]),
 			'links' => [
