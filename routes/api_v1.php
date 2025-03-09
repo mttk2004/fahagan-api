@@ -6,17 +6,19 @@ use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\WhoAmI;
 
 
-//Route::middleware('auth:sanctum')->group(function() {
+Route::middleware('auth:sanctum')->group(function() {
+	Route::get('/whoami', [WhoAmI::class, 'whoAmI']);
 	Route::apiResource('users', UserController::class)
 		 ->except('store');
-//});
+});
 
 Route::apiResources([
 	'books' => BookController::class,
 	'authors' => AuthorController::class,
 	'publishers' => PublisherController::class,
 	'genres' => GenreController::class,
-	'discounts' => DiscountController::class
+	'discounts' => DiscountController::class,
 ]);
