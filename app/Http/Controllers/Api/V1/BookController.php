@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\BookRequest;
+use App\Http\Requests\V1\BookStoreRequest;
 use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
@@ -22,9 +22,36 @@ class BookController extends Controller
 		return new BookCollection($books);
 	}
 
-	public function store(BookRequest $request)
+	public function store(BookStoreRequest $request)
 	{
-		return new BookResource(Book::create($request->validated()));
+		$validatedData = $request->validated();
+		$bookData = $validatedData['data']['attributes'];
+
+		// Ensure sold_count and available_count are set to 0 by default
+		$bookData['sold_count'] = 0;
+		$bookData['available_count'] = 0;
+
+		// Set publisher_id
+		$bookData['publisher_id'] = $validatedData['data']['relationships']['publisher']['id'];
+
+		// Create book
+		$book = Book::create($bookData);
+
+		// Attach authors
+		$book->authors()->attach(
+			collect($validatedData['data']['relationships']['authors']['data'])
+				->pluck('id')
+				->toArray()
+		);
+
+		// Attach genres
+		$book->genres()->attach(
+			collect($validatedData['data']['relationships']['genres']['data'])
+				->pluck('id')
+				->toArray()
+		);
+
+		return new BookResource($book);
 	}
 
 	public function show(Book $book)
@@ -32,7 +59,7 @@ class BookController extends Controller
 		return new BookResource($book);
 	}
 
-	public function update(BookRequest $request, Book $book)
+	public function update($request, Book $book)
 	{
 		$book->update($request->validated());
 
