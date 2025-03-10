@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\BookStoreRequest;
+use App\Http\Requests\V1\BookUpdateRequest;
 use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
@@ -64,11 +65,31 @@ class BookController extends Controller
 		return new BookResource($book);
 	}
 
-	public function update($request, Book $book)
+	public function update(BookUpdateRequest $request, $book_id)
 	{
-		$book->update($request->validated());
+		try {
+			$book = Book::findOrFail($book_id);
+			$validatedData = $request->validated();
+			$bookData = $validatedData['data']['attributes'];
+			$bookData['publisher_id'] = $validatedData['data']['relationships']['publisher']['id'];
 
-		return new BookResource($book);
+			$book->update($bookData);
+
+			$authorIds = collect($validatedData['data']['relationships']['authors']['data'])
+				->pluck('id')
+				->toArray();
+			$genreIds = collect($validatedData['data']['relationships']['genres']['data'])
+				->pluck('id')
+				->toArray();
+
+			// Sync authors and genres
+			$book->authors()->sync($authorIds);
+			$book->genres()->sync($genreIds);
+
+			return new BookResource($book);
+		} catch (ModelNotFoundException) {
+			return $this->error('Sách không tồn tại.', 404);
+		}
 	}
 
 	public function destroy(Request $request, $bookId)
