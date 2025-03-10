@@ -23,9 +23,9 @@ class BookResource extends JsonResource
 				'publication_date' => $this->publication_date,
 				'pages' => $this->pages,
 				'sold_count' => $this->sold_count,
-				$this->mergeWhen($request->routeIs('books.show'), [
-					'description' => $this->description,
+				$this->mergeWhen($request->routeIs('books.show', 'books.store'), [
 					'available_count' => $this->available_count,
+					'description' => $this->description,
 					'created_at' => $this->created_at,
 					'updated_at' => $this->updated_at,
 					'deleted_at' => $this->deleted_at,
