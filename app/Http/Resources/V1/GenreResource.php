@@ -18,8 +18,11 @@ class GenreResource extends JsonResource
 			'id' => $this->id,
 			'attributes' => [
 				'name' => $this->name,
-				'description' => $this->description,
 				'books_count' => $this->books->count(),
+				'description' => $this->when(
+					$request->routeIs('genres.*'),
+					$this->description
+				),
 			],
 			'relationships' => $this->when(
 				$request->routeIs('genres.show'),
