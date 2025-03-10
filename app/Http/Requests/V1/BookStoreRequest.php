@@ -3,7 +3,9 @@
 namespace App\Http\Requests\V1;
 
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 
 class BookStoreRequest extends FormRequest
@@ -35,7 +37,7 @@ class BookStoreRequest extends FormRequest
 				'required' => 'data.attributes.title là trường bắt buộc.',
 				'string' => 'data.attributes.title nên là một chuỗi.',
 				'max:255' => 'data.attributes.title nên có độ dài tối đa 255.',
-				'unique' => 'data.attributes.title và data.attributes.edition nên là duy nhất, hãy thử thay đổi tile hoặc edition rồi thử lại.',
+				'unique' => 'data.attributes.title và data.attributes.edition nên là duy nhất, hãy thử thay đổi tile hoặc edition rồi thực hiện lại.',
 			],
 			'data.attributes.description' => [
 				'required' => 'data.attributes.description là trường bắt buộc.',
@@ -82,8 +84,13 @@ class BookStoreRequest extends FormRequest
 		];
 	}
 
-	public function authorize(): bool
+	public function authorize(Request $request): bool
 	{
-		return true;
+		return $request->user()->checkPermissionTo('create_books');
+	}
+
+	public function failedAuthorization()
+	{
+		throw new AuthorizationException('Bạn không có quyền thực hiện hành động này.');
 	}
 }
