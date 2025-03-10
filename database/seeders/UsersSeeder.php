@@ -34,8 +34,8 @@ class UsersSeeder extends Seeder
 			'is_customer' => false,
 		]);
 
-		// 1 order approver
-		$orderApprover = User::create([
+		// 1 sales staff
+		$salesStaff = User::create([
 			'first_name' => 'Tủn',
 			'last_name' => 'Cao Thị',
 			'phone' => '0321424222',
@@ -44,8 +44,8 @@ class UsersSeeder extends Seeder
 			'is_customer' => false,
 		]);
 
-		$admin->assignRole('admin');
-		$warehouseStaff->assignRole('warehouse_staff');
-		$orderApprover->assignRole('order_approver');
+		$admin->assignRole('Admin');
+		$warehouseStaff->assignRole('Warehouse Staff');
+		$salesStaff->assignRole('Sales Staff');
 	}
 }
