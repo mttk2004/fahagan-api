@@ -9,16 +9,29 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WhoAmI;
 
 
-Route::middleware('auth:sanctum')->group(function() {
-	Route::get('/whoami', [WhoAmI::class, 'whoAmI']);
-	Route::apiResource('users', UserController::class)
-		 ->except('store');
-});
-
+// Public-area
 Route::apiResources([
 	'books' => BookController::class,
 	'authors' => AuthorController::class,
 	'publishers' => PublisherController::class,
 	'genres' => GenreController::class,
-	'discounts' => DiscountController::class,
-]);
+], ['only' => ['index', 'show']]);
+
+// Authenticated-area
+Route::middleware('auth:sanctum')->group(function() {
+	Route::get('/whoami', [WhoAmI::class, 'whoAmI']);
+
+	Route::apiResources([
+		'books' => BookController::class,
+		'authors' => AuthorController::class,
+		'publishers' => PublisherController::class,
+		'genres' => GenreController::class,
+	], ['except' => ['index', 'show']]);
+
+	Route::apiResource('users', UserController::class)
+		 ->except('store');
+
+	Route::apiResources([
+		'discounts' => DiscountController::class,
+	]);
+});
