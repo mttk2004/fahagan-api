@@ -13,18 +13,18 @@ class PublisherStoreRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'name' => ['required', 'string'],
-			'biography' => ['required', 'string'],
+			'data.attributes.name' => ['required', 'string'],
+			'data.attributes.biography' => ['required', 'string'],
 		];
 	}
 
-	public function messages()
+	public function messages(): array
 	{
 		return [
-			'name.required' => 'Tên nhà xuất bản là trường bắt buộc.',
-			'name.string' => 'Tên nhà xuất bản nên là một chuỗi.',
-			'biography.required' => 'Tiểu sử nhà xuất bản là trường bắt buộc.',
-			'biography.string' => 'Tiểu sử nhà xuất bản nên là một chuỗi.',
+			'data.attributes.name.required' => 'Tên nhà xuất bản là trường bắt buộc.',
+			'data.attributes.name.string' => 'Tên nhà xuất bản nên là một chuỗi.',
+			'data.attributes.biography.required' => 'Tiểu sử nhà xuất bản là trường bắt buộc.',
+			'data.attributes.biography.string' => 'Tiểu sử nhà xuất bản nên là một chuỗi.',
 		];
 	}
 
@@ -35,6 +35,6 @@ class PublisherStoreRequest extends FormRequest
 
 	public function failedAuthorization()
 	{
-		throw new AuthorizationException('Bạn không có quyền thực hiện thao tác này.');
+		throw new AuthorizationException('Bạn không có quyền thực hiện hành động này.');
 	}
 }
