@@ -50,7 +50,7 @@ class PublisherController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_books')) {
-			return $this->error('Bạn không có quyền xóa sách.', 403);
+			return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
 		}
 
 		try {

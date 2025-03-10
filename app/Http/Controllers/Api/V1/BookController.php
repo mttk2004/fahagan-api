@@ -18,6 +18,7 @@ class BookController extends Controller
 {
 	use ApiResponses;
 
+
 	public function index(Request $request)
 	{
 		$bookSort = new BookSort($request);
@@ -72,18 +73,18 @@ class BookController extends Controller
 
 	public function destroy(Request $request, $bookId)
 	{
-		try {
-			$user = $request->user();
-			if (!$user->hasPermissionTo('delete_books')) {
-				return $this->error('Bạn không có quyền xóa sách.', 403);
-			}
+		$user = $request->user();
+		if (!$user->hasPermissionTo('delete_books')) {
+			return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+		}
 
+		try {
 			$book = Book::findOrFail($bookId);
 			$book->delete();
 
-			return $this->ok('Sách được xóa thành công.');
+			return $this->ok('Xóa sách thành công.');
 		} catch (ModelNotFoundException) {
-			return $this->error('Không tìm thấy sách này.', 404);
+			return $this->error('Sách không tồn tại.', 404);
 		}
 	}
 }
