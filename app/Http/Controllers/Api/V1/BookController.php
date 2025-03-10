@@ -9,11 +9,15 @@ use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
 use App\Models\Book;
+use App\Traits\ApiResponses;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 
 class BookController extends Controller
 {
+	use ApiResponses;
+
 	public function index(Request $request)
 	{
 		$bookSort = new BookSort($request);
@@ -66,10 +70,20 @@ class BookController extends Controller
 		return new BookResource($book);
 	}
 
-	public function destroy(Book $book)
+	public function destroy(Request $request, $bookId)
 	{
-		$book->delete();
+		try {
+			$user = $request->user();
+			if (!$user->hasPermissionTo('delete_books')) {
+				return $this->error('Bạn không có quyền xóa sách.', 403);
+			}
 
-		return response()->json();
+			$book = Book::findOrFail($bookId);
+			$book->delete();
+
+			return $this->ok('Sách được xóa thành công.');
+		} catch (ModelNotFoundException) {
+			return $this->error('Không tìm thấy sách này.', 404);
+		}
 	}
 }
