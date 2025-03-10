@@ -4,16 +4,20 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\PublisherRequest;
+use App\Http\Requests\PublisherStoreRequest;
 use App\Http\Resources\V1\PublisherCollection;
 use App\Http\Resources\V1\PublisherResource;
 use App\Http\Sorts\V1\PublisherSort;
 use App\Models\Publisher;
+use App\Traits\ApiResponses;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 
 class PublisherController extends Controller
 {
+	use ApiResponses;
+
 	public function index(Request $request)
 	{
 		$publisherSort = new PublisherSort($request);
@@ -22,9 +26,12 @@ class PublisherController extends Controller
 		return new PublisherCollection($publishers);
 	}
 
-	public function store(PublisherRequest $request)
+	public function store(PublisherStoreRequest $request)
 	{
-		return new PublisherResource(Publisher::create($request->validated()));
+		$publisherData = $request->validated();
+		$publisher = Publisher::create($publisherData);
+
+		return new PublisherResource($publisher);
 	}
 
 	public function show(Publisher $publisher)
@@ -32,17 +39,27 @@ class PublisherController extends Controller
 		return new PublisherResource($publisher);
 	}
 
-	public function update(PublisherRequest $request, Publisher $publisher)
+	public function update(Request $request, Publisher $publisher)
 	{
 		$publisher->update($request->validated());
 
 		return new PublisherResource($publisher);
 	}
 
-	public function destroy(Publisher $publisher)
+	public function destroy(Request $request, $publisherId)
 	{
-		$publisher->delete();
+		$user = $request->user();
+		if (!$user->hasPermissionTo('delete_books')) {
+			return $this->error('Bạn không có quyền xóa sách.', 403);
+		}
 
-		return response()->json();
+		try {
+			$publisher = Publisher::findOrFail($publisherId);
+			$publisher->delete();
+
+			return $this->ok('Xóa nhà xuất bản thành công.');
+		} catch (ModelNotFoundException) {
+			return $this->error('Nhà xuất bản không tồn tại.', 404);
+		}
 	}
 }
