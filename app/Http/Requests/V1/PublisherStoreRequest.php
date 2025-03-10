@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\V1;
 
 
 use Illuminate\Auth\Access\AuthorizationException;
@@ -30,7 +30,7 @@ class PublisherStoreRequest extends FormRequest
 
 	public function authorize(Request $request): bool
 	{
-		return $request->user()->hasPermissionTo('create publishers');
+		return $request->user()->hasPermissionTo('create_publishers');
 	}
 
 	public function failedAuthorization()

@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PublisherStoreRequest;
+use App\Http\Requests\V1\PublisherStoreRequest;
+use App\Http\Requests\V1\PublisherUpdateRequest;
 use App\Http\Resources\V1\PublisherCollection;
 use App\Http\Resources\V1\PublisherResource;
 use App\Http\Sorts\V1\PublisherSort;
@@ -39,11 +40,17 @@ class PublisherController extends Controller
 		return new PublisherResource($publisher);
 	}
 
-	public function update(Request $request, Publisher $publisher)
+	public function update(PublisherUpdateRequest $request, $publisher_id)
 	{
-		$publisher->update($request->validated());
+		try {
+			$publisher = Publisher::findOrFail($publisher_id);
+			$publisherData = $request->validated();
+			$publisher->update($publisherData);
 
-		return new PublisherResource($publisher);
+			return new PublisherResource($publisher);
+		} catch (ModelNotFoundException) {
+			return $this->error('Nhà xuất bản không tồn tại.', 404);
+		}
 	}
 
 	public function destroy(Request $request, $publisherId)
