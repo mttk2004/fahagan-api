@@ -22,4 +22,4 @@ yarn-error.log
 /.vscode
 /.zed
 composer.lock
-packgage-lock.json
+.scribe
