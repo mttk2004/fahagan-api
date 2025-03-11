@@ -23,4 +23,4 @@ yarn-error.log
 /.zed
 composer.lock
 .scribe
-public/docs
+/public/docs/
