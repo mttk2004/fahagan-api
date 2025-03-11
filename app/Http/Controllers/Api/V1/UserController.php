@@ -11,6 +11,7 @@ use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
@@ -19,6 +20,13 @@ class UserController extends Controller
 	use ApiResponses;
 
 
+	/**
+	 * Get all users
+	 *
+	 * @param Request $request
+	 * @return UserCollection
+	 * @group Users
+	 */
 	public function index(Request $request)
 	{
 		$userSort = new UserSort($request);
@@ -27,11 +35,26 @@ class UserController extends Controller
 		return new UserCollection($users);
 	}
 
+	/**
+	 * Get a user
+	 *
+	 * @param User $user
+	 * @return UserResource
+	 * @group Users
+	 */
 	public function show(User $user)
 	{
 		return new UserResource($user);
 	}
 
+	/**
+	 * Update a user
+	 *
+	 * @param UserUpdateRequest $request
+	 * @param $user_id
+	 * @return JsonResponse|UserResource
+	 * @group Users
+	 */
 	public function update(UserUpdateRequest $request, $user_id)
 	{
 		try {
@@ -45,6 +68,14 @@ class UserController extends Controller
 		}
 	}
 
+	/**
+	 * Delete a user
+	 *
+	 * @param Request $request
+	 * @param $user_id
+	 * @return JsonResponse
+	 * @group Users
+	 */
 	public function destroy(Request $request, $user_id)
 	{
 		$user = $request->user();

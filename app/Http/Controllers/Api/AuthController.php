@@ -10,6 +10,7 @@ use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
@@ -18,6 +19,14 @@ class AuthController extends Controller
 	use ApiResponses;
 
 
+	/**
+	 * Register a new user
+	 *
+	 * @param RegisterRequest $request
+	 * @return JsonResponse
+	 * @group Auth
+	 * @unauthenticated
+	 */
 	public function register(RegisterRequest $request)
 	{
 		$data = $request->validated();
@@ -32,6 +41,14 @@ class AuthController extends Controller
 		]);
 	}
 
+	/**
+	 * Login
+	 *
+	 * @param LoginRequest $request
+	 * @return JsonResponse
+	 * @group Auth
+	 * @unauthenticated
+	 */
 	public function login(LoginRequest $request)
 	{
 		$request->validated($request->only(['email', 'password']));
@@ -58,6 +75,13 @@ class AuthController extends Controller
 		]);
 	}
 
+	/**
+	 * Logout
+	 *
+	 * @param Request $request
+	 * @return JsonResponse
+	 * @group Auth
+	 */
 	public function logout(Request $request)
 	{
 		$request->user()->currentAccessToken()->delete();

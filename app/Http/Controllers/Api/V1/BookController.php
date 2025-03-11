@@ -12,6 +12,7 @@ use App\Http\Sorts\V1\BookSort;
 use App\Models\Book;
 use App\Traits\ApiResponses;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
@@ -20,6 +21,14 @@ class BookController extends Controller
 	use ApiResponses;
 
 
+	/**
+	 * Get all books
+	 *
+	 * @param Request $request
+	 * @return BookCollection
+	 * @group Books
+	 * @unauthenticated
+	 */
 	public function index(Request $request)
 	{
 		$bookSort = new BookSort($request);
@@ -28,6 +37,13 @@ class BookController extends Controller
 		return new BookCollection($books);
 	}
 
+	/**
+	 * Create a new book
+	 *
+	 * @param BookStoreRequest $request
+	 * @return BookResource
+	 * @group Books
+	 */
 	public function store(BookStoreRequest $request)
 	{
 		$validatedData = $request->validated();
@@ -60,11 +76,27 @@ class BookController extends Controller
 		return new BookResource($book);
 	}
 
+	/**
+	 * Get a book
+	 *
+	 * @param Book $book
+	 * @return BookResource
+	 * @group Books
+	 * @unauthenticated
+	 */
 	public function show(Book $book)
 	{
 		return new BookResource($book);
 	}
 
+	/**
+	 * Update a book
+	 *
+	 * @param BookUpdateRequest $request
+	 * @param $book_id
+	 * @return JsonResponse|BookResource
+	 * @group Books
+	 */
 	public function update(BookUpdateRequest $request, $book_id)
 	{
 		try {
@@ -92,6 +124,14 @@ class BookController extends Controller
 		}
 	}
 
+	/**
+	 * Delete a book
+	 *
+	 * @param Request $request
+	 * @param $bookId
+	 * @return JsonResponse
+	 * @group Books
+	 */
 	public function destroy(Request $request, $bookId)
 	{
 		$user = $request->user();

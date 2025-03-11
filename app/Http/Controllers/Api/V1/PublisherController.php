@@ -12,6 +12,7 @@ use App\Http\Sorts\V1\PublisherSort;
 use App\Models\Publisher;
 use App\Traits\ApiResponses;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
@@ -19,6 +20,14 @@ class PublisherController extends Controller
 {
 	use ApiResponses;
 
+	/**
+	 * Get all publishers
+	 *
+	 * @param Request $request
+	 * @return PublisherCollection
+	 * @group Publishers
+	 * @unauthenticated
+	 */
 	public function index(Request $request)
 	{
 		$publisherSort = new PublisherSort($request);
@@ -27,6 +36,13 @@ class PublisherController extends Controller
 		return new PublisherCollection($publishers);
 	}
 
+	/**
+	 * Create a new publisher
+	 *
+	 * @param PublisherStoreRequest $request
+	 * @return PublisherResource
+	 * @group Publishers
+	 */
 	public function store(PublisherStoreRequest $request)
 	{
 		$publisherData = $request->validated();
@@ -35,11 +51,27 @@ class PublisherController extends Controller
 		return new PublisherResource($publisher);
 	}
 
+	/**
+	 * Get a publisher
+	 *
+	 * @param Publisher $publisher
+	 * @return PublisherResource
+	 * @group Publishers
+	 * @unauthenticated
+	 */
 	public function show(Publisher $publisher)
 	{
 		return new PublisherResource($publisher);
 	}
 
+	/**
+	 * Update a publisher
+	 *
+	 * @param PublisherUpdateRequest $request
+	 * @param $publisher_id
+	 * @return JsonResponse|PublisherResource
+	 * @group Publishers
+	 */
 	public function update(PublisherUpdateRequest $request, $publisher_id)
 	{
 		try {
@@ -53,6 +85,14 @@ class PublisherController extends Controller
 		}
 	}
 
+	/**
+	 * Delete a publisher
+	 *
+	 * @param Request $request
+	 * @param $publisherId
+	 * @return JsonResponse
+	 * @group Publishers
+	 */
 	public function destroy(Request $request, $publisherId)
 	{
 		$user = $request->user();

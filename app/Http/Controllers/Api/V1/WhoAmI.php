@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponses;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
@@ -12,6 +13,13 @@ class WhoAmI extends Controller
 {
 	use ApiResponses;
 
+	/**
+	 * Get the authenticated user
+	 *
+	 * @param Request $request
+	 * @return JsonResponse
+	 * @group Auth
+	 */
 	public function whoAmI(Request $request)
 	{
 		$user = $request->user();

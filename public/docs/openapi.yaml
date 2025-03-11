@@ -11,7 +11,22 @@ tags:
     name: Auth
     description: ''
   -
+    name: Books
+    description: ''
+  -
+    name: Discounts
+    description: ''
+  -
     name: Endpoints
+    description: ''
+  -
+    name: Genres
+    description: ''
+  -
+    name: Publishers
+    description: ''
+  -
+    name: Users
     description: ''
 components:
   securitySchemes:
@@ -122,10 +137,31 @@ paths:
       responses: {  }
       tags:
         - Auth
+  /api/v1/whoami:
+    get:
+      summary: 'Get the authenticated user'
+      operationId: getTheAuthenticatedUser
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Auth
   /api/v1/books:
     get:
-      summary: ''
-      operationId: getApiV1Books
+      summary: 'Get all books'
+      operationId: getAllBooks
       description: ''
       parameters: []
       responses:
@@ -1982,15 +2018,16 @@ paths:
                         type: integer
                         example: 102
       tags:
-        - Endpoints
+        - Books
+      security: []
     post:
-      summary: ''
-      operationId: postApiV1Books
+      summary: 'Create a new book'
+      operationId: createANewBook
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Books
       requestBody:
         required: false
         content:
@@ -2110,8 +2147,8 @@ paths:
                                   - id
   '/api/v1/books/{id}':
     get:
-      summary: ''
-      operationId: getApiV1BooksId
+      summary: 'Get a book'
+      operationId: getABook
       description: ''
       parameters: []
       responses:
@@ -2308,15 +2345,16 @@ paths:
                             type: string
                             example: 'http://localhost:8000/api/v1/books/716924900111024128'
       tags:
-        - Endpoints
+        - Books
+      security: []
     put:
-      summary: ''
-      operationId: putApiV1BooksId
+      summary: 'Update a book'
+      operationId: updateABook
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Books
       requestBody:
         required: false
         content:
@@ -2422,13 +2460,13 @@ paths:
                                     example: 16
                                     nullable: false
     delete:
-      summary: ''
-      operationId: deleteApiV1BooksId
+      summary: 'Delete a book'
+      operationId: deleteABook
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Books
     parameters:
       -
         in: path
@@ -2438,10 +2476,85 @@ paths:
         required: true
         schema:
           type: string
+  /api/v1/discounts:
+    get:
+      summary: 'Get all discounts'
+      operationId: getAllDiscounts
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Discounts
+    post:
+      summary: 'Create a new discount'
+      operationId: createANewDiscount
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Discounts
+  '/api/v1/discounts/{id}':
+    get:
+      summary: 'Get a discount'
+      operationId: getADiscount
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Discounts
+    put:
+      summary: 'Update a discount'
+      operationId: updateADiscount
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Discounts
+    delete:
+      summary: 'Delete a discount'
+      operationId: deleteADiscount
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Discounts
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the discount.'
+        example: 716924903336443904
+        required: true
+        schema:
+          type: string
   /api/v1/authors:
     get:
-      summary: ''
-      operationId: getApiV1Authors
+      summary: 'Get all authors'
+      operationId: getAllAuthors
       description: ''
       parameters: []
       responses:
@@ -2455,8 +2568,8 @@ paths:
       tags:
         - Endpoints
     post:
-      summary: ''
-      operationId: postApiV1Authors
+      summary: 'Create a new author'
+      operationId: createANewAuthor
       description: ''
       parameters: []
       responses: {  }
@@ -2464,8 +2577,8 @@ paths:
         - Endpoints
   '/api/v1/authors/{id}':
     get:
-      summary: ''
-      operationId: getApiV1AuthorsId
+      summary: 'Get an author'
+      operationId: getAnAuthor
       description: ''
       parameters: []
       responses:
@@ -2479,16 +2592,16 @@ paths:
       tags:
         - Endpoints
     put:
-      summary: ''
-      operationId: putApiV1AuthorsId
+      summary: 'Update an author'
+      operationId: updateAnAuthor
       description: ''
       parameters: []
       responses: {  }
       tags:
         - Endpoints
     delete:
-      summary: ''
-      operationId: deleteApiV1AuthorsId
+      summary: 'Delete an author'
+      operationId: deleteAnAuthor
       description: ''
       parameters: []
       responses: {  }
@@ -2503,10 +2616,957 @@ paths:
         required: true
         schema:
           type: integer
+  /api/v1/genres:
+    get:
+      summary: 'Get all genres'
+      operationId: getAllGenres
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      type: genre
+                      id: 10000
+                      attributes:
+                        name: 'Văn học'
+                        books_count: 24
+                        description: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
+                      links:
+                        self: 'http://localhost:8000/api/v1/genres/10000'
+                    -
+                      type: genre
+                      id: 10001
+                      attributes:
+                        name: 'Lịch sử'
+                        books_count: 21
+                        description: 'Nihil et quis et qui odio impedit enim. Nesciunt quod qui iste laborum assumenda explicabo. Rerum eaque qui est qui iure et exercitationem.'
+                      links:
+                        self: 'http://localhost:8000/api/v1/genres/10001'
+                    -
+                      type: genre
+                      id: 10002
+                      attributes:
+                        name: 'Triết học'
+                        books_count: 21
+                        description: 'Exercitationem quia dolore expedita neque ut nihil voluptas. Deserunt quidem fuga error vel impedit voluptas est. Sed exercitationem omnis officia et.'
+                      links:
+                        self: 'http://localhost:8000/api/v1/genres/10002'
+                    -
+                      type: genre
+                      id: 10003
+                      attributes:
+                        name: 'Kinh tế'
+                        books_count: 35
+                        description: 'Sunt autem quos cupiditate harum voluptas. Iste ea quam omnis ut doloribus omnis autem. Et ipsa vel inventore qui et. Repellendus est qui laudantium consectetur.'
+                      links:
+                        self: 'http://localhost:8000/api/v1/genres/10003'
+                    -
+                      type: genre
+                      id: 10004
+                      attributes:
+                        name: 'Tâm lý - Kỹ năng sống'
+                        books_count: 25
+                        description: 'Blanditiis maxime illum reprehenderit non quaerat. Nihil libero ratione quisquam reiciendis. Numquam laudantium blanditiis aut aut veniam.'
+                      links:
+                        self: 'http://localhost:8000/api/v1/genres/10004'
+                    -
+                      type: genre
+                      id: 10005
+                      attributes:
+                        name: 'Hồi ký - Tiểu sử'
+                        books_count: 24
+                        description: 'Vitae et earum nihil. Molestias recusandae et vel officiis maiores molestias molestiae. Aut aut et saepe ut laudantium repudiandae.'
+                      links:
+                        self: 'http://localhost:8000/api/v1/genres/10005'
+                  included: []
+                  links:
+                    first: 'http://localhost:8000/api/v1/genres?page=1'
+                    last: 'http://localhost:8000/api/v1/genres?page=1'
+                    prev: null
+                    next: null
+                  meta:
+                    current_page: 1
+                    from: 1
+                    last_page: 1
+                    links:
+                      -
+                        url: null
+                        label: '&laquo; Previous'
+                        active: false
+                      -
+                        url: 'http://localhost:8000/api/v1/genres?page=1'
+                        label: '1'
+                        active: true
+                      -
+                        url: null
+                        label: 'Next &raquo;'
+                        active: false
+                    path: 'http://localhost:8000/api/v1/genres'
+                    per_page: 15
+                    to: 6
+                    total: 6
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        type: genre
+                        id: 10000
+                        attributes:
+                          name: 'Văn học'
+                          books_count: 24
+                          description: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
+                        links:
+                          self: 'http://localhost:8000/api/v1/genres/10000'
+                      -
+                        type: genre
+                        id: 10001
+                        attributes:
+                          name: 'Lịch sử'
+                          books_count: 21
+                          description: 'Nihil et quis et qui odio impedit enim. Nesciunt quod qui iste laborum assumenda explicabo. Rerum eaque qui est qui iure et exercitationem.'
+                        links:
+                          self: 'http://localhost:8000/api/v1/genres/10001'
+                      -
+                        type: genre
+                        id: 10002
+                        attributes:
+                          name: 'Triết học'
+                          books_count: 21
+                          description: 'Exercitationem quia dolore expedita neque ut nihil voluptas. Deserunt quidem fuga error vel impedit voluptas est. Sed exercitationem omnis officia et.'
+                        links:
+                          self: 'http://localhost:8000/api/v1/genres/10002'
+                      -
+                        type: genre
+                        id: 10003
+                        attributes:
+                          name: 'Kinh tế'
+                          books_count: 35
+                          description: 'Sunt autem quos cupiditate harum voluptas. Iste ea quam omnis ut doloribus omnis autem. Et ipsa vel inventore qui et. Repellendus est qui laudantium consectetur.'
+                        links:
+                          self: 'http://localhost:8000/api/v1/genres/10003'
+                      -
+                        type: genre
+                        id: 10004
+                        attributes:
+                          name: 'Tâm lý - Kỹ năng sống'
+                          books_count: 25
+                          description: 'Blanditiis maxime illum reprehenderit non quaerat. Nihil libero ratione quisquam reiciendis. Numquam laudantium blanditiis aut aut veniam.'
+                        links:
+                          self: 'http://localhost:8000/api/v1/genres/10004'
+                      -
+                        type: genre
+                        id: 10005
+                        attributes:
+                          name: 'Hồi ký - Tiểu sử'
+                          books_count: 24
+                          description: 'Vitae et earum nihil. Molestias recusandae et vel officiis maiores molestias molestiae. Aut aut et saepe ut laudantium repudiandae.'
+                        links:
+                          self: 'http://localhost:8000/api/v1/genres/10005'
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: genre
+                        id:
+                          type: integer
+                          example: 10000
+                        attributes:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: 'Văn học'
+                            books_count:
+                              type: integer
+                              example: 24
+                            description:
+                              type: string
+                              example: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
+                        links:
+                          type: object
+                          properties:
+                            self:
+                              type: string
+                              example: 'http://localhost:8000/api/v1/genres/10000'
+                  included:
+                    type: array
+                    example: []
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/genres?page=1'
+                      last:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/genres?page=1'
+                      prev:
+                        type: string
+                        example: null
+                      next:
+                        type: string
+                        example: null
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        example:
+                          -
+                            url: null
+                            label: '&laquo; Previous'
+                            active: false
+                          -
+                            url: 'http://localhost:8000/api/v1/genres?page=1'
+                            label: '1'
+                            active: true
+                          -
+                            url: null
+                            label: 'Next &raquo;'
+                            active: false
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                            label:
+                              type: string
+                              example: '&laquo; Previous'
+                            active:
+                              type: boolean
+                              example: false
+                      path:
+                        type: string
+                        example: 'http://localhost:8000/api/v1/genres'
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type: integer
+                        example: 6
+                      total:
+                        type: integer
+                        example: 6
+      tags:
+        - Genres
+      security: []
+    post:
+      summary: 'Create a new genre'
+      operationId: createANewGenre
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Genres
+  '/api/v1/genres/{id}':
+    get:
+      summary: 'Get a genre'
+      operationId: getAGenre
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    type: genre
+                    id: 10000
+                    attributes:
+                      name: 'Văn học'
+                      books_count: 24
+                      description: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
+                    relationships:
+                      books:
+                        data:
+                          -
+                            type: book
+                            id: 716924900148772864
+                            attributes:
+                              title: 'Est non ut'
+                              price: '1400000.0'
+                              edition: 2
+                              publication_date: '2018-02-25T00:00:00.000000Z'
+                              pages: 452
+                              sold_count: 7260
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900148772864'
+                          -
+                            type: book
+                            id: 716924900211687424
+                            attributes:
+                              title: 'Ratione perferendis saepe molestiae et aut neque ut'
+                              price: '1180000.0'
+                              edition: 2
+                              publication_date: '2023-05-09T00:00:00.000000Z'
+                              pages: 730
+                              sold_count: 9176
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900211687424'
+                          -
+                            type: book
+                            id: 716924900341710848
+                            attributes:
+                              title: 'Inventore delectus exercitationem a et ullam nemo'
+                              price: '1340000.0'
+                              edition: 1
+                              publication_date: '2018-08-04T00:00:00.000000Z'
+                              pages: 256
+                              sold_count: 3913
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900341710848'
+                          -
+                            type: book
+                            id: 716924900371070976
+                            attributes:
+                              title: 'Iusto dicta est occaecati'
+                              price: '1350000.0'
+                              edition: 4
+                              publication_date: '2024-02-20T00:00:00.000000Z'
+                              pages: 779
+                              sold_count: 1629
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900371070976'
+                          -
+                            type: book
+                            id: 716924900383653888
+                            attributes:
+                              title: 'Laboriosam autem blanditiis'
+                              price: '620000.0'
+                              edition: 1
+                              publication_date: '2022-12-01T00:00:00.000000Z'
+                              pages: 638
+                              sold_count: 9041
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900383653888'
+                          -
+                            type: book
+                            id: 716924900509483008
+                            attributes:
+                              title: 'Dicta tempore dolor'
+                              price: '480000.0'
+                              edition: 4
+                              publication_date: '2016-11-02T00:00:00.000000Z'
+                              pages: 249
+                              sold_count: 9538
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900509483008'
+                          -
+                            type: book
+                            id: 716924900522065920
+                            attributes:
+                              title: 'Eveniet corrupti quasi et assumenda quam natus quidem'
+                              price: '880000.0'
+                              edition: 4
+                              publication_date: '2018-10-25T00:00:00.000000Z'
+                              pages: 701
+                              sold_count: 7914
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900522065920'
+                          -
+                            type: book
+                            id: 716924900551426048
+                            attributes:
+                              title: 'Ut modi voluptatem quo commodi impedit consequuntur aperiam quo'
+                              price: '1050000.0'
+                              edition: 3
+                              publication_date: '2024-05-16T00:00:00.000000Z'
+                              pages: 858
+                              sold_count: 9271
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900551426048'
+                          -
+                            type: book
+                            id: 716924900631117824
+                            attributes:
+                              title: 'Culpa voluptatibus nisi fuga non eius'
+                              price: '1120000.0'
+                              edition: 4
+                              publication_date: '2016-03-14T00:00:00.000000Z'
+                              pages: 784
+                              sold_count: 3529
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900631117824'
+                          -
+                            type: book
+                            id: 716924900664672256
+                            attributes:
+                              title: 'Quisquam aut sequi aut provident'
+                              price: '830000.0'
+                              edition: 2
+                              publication_date: '2022-06-03T00:00:00.000000Z'
+                              pages: 812
+                              sold_count: 823
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900664672256'
+                          -
+                            type: book
+                            id: 716924900681449472
+                            attributes:
+                              title: 'Et esse aut consequuntur est et minima architecto'
+                              price: '1240000.0'
+                              edition: 1
+                              publication_date: '2019-07-04T00:00:00.000000Z'
+                              pages: 272
+                              sold_count: 1667
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900681449472'
+                          -
+                            type: book
+                            id: 716924900886970368
+                            attributes:
+                              title: 'Enim est ab repellat excepturi non earum'
+                              price: '1190000.0'
+                              edition: 5
+                              publication_date: '2019-02-21T00:00:00.000000Z'
+                              pages: 245
+                              sold_count: 2613
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900886970368'
+                          -
+                            type: book
+                            id: 716924900945690624
+                            attributes:
+                              title: 'Sit vero consectetur nobis sit labore quod beatae sapiente'
+                              price: '620000.0'
+                              edition: 6
+                              publication_date: '2021-01-10T00:00:00.000000Z'
+                              pages: 624
+                              sold_count: 6341
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924900945690624'
+                          -
+                            type: book
+                            id: 716924901008605184
+                            attributes:
+                              title: 'Enim et autem'
+                              price: '710000.0'
+                              edition: 4
+                              publication_date: '2020-07-09T00:00:00.000000Z'
+                              pages: 826
+                              sold_count: 9203
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901008605184'
+                          -
+                            type: book
+                            id: 716924901025382400
+                            attributes:
+                              title: 'Sunt fugiat eaque rerum porro dignissimos cupiditate occaecati error atque'
+                              price: '1350000.0'
+                              edition: 5
+                              publication_date: '2018-11-02T00:00:00.000000Z'
+                              pages: 629
+                              sold_count: 3315
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901025382400'
+                          -
+                            type: book
+                            id: 716924901079908352
+                            attributes:
+                              title: 'Soluta quisquam minus'
+                              price: '710000.0'
+                              edition: 3
+                              publication_date: '2023-01-31T00:00:00.000000Z'
+                              pages: 524
+                              sold_count: 7339
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901079908352'
+                          -
+                            type: book
+                            id: 716924901155405824
+                            attributes:
+                              title: 'Illo dolor impedit repellendus ratione'
+                              price: '550000.0'
+                              edition: 1
+                              publication_date: '2024-08-17T00:00:00.000000Z'
+                              pages: 653
+                              sold_count: 313
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901155405824'
+                          -
+                            type: book
+                            id: 716924901272846336
+                            attributes:
+                              title: 'Ipsum numquam qui quia quibusdam'
+                              price: '730000.0'
+                              edition: 2
+                              publication_date: '2017-02-05T00:00:00.000000Z'
+                              pages: 710
+                              sold_count: 7640
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901272846336'
+                          -
+                            type: book
+                            id: 716924901348343808
+                            attributes:
+                              title: 'Quis provident autem ex'
+                              price: '750000.0'
+                              edition: 2
+                              publication_date: '2024-01-15T00:00:00.000000Z'
+                              pages: 522
+                              sold_count: 6413
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901348343808'
+                          -
+                            type: book
+                            id: 716924901398675456
+                            attributes:
+                              title: 'Sit ratione quidem voluptates sunt error voluptatem aut aut'
+                              price: '1240000.0'
+                              edition: 1
+                              publication_date: '2015-04-27T00:00:00.000000Z'
+                              pages: 271
+                              sold_count: 9013
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901398675456'
+                          -
+                            type: book
+                            id: 716924901440618496
+                            attributes:
+                              title: 'Adipisci vero ut maiores quis maxime illo sapiente'
+                              price: '1130000.0'
+                              edition: 5
+                              publication_date: '2024-07-02T00:00:00.000000Z'
+                              pages: 765
+                              sold_count: 7695
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901440618496'
+                          -
+                            type: book
+                            id: 716924901516115968
+                            attributes:
+                              title: 'Recusandae expedita est et ipsam ratione non minus'
+                              price: '600000.0'
+                              edition: 1
+                              publication_date: '2017-07-18T00:00:00.000000Z'
+                              pages: 339
+                              sold_count: 2798
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901516115968'
+                          -
+                            type: book
+                            id: 716924901558059008
+                            attributes:
+                              title: 'Nostrum quaerat necessitatibus reprehenderit aperiam'
+                              price: '790000.0'
+                              edition: 3
+                              publication_date: '2017-08-20T00:00:00.000000Z'
+                              pages: 295
+                              sold_count: 2189
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901558059008'
+                          -
+                            type: book
+                            id: 716924901574836224
+                            attributes:
+                              title: 'Autem enim excepturi'
+                              price: '810000.0'
+                              edition: 3
+                              publication_date: '2015-08-13T00:00:00.000000Z'
+                              pages: 455
+                              sold_count: 3001
+                            links:
+                              self: 'http://localhost:8000/api/v1/books/716924901574836224'
+                        included: []
+                    links:
+                      self: 'http://localhost:8000/api/v1/genres/10000'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: genre
+                      id:
+                        type: integer
+                        example: 10000
+                      attributes:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: 'Văn học'
+                          books_count:
+                            type: integer
+                            example: 24
+                          description:
+                            type: string
+                            example: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
+                      relationships:
+                        type: object
+                        properties:
+                          books:
+                            type: object
+                            properties:
+                              data:
+                                type: array
+                                example:
+                                  -
+                                    type: book
+                                    id: 716924900148772864
+                                    attributes:
+                                      title: 'Est non ut'
+                                      price: '1400000.0'
+                                      edition: 2
+                                      publication_date: '2018-02-25T00:00:00.000000Z'
+                                      pages: 452
+                                      sold_count: 7260
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900148772864'
+                                  -
+                                    type: book
+                                    id: 716924900211687424
+                                    attributes:
+                                      title: 'Ratione perferendis saepe molestiae et aut neque ut'
+                                      price: '1180000.0'
+                                      edition: 2
+                                      publication_date: '2023-05-09T00:00:00.000000Z'
+                                      pages: 730
+                                      sold_count: 9176
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900211687424'
+                                  -
+                                    type: book
+                                    id: 716924900341710848
+                                    attributes:
+                                      title: 'Inventore delectus exercitationem a et ullam nemo'
+                                      price: '1340000.0'
+                                      edition: 1
+                                      publication_date: '2018-08-04T00:00:00.000000Z'
+                                      pages: 256
+                                      sold_count: 3913
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900341710848'
+                                  -
+                                    type: book
+                                    id: 716924900371070976
+                                    attributes:
+                                      title: 'Iusto dicta est occaecati'
+                                      price: '1350000.0'
+                                      edition: 4
+                                      publication_date: '2024-02-20T00:00:00.000000Z'
+                                      pages: 779
+                                      sold_count: 1629
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900371070976'
+                                  -
+                                    type: book
+                                    id: 716924900383653888
+                                    attributes:
+                                      title: 'Laboriosam autem blanditiis'
+                                      price: '620000.0'
+                                      edition: 1
+                                      publication_date: '2022-12-01T00:00:00.000000Z'
+                                      pages: 638
+                                      sold_count: 9041
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900383653888'
+                                  -
+                                    type: book
+                                    id: 716924900509483008
+                                    attributes:
+                                      title: 'Dicta tempore dolor'
+                                      price: '480000.0'
+                                      edition: 4
+                                      publication_date: '2016-11-02T00:00:00.000000Z'
+                                      pages: 249
+                                      sold_count: 9538
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900509483008'
+                                  -
+                                    type: book
+                                    id: 716924900522065920
+                                    attributes:
+                                      title: 'Eveniet corrupti quasi et assumenda quam natus quidem'
+                                      price: '880000.0'
+                                      edition: 4
+                                      publication_date: '2018-10-25T00:00:00.000000Z'
+                                      pages: 701
+                                      sold_count: 7914
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900522065920'
+                                  -
+                                    type: book
+                                    id: 716924900551426048
+                                    attributes:
+                                      title: 'Ut modi voluptatem quo commodi impedit consequuntur aperiam quo'
+                                      price: '1050000.0'
+                                      edition: 3
+                                      publication_date: '2024-05-16T00:00:00.000000Z'
+                                      pages: 858
+                                      sold_count: 9271
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900551426048'
+                                  -
+                                    type: book
+                                    id: 716924900631117824
+                                    attributes:
+                                      title: 'Culpa voluptatibus nisi fuga non eius'
+                                      price: '1120000.0'
+                                      edition: 4
+                                      publication_date: '2016-03-14T00:00:00.000000Z'
+                                      pages: 784
+                                      sold_count: 3529
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900631117824'
+                                  -
+                                    type: book
+                                    id: 716924900664672256
+                                    attributes:
+                                      title: 'Quisquam aut sequi aut provident'
+                                      price: '830000.0'
+                                      edition: 2
+                                      publication_date: '2022-06-03T00:00:00.000000Z'
+                                      pages: 812
+                                      sold_count: 823
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900664672256'
+                                  -
+                                    type: book
+                                    id: 716924900681449472
+                                    attributes:
+                                      title: 'Et esse aut consequuntur est et minima architecto'
+                                      price: '1240000.0'
+                                      edition: 1
+                                      publication_date: '2019-07-04T00:00:00.000000Z'
+                                      pages: 272
+                                      sold_count: 1667
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900681449472'
+                                  -
+                                    type: book
+                                    id: 716924900886970368
+                                    attributes:
+                                      title: 'Enim est ab repellat excepturi non earum'
+                                      price: '1190000.0'
+                                      edition: 5
+                                      publication_date: '2019-02-21T00:00:00.000000Z'
+                                      pages: 245
+                                      sold_count: 2613
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900886970368'
+                                  -
+                                    type: book
+                                    id: 716924900945690624
+                                    attributes:
+                                      title: 'Sit vero consectetur nobis sit labore quod beatae sapiente'
+                                      price: '620000.0'
+                                      edition: 6
+                                      publication_date: '2021-01-10T00:00:00.000000Z'
+                                      pages: 624
+                                      sold_count: 6341
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924900945690624'
+                                  -
+                                    type: book
+                                    id: 716924901008605184
+                                    attributes:
+                                      title: 'Enim et autem'
+                                      price: '710000.0'
+                                      edition: 4
+                                      publication_date: '2020-07-09T00:00:00.000000Z'
+                                      pages: 826
+                                      sold_count: 9203
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901008605184'
+                                  -
+                                    type: book
+                                    id: 716924901025382400
+                                    attributes:
+                                      title: 'Sunt fugiat eaque rerum porro dignissimos cupiditate occaecati error atque'
+                                      price: '1350000.0'
+                                      edition: 5
+                                      publication_date: '2018-11-02T00:00:00.000000Z'
+                                      pages: 629
+                                      sold_count: 3315
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901025382400'
+                                  -
+                                    type: book
+                                    id: 716924901079908352
+                                    attributes:
+                                      title: 'Soluta quisquam minus'
+                                      price: '710000.0'
+                                      edition: 3
+                                      publication_date: '2023-01-31T00:00:00.000000Z'
+                                      pages: 524
+                                      sold_count: 7339
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901079908352'
+                                  -
+                                    type: book
+                                    id: 716924901155405824
+                                    attributes:
+                                      title: 'Illo dolor impedit repellendus ratione'
+                                      price: '550000.0'
+                                      edition: 1
+                                      publication_date: '2024-08-17T00:00:00.000000Z'
+                                      pages: 653
+                                      sold_count: 313
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901155405824'
+                                  -
+                                    type: book
+                                    id: 716924901272846336
+                                    attributes:
+                                      title: 'Ipsum numquam qui quia quibusdam'
+                                      price: '730000.0'
+                                      edition: 2
+                                      publication_date: '2017-02-05T00:00:00.000000Z'
+                                      pages: 710
+                                      sold_count: 7640
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901272846336'
+                                  -
+                                    type: book
+                                    id: 716924901348343808
+                                    attributes:
+                                      title: 'Quis provident autem ex'
+                                      price: '750000.0'
+                                      edition: 2
+                                      publication_date: '2024-01-15T00:00:00.000000Z'
+                                      pages: 522
+                                      sold_count: 6413
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901348343808'
+                                  -
+                                    type: book
+                                    id: 716924901398675456
+                                    attributes:
+                                      title: 'Sit ratione quidem voluptates sunt error voluptatem aut aut'
+                                      price: '1240000.0'
+                                      edition: 1
+                                      publication_date: '2015-04-27T00:00:00.000000Z'
+                                      pages: 271
+                                      sold_count: 9013
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901398675456'
+                                  -
+                                    type: book
+                                    id: 716924901440618496
+                                    attributes:
+                                      title: 'Adipisci vero ut maiores quis maxime illo sapiente'
+                                      price: '1130000.0'
+                                      edition: 5
+                                      publication_date: '2024-07-02T00:00:00.000000Z'
+                                      pages: 765
+                                      sold_count: 7695
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901440618496'
+                                  -
+                                    type: book
+                                    id: 716924901516115968
+                                    attributes:
+                                      title: 'Recusandae expedita est et ipsam ratione non minus'
+                                      price: '600000.0'
+                                      edition: 1
+                                      publication_date: '2017-07-18T00:00:00.000000Z'
+                                      pages: 339
+                                      sold_count: 2798
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901516115968'
+                                  -
+                                    type: book
+                                    id: 716924901558059008
+                                    attributes:
+                                      title: 'Nostrum quaerat necessitatibus reprehenderit aperiam'
+                                      price: '790000.0'
+                                      edition: 3
+                                      publication_date: '2017-08-20T00:00:00.000000Z'
+                                      pages: 295
+                                      sold_count: 2189
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901558059008'
+                                  -
+                                    type: book
+                                    id: 716924901574836224
+                                    attributes:
+                                      title: 'Autem enim excepturi'
+                                      price: '810000.0'
+                                      edition: 3
+                                      publication_date: '2015-08-13T00:00:00.000000Z'
+                                      pages: 455
+                                      sold_count: 3001
+                                    links:
+                                      self: 'http://localhost:8000/api/v1/books/716924901574836224'
+                                items:
+                                  type: object
+                                  properties:
+                                    type:
+                                      type: string
+                                      example: book
+                                    id:
+                                      type: integer
+                                      example: 716924900148772864
+                                    attributes:
+                                      type: object
+                                      properties: { title: { type: string, example: 'Est non ut' }, price: { type: string, example: '1400000.0' }, edition: { type: integer, example: 2 }, publication_date: { type: string, example: '2018-02-25T00:00:00.000000Z' }, pages: { type: integer, example: 452 }, sold_count: { type: integer, example: 7260 } }
+                                    links:
+                                      type: object
+                                      properties: { self: { type: string, example: 'http://localhost:8000/api/v1/books/716924900148772864' } }
+                              included:
+                                type: array
+                                example: []
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: string
+                            example: 'http://localhost:8000/api/v1/genres/10000'
+      tags:
+        - Genres
+      security: []
+    put:
+      summary: 'Update a genre'
+      operationId: updateAGenre
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Genres
+    delete:
+      summary: 'Delete a genre'
+      operationId: deleteAGenre
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Genres
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the genre.'
+        example: 10000
+        required: true
+        schema:
+          type: integer
   /api/v1/publishers:
     get:
-      summary: ''
-      operationId: getApiV1Publishers
+      summary: 'Get all publishers'
+      operationId: getAllPublishers
       description: ''
       parameters: []
       responses:
@@ -5415,15 +6475,16 @@ paths:
                         type: integer
                         example: 10
       tags:
-        - Endpoints
+        - Publishers
+      security: []
     post:
-      summary: ''
-      operationId: postApiV1Publishers
+      summary: 'Create a new publisher'
+      operationId: createANewPublisher
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Publishers
       requestBody:
         required: false
         content:
@@ -5458,8 +6519,8 @@ paths:
                         - biography
   '/api/v1/publishers/{id}':
     get:
-      summary: ''
-      operationId: getApiV1PublishersId
+      summary: 'Get a publisher'
+      operationId: getAPublisher
       description: ''
       parameters: []
       responses:
@@ -5847,15 +6908,16 @@ paths:
                             type: string
                             example: 'http://localhost:8000/api/v1/publishers/10000'
       tags:
-        - Endpoints
+        - Publishers
+      security: []
     put:
-      summary: ''
-      operationId: putApiV1PublishersId
+      summary: 'Update a publisher'
+      operationId: updateAPublisher
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Publishers
       requestBody:
         required: false
         content:
@@ -5886,13 +6948,13 @@ paths:
                           example: architecto
                           nullable: false
     delete:
-      summary: ''
-      operationId: deleteApiV1PublishersId
+      summary: 'Delete a publisher'
+      operationId: deleteAPublisher
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Publishers
     parameters:
       -
         in: path
@@ -5902,1924 +6964,56 @@ paths:
         required: true
         schema:
           type: integer
-  /api/v1/genres:
-    get:
-      summary: ''
-      operationId: getApiV1Genres
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  data:
-                    -
-                      type: genre
-                      id: 10000
-                      attributes:
-                        name: 'Văn học'
-                        books_count: 24
-                        description: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
-                      links:
-                        self: 'http://localhost:8000/api/v1/genres/10000'
-                    -
-                      type: genre
-                      id: 10001
-                      attributes:
-                        name: 'Lịch sử'
-                        books_count: 21
-                        description: 'Nihil et quis et qui odio impedit enim. Nesciunt quod qui iste laborum assumenda explicabo. Rerum eaque qui est qui iure et exercitationem.'
-                      links:
-                        self: 'http://localhost:8000/api/v1/genres/10001'
-                    -
-                      type: genre
-                      id: 10002
-                      attributes:
-                        name: 'Triết học'
-                        books_count: 21
-                        description: 'Exercitationem quia dolore expedita neque ut nihil voluptas. Deserunt quidem fuga error vel impedit voluptas est. Sed exercitationem omnis officia et.'
-                      links:
-                        self: 'http://localhost:8000/api/v1/genres/10002'
-                    -
-                      type: genre
-                      id: 10003
-                      attributes:
-                        name: 'Kinh tế'
-                        books_count: 35
-                        description: 'Sunt autem quos cupiditate harum voluptas. Iste ea quam omnis ut doloribus omnis autem. Et ipsa vel inventore qui et. Repellendus est qui laudantium consectetur.'
-                      links:
-                        self: 'http://localhost:8000/api/v1/genres/10003'
-                    -
-                      type: genre
-                      id: 10004
-                      attributes:
-                        name: 'Tâm lý - Kỹ năng sống'
-                        books_count: 25
-                        description: 'Blanditiis maxime illum reprehenderit non quaerat. Nihil libero ratione quisquam reiciendis. Numquam laudantium blanditiis aut aut veniam.'
-                      links:
-                        self: 'http://localhost:8000/api/v1/genres/10004'
-                    -
-                      type: genre
-                      id: 10005
-                      attributes:
-                        name: 'Hồi ký - Tiểu sử'
-                        books_count: 24
-                        description: 'Vitae et earum nihil. Molestias recusandae et vel officiis maiores molestias molestiae. Aut aut et saepe ut laudantium repudiandae.'
-                      links:
-                        self: 'http://localhost:8000/api/v1/genres/10005'
-                  included: []
-                  links:
-                    first: 'http://localhost:8000/api/v1/genres?page=1'
-                    last: 'http://localhost:8000/api/v1/genres?page=1'
-                    prev: null
-                    next: null
-                  meta:
-                    current_page: 1
-                    from: 1
-                    last_page: 1
-                    links:
-                      -
-                        url: null
-                        label: '&laquo; Previous'
-                        active: false
-                      -
-                        url: 'http://localhost:8000/api/v1/genres?page=1'
-                        label: '1'
-                        active: true
-                      -
-                        url: null
-                        label: 'Next &raquo;'
-                        active: false
-                    path: 'http://localhost:8000/api/v1/genres'
-                    per_page: 15
-                    to: 6
-                    total: 6
-                properties:
-                  data:
-                    type: array
-                    example:
-                      -
-                        type: genre
-                        id: 10000
-                        attributes:
-                          name: 'Văn học'
-                          books_count: 24
-                          description: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
-                        links:
-                          self: 'http://localhost:8000/api/v1/genres/10000'
-                      -
-                        type: genre
-                        id: 10001
-                        attributes:
-                          name: 'Lịch sử'
-                          books_count: 21
-                          description: 'Nihil et quis et qui odio impedit enim. Nesciunt quod qui iste laborum assumenda explicabo. Rerum eaque qui est qui iure et exercitationem.'
-                        links:
-                          self: 'http://localhost:8000/api/v1/genres/10001'
-                      -
-                        type: genre
-                        id: 10002
-                        attributes:
-                          name: 'Triết học'
-                          books_count: 21
-                          description: 'Exercitationem quia dolore expedita neque ut nihil voluptas. Deserunt quidem fuga error vel impedit voluptas est. Sed exercitationem omnis officia et.'
-                        links:
-                          self: 'http://localhost:8000/api/v1/genres/10002'
-                      -
-                        type: genre
-                        id: 10003
-                        attributes:
-                          name: 'Kinh tế'
-                          books_count: 35
-                          description: 'Sunt autem quos cupiditate harum voluptas. Iste ea quam omnis ut doloribus omnis autem. Et ipsa vel inventore qui et. Repellendus est qui laudantium consectetur.'
-                        links:
-                          self: 'http://localhost:8000/api/v1/genres/10003'
-                      -
-                        type: genre
-                        id: 10004
-                        attributes:
-                          name: 'Tâm lý - Kỹ năng sống'
-                          books_count: 25
-                          description: 'Blanditiis maxime illum reprehenderit non quaerat. Nihil libero ratione quisquam reiciendis. Numquam laudantium blanditiis aut aut veniam.'
-                        links:
-                          self: 'http://localhost:8000/api/v1/genres/10004'
-                      -
-                        type: genre
-                        id: 10005
-                        attributes:
-                          name: 'Hồi ký - Tiểu sử'
-                          books_count: 24
-                          description: 'Vitae et earum nihil. Molestias recusandae et vel officiis maiores molestias molestiae. Aut aut et saepe ut laudantium repudiandae.'
-                        links:
-                          self: 'http://localhost:8000/api/v1/genres/10005'
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                          example: genre
-                        id:
-                          type: integer
-                          example: 10000
-                        attributes:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                              example: 'Văn học'
-                            books_count:
-                              type: integer
-                              example: 24
-                            description:
-                              type: string
-                              example: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
-                        links:
-                          type: object
-                          properties:
-                            self:
-                              type: string
-                              example: 'http://localhost:8000/api/v1/genres/10000'
-                  included:
-                    type: array
-                    example: []
-                  links:
-                    type: object
-                    properties:
-                      first:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/genres?page=1'
-                      last:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/genres?page=1'
-                      prev:
-                        type: string
-                        example: null
-                      next:
-                        type: string
-                        example: null
-                  meta:
-                    type: object
-                    properties:
-                      current_page:
-                        type: integer
-                        example: 1
-                      from:
-                        type: integer
-                        example: 1
-                      last_page:
-                        type: integer
-                        example: 1
-                      links:
-                        type: array
-                        example:
-                          -
-                            url: null
-                            label: '&laquo; Previous'
-                            active: false
-                          -
-                            url: 'http://localhost:8000/api/v1/genres?page=1'
-                            label: '1'
-                            active: true
-                          -
-                            url: null
-                            label: 'Next &raquo;'
-                            active: false
-                        items:
-                          type: object
-                          properties:
-                            url:
-                              type: string
-                              example: null
-                            label:
-                              type: string
-                              example: '&laquo; Previous'
-                            active:
-                              type: boolean
-                              example: false
-                      path:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/genres'
-                      per_page:
-                        type: integer
-                        example: 15
-                      to:
-                        type: integer
-                        example: 6
-                      total:
-                        type: integer
-                        example: 6
-      tags:
-        - Endpoints
-    post:
-      summary: ''
-      operationId: postApiV1Genres
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-  '/api/v1/genres/{id}':
-    get:
-      summary: ''
-      operationId: getApiV1GenresId
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  data:
-                    type: genre
-                    id: 10000
-                    attributes:
-                      name: 'Văn học'
-                      books_count: 24
-                      description: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
-                    relationships:
-                      books:
-                        data:
-                          -
-                            type: book
-                            id: 716924900148772864
-                            attributes:
-                              title: 'Est non ut'
-                              price: '1400000.0'
-                              edition: 2
-                              publication_date: '2018-02-25T00:00:00.000000Z'
-                              pages: 452
-                              sold_count: 7260
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900148772864'
-                          -
-                            type: book
-                            id: 716924900211687424
-                            attributes:
-                              title: 'Ratione perferendis saepe molestiae et aut neque ut'
-                              price: '1180000.0'
-                              edition: 2
-                              publication_date: '2023-05-09T00:00:00.000000Z'
-                              pages: 730
-                              sold_count: 9176
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900211687424'
-                          -
-                            type: book
-                            id: 716924900341710848
-                            attributes:
-                              title: 'Inventore delectus exercitationem a et ullam nemo'
-                              price: '1340000.0'
-                              edition: 1
-                              publication_date: '2018-08-04T00:00:00.000000Z'
-                              pages: 256
-                              sold_count: 3913
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900341710848'
-                          -
-                            type: book
-                            id: 716924900371070976
-                            attributes:
-                              title: 'Iusto dicta est occaecati'
-                              price: '1350000.0'
-                              edition: 4
-                              publication_date: '2024-02-20T00:00:00.000000Z'
-                              pages: 779
-                              sold_count: 1629
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900371070976'
-                          -
-                            type: book
-                            id: 716924900383653888
-                            attributes:
-                              title: 'Laboriosam autem blanditiis'
-                              price: '620000.0'
-                              edition: 1
-                              publication_date: '2022-12-01T00:00:00.000000Z'
-                              pages: 638
-                              sold_count: 9041
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900383653888'
-                          -
-                            type: book
-                            id: 716924900509483008
-                            attributes:
-                              title: 'Dicta tempore dolor'
-                              price: '480000.0'
-                              edition: 4
-                              publication_date: '2016-11-02T00:00:00.000000Z'
-                              pages: 249
-                              sold_count: 9538
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900509483008'
-                          -
-                            type: book
-                            id: 716924900522065920
-                            attributes:
-                              title: 'Eveniet corrupti quasi et assumenda quam natus quidem'
-                              price: '880000.0'
-                              edition: 4
-                              publication_date: '2018-10-25T00:00:00.000000Z'
-                              pages: 701
-                              sold_count: 7914
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900522065920'
-                          -
-                            type: book
-                            id: 716924900551426048
-                            attributes:
-                              title: 'Ut modi voluptatem quo commodi impedit consequuntur aperiam quo'
-                              price: '1050000.0'
-                              edition: 3
-                              publication_date: '2024-05-16T00:00:00.000000Z'
-                              pages: 858
-                              sold_count: 9271
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900551426048'
-                          -
-                            type: book
-                            id: 716924900631117824
-                            attributes:
-                              title: 'Culpa voluptatibus nisi fuga non eius'
-                              price: '1120000.0'
-                              edition: 4
-                              publication_date: '2016-03-14T00:00:00.000000Z'
-                              pages: 784
-                              sold_count: 3529
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900631117824'
-                          -
-                            type: book
-                            id: 716924900664672256
-                            attributes:
-                              title: 'Quisquam aut sequi aut provident'
-                              price: '830000.0'
-                              edition: 2
-                              publication_date: '2022-06-03T00:00:00.000000Z'
-                              pages: 812
-                              sold_count: 823
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900664672256'
-                          -
-                            type: book
-                            id: 716924900681449472
-                            attributes:
-                              title: 'Et esse aut consequuntur est et minima architecto'
-                              price: '1240000.0'
-                              edition: 1
-                              publication_date: '2019-07-04T00:00:00.000000Z'
-                              pages: 272
-                              sold_count: 1667
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900681449472'
-                          -
-                            type: book
-                            id: 716924900886970368
-                            attributes:
-                              title: 'Enim est ab repellat excepturi non earum'
-                              price: '1190000.0'
-                              edition: 5
-                              publication_date: '2019-02-21T00:00:00.000000Z'
-                              pages: 245
-                              sold_count: 2613
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900886970368'
-                          -
-                            type: book
-                            id: 716924900945690624
-                            attributes:
-                              title: 'Sit vero consectetur nobis sit labore quod beatae sapiente'
-                              price: '620000.0'
-                              edition: 6
-                              publication_date: '2021-01-10T00:00:00.000000Z'
-                              pages: 624
-                              sold_count: 6341
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924900945690624'
-                          -
-                            type: book
-                            id: 716924901008605184
-                            attributes:
-                              title: 'Enim et autem'
-                              price: '710000.0'
-                              edition: 4
-                              publication_date: '2020-07-09T00:00:00.000000Z'
-                              pages: 826
-                              sold_count: 9203
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901008605184'
-                          -
-                            type: book
-                            id: 716924901025382400
-                            attributes:
-                              title: 'Sunt fugiat eaque rerum porro dignissimos cupiditate occaecati error atque'
-                              price: '1350000.0'
-                              edition: 5
-                              publication_date: '2018-11-02T00:00:00.000000Z'
-                              pages: 629
-                              sold_count: 3315
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901025382400'
-                          -
-                            type: book
-                            id: 716924901079908352
-                            attributes:
-                              title: 'Soluta quisquam minus'
-                              price: '710000.0'
-                              edition: 3
-                              publication_date: '2023-01-31T00:00:00.000000Z'
-                              pages: 524
-                              sold_count: 7339
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901079908352'
-                          -
-                            type: book
-                            id: 716924901155405824
-                            attributes:
-                              title: 'Illo dolor impedit repellendus ratione'
-                              price: '550000.0'
-                              edition: 1
-                              publication_date: '2024-08-17T00:00:00.000000Z'
-                              pages: 653
-                              sold_count: 313
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901155405824'
-                          -
-                            type: book
-                            id: 716924901272846336
-                            attributes:
-                              title: 'Ipsum numquam qui quia quibusdam'
-                              price: '730000.0'
-                              edition: 2
-                              publication_date: '2017-02-05T00:00:00.000000Z'
-                              pages: 710
-                              sold_count: 7640
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901272846336'
-                          -
-                            type: book
-                            id: 716924901348343808
-                            attributes:
-                              title: 'Quis provident autem ex'
-                              price: '750000.0'
-                              edition: 2
-                              publication_date: '2024-01-15T00:00:00.000000Z'
-                              pages: 522
-                              sold_count: 6413
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901348343808'
-                          -
-                            type: book
-                            id: 716924901398675456
-                            attributes:
-                              title: 'Sit ratione quidem voluptates sunt error voluptatem aut aut'
-                              price: '1240000.0'
-                              edition: 1
-                              publication_date: '2015-04-27T00:00:00.000000Z'
-                              pages: 271
-                              sold_count: 9013
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901398675456'
-                          -
-                            type: book
-                            id: 716924901440618496
-                            attributes:
-                              title: 'Adipisci vero ut maiores quis maxime illo sapiente'
-                              price: '1130000.0'
-                              edition: 5
-                              publication_date: '2024-07-02T00:00:00.000000Z'
-                              pages: 765
-                              sold_count: 7695
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901440618496'
-                          -
-                            type: book
-                            id: 716924901516115968
-                            attributes:
-                              title: 'Recusandae expedita est et ipsam ratione non minus'
-                              price: '600000.0'
-                              edition: 1
-                              publication_date: '2017-07-18T00:00:00.000000Z'
-                              pages: 339
-                              sold_count: 2798
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901516115968'
-                          -
-                            type: book
-                            id: 716924901558059008
-                            attributes:
-                              title: 'Nostrum quaerat necessitatibus reprehenderit aperiam'
-                              price: '790000.0'
-                              edition: 3
-                              publication_date: '2017-08-20T00:00:00.000000Z'
-                              pages: 295
-                              sold_count: 2189
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901558059008'
-                          -
-                            type: book
-                            id: 716924901574836224
-                            attributes:
-                              title: 'Autem enim excepturi'
-                              price: '810000.0'
-                              edition: 3
-                              publication_date: '2015-08-13T00:00:00.000000Z'
-                              pages: 455
-                              sold_count: 3001
-                            links:
-                              self: 'http://localhost:8000/api/v1/books/716924901574836224'
-                        included: []
-                    links:
-                      self: 'http://localhost:8000/api/v1/genres/10000'
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      type:
-                        type: string
-                        example: genre
-                      id:
-                        type: integer
-                        example: 10000
-                      attributes:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                            example: 'Văn học'
-                          books_count:
-                            type: integer
-                            example: 24
-                          description:
-                            type: string
-                            example: 'Tenetur mollitia dignissimos voluptate sit quis. Nemo laudantium et sit delectus consequatur sapiente. Quibusdam et ullam iste et vel non atque.'
-                      relationships:
-                        type: object
-                        properties:
-                          books:
-                            type: object
-                            properties:
-                              data:
-                                type: array
-                                example:
-                                  -
-                                    type: book
-                                    id: 716924900148772864
-                                    attributes:
-                                      title: 'Est non ut'
-                                      price: '1400000.0'
-                                      edition: 2
-                                      publication_date: '2018-02-25T00:00:00.000000Z'
-                                      pages: 452
-                                      sold_count: 7260
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900148772864'
-                                  -
-                                    type: book
-                                    id: 716924900211687424
-                                    attributes:
-                                      title: 'Ratione perferendis saepe molestiae et aut neque ut'
-                                      price: '1180000.0'
-                                      edition: 2
-                                      publication_date: '2023-05-09T00:00:00.000000Z'
-                                      pages: 730
-                                      sold_count: 9176
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900211687424'
-                                  -
-                                    type: book
-                                    id: 716924900341710848
-                                    attributes:
-                                      title: 'Inventore delectus exercitationem a et ullam nemo'
-                                      price: '1340000.0'
-                                      edition: 1
-                                      publication_date: '2018-08-04T00:00:00.000000Z'
-                                      pages: 256
-                                      sold_count: 3913
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900341710848'
-                                  -
-                                    type: book
-                                    id: 716924900371070976
-                                    attributes:
-                                      title: 'Iusto dicta est occaecati'
-                                      price: '1350000.0'
-                                      edition: 4
-                                      publication_date: '2024-02-20T00:00:00.000000Z'
-                                      pages: 779
-                                      sold_count: 1629
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900371070976'
-                                  -
-                                    type: book
-                                    id: 716924900383653888
-                                    attributes:
-                                      title: 'Laboriosam autem blanditiis'
-                                      price: '620000.0'
-                                      edition: 1
-                                      publication_date: '2022-12-01T00:00:00.000000Z'
-                                      pages: 638
-                                      sold_count: 9041
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900383653888'
-                                  -
-                                    type: book
-                                    id: 716924900509483008
-                                    attributes:
-                                      title: 'Dicta tempore dolor'
-                                      price: '480000.0'
-                                      edition: 4
-                                      publication_date: '2016-11-02T00:00:00.000000Z'
-                                      pages: 249
-                                      sold_count: 9538
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900509483008'
-                                  -
-                                    type: book
-                                    id: 716924900522065920
-                                    attributes:
-                                      title: 'Eveniet corrupti quasi et assumenda quam natus quidem'
-                                      price: '880000.0'
-                                      edition: 4
-                                      publication_date: '2018-10-25T00:00:00.000000Z'
-                                      pages: 701
-                                      sold_count: 7914
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900522065920'
-                                  -
-                                    type: book
-                                    id: 716924900551426048
-                                    attributes:
-                                      title: 'Ut modi voluptatem quo commodi impedit consequuntur aperiam quo'
-                                      price: '1050000.0'
-                                      edition: 3
-                                      publication_date: '2024-05-16T00:00:00.000000Z'
-                                      pages: 858
-                                      sold_count: 9271
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900551426048'
-                                  -
-                                    type: book
-                                    id: 716924900631117824
-                                    attributes:
-                                      title: 'Culpa voluptatibus nisi fuga non eius'
-                                      price: '1120000.0'
-                                      edition: 4
-                                      publication_date: '2016-03-14T00:00:00.000000Z'
-                                      pages: 784
-                                      sold_count: 3529
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900631117824'
-                                  -
-                                    type: book
-                                    id: 716924900664672256
-                                    attributes:
-                                      title: 'Quisquam aut sequi aut provident'
-                                      price: '830000.0'
-                                      edition: 2
-                                      publication_date: '2022-06-03T00:00:00.000000Z'
-                                      pages: 812
-                                      sold_count: 823
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900664672256'
-                                  -
-                                    type: book
-                                    id: 716924900681449472
-                                    attributes:
-                                      title: 'Et esse aut consequuntur est et minima architecto'
-                                      price: '1240000.0'
-                                      edition: 1
-                                      publication_date: '2019-07-04T00:00:00.000000Z'
-                                      pages: 272
-                                      sold_count: 1667
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900681449472'
-                                  -
-                                    type: book
-                                    id: 716924900886970368
-                                    attributes:
-                                      title: 'Enim est ab repellat excepturi non earum'
-                                      price: '1190000.0'
-                                      edition: 5
-                                      publication_date: '2019-02-21T00:00:00.000000Z'
-                                      pages: 245
-                                      sold_count: 2613
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900886970368'
-                                  -
-                                    type: book
-                                    id: 716924900945690624
-                                    attributes:
-                                      title: 'Sit vero consectetur nobis sit labore quod beatae sapiente'
-                                      price: '620000.0'
-                                      edition: 6
-                                      publication_date: '2021-01-10T00:00:00.000000Z'
-                                      pages: 624
-                                      sold_count: 6341
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924900945690624'
-                                  -
-                                    type: book
-                                    id: 716924901008605184
-                                    attributes:
-                                      title: 'Enim et autem'
-                                      price: '710000.0'
-                                      edition: 4
-                                      publication_date: '2020-07-09T00:00:00.000000Z'
-                                      pages: 826
-                                      sold_count: 9203
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901008605184'
-                                  -
-                                    type: book
-                                    id: 716924901025382400
-                                    attributes:
-                                      title: 'Sunt fugiat eaque rerum porro dignissimos cupiditate occaecati error atque'
-                                      price: '1350000.0'
-                                      edition: 5
-                                      publication_date: '2018-11-02T00:00:00.000000Z'
-                                      pages: 629
-                                      sold_count: 3315
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901025382400'
-                                  -
-                                    type: book
-                                    id: 716924901079908352
-                                    attributes:
-                                      title: 'Soluta quisquam minus'
-                                      price: '710000.0'
-                                      edition: 3
-                                      publication_date: '2023-01-31T00:00:00.000000Z'
-                                      pages: 524
-                                      sold_count: 7339
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901079908352'
-                                  -
-                                    type: book
-                                    id: 716924901155405824
-                                    attributes:
-                                      title: 'Illo dolor impedit repellendus ratione'
-                                      price: '550000.0'
-                                      edition: 1
-                                      publication_date: '2024-08-17T00:00:00.000000Z'
-                                      pages: 653
-                                      sold_count: 313
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901155405824'
-                                  -
-                                    type: book
-                                    id: 716924901272846336
-                                    attributes:
-                                      title: 'Ipsum numquam qui quia quibusdam'
-                                      price: '730000.0'
-                                      edition: 2
-                                      publication_date: '2017-02-05T00:00:00.000000Z'
-                                      pages: 710
-                                      sold_count: 7640
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901272846336'
-                                  -
-                                    type: book
-                                    id: 716924901348343808
-                                    attributes:
-                                      title: 'Quis provident autem ex'
-                                      price: '750000.0'
-                                      edition: 2
-                                      publication_date: '2024-01-15T00:00:00.000000Z'
-                                      pages: 522
-                                      sold_count: 6413
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901348343808'
-                                  -
-                                    type: book
-                                    id: 716924901398675456
-                                    attributes:
-                                      title: 'Sit ratione quidem voluptates sunt error voluptatem aut aut'
-                                      price: '1240000.0'
-                                      edition: 1
-                                      publication_date: '2015-04-27T00:00:00.000000Z'
-                                      pages: 271
-                                      sold_count: 9013
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901398675456'
-                                  -
-                                    type: book
-                                    id: 716924901440618496
-                                    attributes:
-                                      title: 'Adipisci vero ut maiores quis maxime illo sapiente'
-                                      price: '1130000.0'
-                                      edition: 5
-                                      publication_date: '2024-07-02T00:00:00.000000Z'
-                                      pages: 765
-                                      sold_count: 7695
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901440618496'
-                                  -
-                                    type: book
-                                    id: 716924901516115968
-                                    attributes:
-                                      title: 'Recusandae expedita est et ipsam ratione non minus'
-                                      price: '600000.0'
-                                      edition: 1
-                                      publication_date: '2017-07-18T00:00:00.000000Z'
-                                      pages: 339
-                                      sold_count: 2798
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901516115968'
-                                  -
-                                    type: book
-                                    id: 716924901558059008
-                                    attributes:
-                                      title: 'Nostrum quaerat necessitatibus reprehenderit aperiam'
-                                      price: '790000.0'
-                                      edition: 3
-                                      publication_date: '2017-08-20T00:00:00.000000Z'
-                                      pages: 295
-                                      sold_count: 2189
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901558059008'
-                                  -
-                                    type: book
-                                    id: 716924901574836224
-                                    attributes:
-                                      title: 'Autem enim excepturi'
-                                      price: '810000.0'
-                                      edition: 3
-                                      publication_date: '2015-08-13T00:00:00.000000Z'
-                                      pages: 455
-                                      sold_count: 3001
-                                    links:
-                                      self: 'http://localhost:8000/api/v1/books/716924901574836224'
-                                items:
-                                  type: object
-                                  properties:
-                                    type:
-                                      type: string
-                                      example: book
-                                    id:
-                                      type: integer
-                                      example: 716924900148772864
-                                    attributes:
-                                      type: object
-                                      properties: { title: { type: string, example: 'Est non ut' }, price: { type: string, example: '1400000.0' }, edition: { type: integer, example: 2 }, publication_date: { type: string, example: '2018-02-25T00:00:00.000000Z' }, pages: { type: integer, example: 452 }, sold_count: { type: integer, example: 7260 } }
-                                    links:
-                                      type: object
-                                      properties: { self: { type: string, example: 'http://localhost:8000/api/v1/books/716924900148772864' } }
-                              included:
-                                type: array
-                                example: []
-                      links:
-                        type: object
-                        properties:
-                          self:
-                            type: string
-                            example: 'http://localhost:8000/api/v1/genres/10000'
-      tags:
-        - Endpoints
-    put:
-      summary: ''
-      operationId: putApiV1GenresId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    delete:
-      summary: ''
-      operationId: deleteApiV1GenresId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: id
-        description: 'The ID of the genre.'
-        example: 10000
-        required: true
-        schema:
-          type: integer
-  /api/v1/whoami:
-    get:
-      summary: ''
-      operationId: getApiV1Whoami
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  data:
-                    you_are: 'Not a Customer'
-                    id: 716924898248753152
-                    attributes:
-                      first_name: Admin
-                      last_name: Kiet
-                      email: admin@example.com
-                      phone: '0123456789'
-                      is_customer: false
-                      last_login: '2025-03-11T01:38:53.000000Z'
-                      created_at: '2025-03-10T08:03:35.000000Z'
-                      updated_at: '2025-03-11T01:38:53.000000Z'
-                      deleted_at: null
-                    roles:
-                      - Admin
-                    permissions:
-                      - view_orders
-                      - create_books
-                      - edit_books
-                      - delete_books
-                      - view_users
-                      - create_users
-                      - edit_users
-                      - delete_users
-                      - create_authors
-                      - edit_authors
-                      - delete_authors
-                      - create_publishers
-                      - edit_publishers
-                      - delete_publishers
-                      - create_genres
-                      - edit_genres
-                      - delete_genres
-                      - view_discounts
-                      - create_discounts
-                      - edit_discounts
-                      - delete_discounts
-                      - view_roles
-                      - create_roles
-                      - edit_roles
-                      - delete_roles
-                      - view_permissions
-                      - create_permissions
-                      - edit_permissions
-                      - delete_permissions
-                  message: Success
-                  status: 200
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      you_are:
-                        type: string
-                        example: 'Not a Customer'
-                      id:
-                        type: integer
-                        example: 716924898248753152
-                      attributes:
-                        type: object
-                        properties:
-                          first_name:
-                            type: string
-                            example: Admin
-                          last_name:
-                            type: string
-                            example: Kiet
-                          email:
-                            type: string
-                            example: admin@example.com
-                          phone:
-                            type: string
-                            example: '0123456789'
-                          is_customer:
-                            type: boolean
-                            example: false
-                          last_login:
-                            type: string
-                            example: '2025-03-11T01:38:53.000000Z'
-                          created_at:
-                            type: string
-                            example: '2025-03-10T08:03:35.000000Z'
-                          updated_at:
-                            type: string
-                            example: '2025-03-11T01:38:53.000000Z'
-                          deleted_at:
-                            type: string
-                            example: null
-                      roles:
-                        type: array
-                        example:
-                          - Admin
-                        items:
-                          type: string
-                      permissions:
-                        type: array
-                        example:
-                          - view_orders
-                          - create_books
-                          - edit_books
-                          - delete_books
-                          - view_users
-                          - create_users
-                          - edit_users
-                          - delete_users
-                          - create_authors
-                          - edit_authors
-                          - delete_authors
-                          - create_publishers
-                          - edit_publishers
-                          - delete_publishers
-                          - create_genres
-                          - edit_genres
-                          - delete_genres
-                          - view_discounts
-                          - create_discounts
-                          - edit_discounts
-                          - delete_discounts
-                          - view_roles
-                          - create_roles
-                          - edit_roles
-                          - delete_roles
-                          - view_permissions
-                          - create_permissions
-                          - edit_permissions
-                          - delete_permissions
-                        items:
-                          type: string
-                  message:
-                    type: string
-                    example: Success
-                  status:
-                    type: integer
-                    example: 200
-      tags:
-        - Endpoints
   /api/v1/users:
     get:
-      summary: ''
-      operationId: getApiV1Users
+      summary: 'Get all users'
+      operationId: getAllUsers
       description: ''
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data:
-                    -
-                      type: user
-                      id: 716924897057570816
-                      attributes:
-                        first_name: Đàn
-                        last_name: Hùng
-                        email: nguy.ky@example.com
-                        is_customer: true
-                        full_name: 'Đàn Hùng'
-                        phone: '0857678050'
-                        last_login: null
-                        created_at: '2023-02-21T07:07:26.000000Z'
-                        updated_at: '2023-02-21T07:07:26.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897057570816'
-                    -
-                      type: user
-                      id: 716924897095319552
-                      attributes:
-                        first_name: Yên
-                        last_name: Trần
-                        email: danh.dan@example.org
-                        is_customer: true
-                        full_name: 'Yên Trần'
-                        phone: '0753514318'
-                        last_login: null
-                        created_at: '2020-05-25T19:50:48.000000Z'
-                        updated_at: '2020-05-25T19:50:48.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897095319552'
-                    -
-                      type: user
-                      id: 716924897107902464
-                      attributes:
-                        first_name: Hào
-                        last_name: Lỡ
-                        email: anham@example.org
-                        is_customer: true
-                        full_name: 'Hào Lỡ'
-                        phone: '0572154318'
-                        last_login: null
-                        created_at: '2025-01-06T16:52:03.000000Z'
-                        updated_at: '2025-01-06T16:52:03.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897107902464'
-                    -
-                      type: user
-                      id: 716924897120485376
-                      attributes:
-                        first_name: Hải
-                        last_name: Lục
-                        email: kha.hua@example.com
-                        is_customer: true
-                        full_name: 'Hải Lục'
-                        phone: '0368955584'
-                        last_login: null
-                        created_at: '2020-04-17T13:04:53.000000Z'
-                        updated_at: '2020-04-17T13:04:53.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897120485376'
-                    -
-                      type: user
-                      id: 716924897141456896
-                      attributes:
-                        first_name: Tín
-                        last_name: Ấu
-                        email: suong.moc@example.com
-                        is_customer: true
-                        full_name: 'Tín Ấu'
-                        phone: '0979742698'
-                        last_login: null
-                        created_at: '2024-11-13T19:41:03.000000Z'
-                        updated_at: '2024-11-13T19:41:03.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897141456896'
-                    -
-                      type: user
-                      id: 716924897154039808
-                      attributes:
-                        first_name: Lễ
-                        last_name: Hình
-                        email: van.man@example.com
-                        is_customer: true
-                        full_name: 'Lễ Hình'
-                        phone: '0302008891'
-                        last_login: null
-                        created_at: '2021-07-21T10:28:49.000000Z'
-                        updated_at: '2021-07-21T10:28:49.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897154039808'
-                    -
-                      type: user
-                      id: 716924897170817024
-                      attributes:
-                        first_name: Văn
-                        last_name: Khương
-                        email: mla@example.org
-                        is_customer: true
-                        full_name: 'Văn Khương'
-                        phone: '0906281107'
-                        last_login: null
-                        created_at: '2021-07-02T08:57:12.000000Z'
-                        updated_at: '2021-07-02T08:57:12.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897170817024'
-                    -
-                      type: user
-                      id: 716924897187594240
-                      attributes:
-                        first_name: Sơn
-                        last_name: Ông
-                        email: jhoa@example.org
-                        is_customer: true
-                        full_name: 'Sơn Ông'
-                        phone: '0770789204'
-                        last_login: null
-                        created_at: '2023-07-31T02:38:43.000000Z'
-                        updated_at: '2023-07-31T02:38:43.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897187594240'
-                    -
-                      type: user
-                      id: 716924897200177152
-                      attributes:
-                        first_name: My
-                        last_name: Bì
-                        email: atong@example.net
-                        is_customer: true
-                        full_name: 'My Bì'
-                        phone: '0787400390'
-                        last_login: null
-                        created_at: '2022-03-04T07:49:38.000000Z'
-                        updated_at: '2022-03-04T07:49:38.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897200177152'
-                    -
-                      type: user
-                      id: 716924897212760064
-                      attributes:
-                        first_name: Kiện
-                        last_name: Bửu
-                        email: tien51@example.com
-                        is_customer: true
-                        full_name: 'Kiện Bửu'
-                        phone: '0337575900'
-                        last_login: null
-                        created_at: '2020-08-04T00:59:56.000000Z'
-                        updated_at: '2020-08-04T00:59:56.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897212760064'
-                    -
-                      type: user
-                      id: 716924897229537280
-                      attributes:
-                        first_name: Chiểu
-                        last_name: Chế
-                        email: rdai@example.org
-                        is_customer: true
-                        full_name: 'Chiểu Chế'
-                        phone: '0974667283'
-                        last_login: null
-                        created_at: '2020-05-03T18:41:38.000000Z'
-                        updated_at: '2020-05-03T18:41:38.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897229537280'
-                    -
-                      type: user
-                      id: 716924897250508800
-                      attributes:
-                        first_name: Thọ
-                        last_name: Phan
-                        email: thoi.dai@example.net
-                        is_customer: true
-                        full_name: 'Thọ Phan'
-                        phone: '0776279553'
-                        last_login: null
-                        created_at: '2022-08-11T23:06:17.000000Z'
-                        updated_at: '2022-08-11T23:06:17.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897250508800'
-                    -
-                      type: user
-                      id: 716924897263091712
-                      attributes:
-                        first_name: Nương
-                        last_name: Trương
-                        email: my.tong@example.net
-                        is_customer: true
-                        full_name: 'Nương Trương'
-                        phone: '0562682928'
-                        last_login: null
-                        created_at: '2021-08-07T16:12:26.000000Z'
-                        updated_at: '2021-08-07T16:12:26.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897263091712'
-                    -
-                      type: user
-                      id: 716924897275674624
-                      attributes:
-                        first_name: Châu
-                        last_name: Trịnh
-                        email: vhy@example.net
-                        is_customer: true
-                        full_name: 'Châu Trịnh'
-                        phone: '0833019270'
-                        last_login: null
-                        created_at: '2023-12-24T23:03:38.000000Z'
-                        updated_at: '2023-12-24T23:03:38.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897275674624'
-                    -
-                      type: user
-                      id: 716924897292451840
-                      attributes:
-                        first_name: Quân
-                        last_name: Phạm
-                        email: thanh95@example.org
-                        is_customer: true
-                        full_name: 'Quân Phạm'
-                        phone: '0351160949'
-                        last_login: null
-                        created_at: '2020-07-30T12:25:36.000000Z'
-                        updated_at: '2020-07-30T12:25:36.000000Z'
-                        deleted_at: null
-                      relationships:
-                        cart_items: ''
-                      links:
-                        self: 'http://localhost:8000/api/v1/users/716924897292451840'
-                  included: []
-                  links:
-                    first: 'http://localhost:8000/api/v1/users?page=1'
-                    last: 'http://localhost:8000/api/v1/users?page=3'
-                    prev: null
-                    next: 'http://localhost:8000/api/v1/users?page=2'
-                  meta:
-                    current_page: 1
-                    from: 1
-                    last_page: 3
-                    links:
-                      -
-                        url: null
-                        label: '&laquo; Previous'
-                        active: false
-                      -
-                        url: 'http://localhost:8000/api/v1/users?page=1'
-                        label: '1'
-                        active: true
-                      -
-                        url: 'http://localhost:8000/api/v1/users?page=2'
-                        label: '2'
-                        active: false
-                      -
-                        url: 'http://localhost:8000/api/v1/users?page=3'
-                        label: '3'
-                        active: false
-                      -
-                        url: 'http://localhost:8000/api/v1/users?page=2'
-                        label: 'Next &raquo;'
-                        active: false
-                    path: 'http://localhost:8000/api/v1/users'
-                    per_page: 15
-                    to: 15
-                    total: 33
+                  message: Unauthenticated.
                 properties:
-                  data:
-                    type: array
-                    example:
-                      -
-                        type: user
-                        id: 716924897057570816
-                        attributes:
-                          first_name: Đàn
-                          last_name: Hùng
-                          email: nguy.ky@example.com
-                          is_customer: true
-                          full_name: 'Đàn Hùng'
-                          phone: '0857678050'
-                          last_login: null
-                          created_at: '2023-02-21T07:07:26.000000Z'
-                          updated_at: '2023-02-21T07:07:26.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897057570816'
-                      -
-                        type: user
-                        id: 716924897095319552
-                        attributes:
-                          first_name: Yên
-                          last_name: Trần
-                          email: danh.dan@example.org
-                          is_customer: true
-                          full_name: 'Yên Trần'
-                          phone: '0753514318'
-                          last_login: null
-                          created_at: '2020-05-25T19:50:48.000000Z'
-                          updated_at: '2020-05-25T19:50:48.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897095319552'
-                      -
-                        type: user
-                        id: 716924897107902464
-                        attributes:
-                          first_name: Hào
-                          last_name: Lỡ
-                          email: anham@example.org
-                          is_customer: true
-                          full_name: 'Hào Lỡ'
-                          phone: '0572154318'
-                          last_login: null
-                          created_at: '2025-01-06T16:52:03.000000Z'
-                          updated_at: '2025-01-06T16:52:03.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897107902464'
-                      -
-                        type: user
-                        id: 716924897120485376
-                        attributes:
-                          first_name: Hải
-                          last_name: Lục
-                          email: kha.hua@example.com
-                          is_customer: true
-                          full_name: 'Hải Lục'
-                          phone: '0368955584'
-                          last_login: null
-                          created_at: '2020-04-17T13:04:53.000000Z'
-                          updated_at: '2020-04-17T13:04:53.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897120485376'
-                      -
-                        type: user
-                        id: 716924897141456896
-                        attributes:
-                          first_name: Tín
-                          last_name: Ấu
-                          email: suong.moc@example.com
-                          is_customer: true
-                          full_name: 'Tín Ấu'
-                          phone: '0979742698'
-                          last_login: null
-                          created_at: '2024-11-13T19:41:03.000000Z'
-                          updated_at: '2024-11-13T19:41:03.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897141456896'
-                      -
-                        type: user
-                        id: 716924897154039808
-                        attributes:
-                          first_name: Lễ
-                          last_name: Hình
-                          email: van.man@example.com
-                          is_customer: true
-                          full_name: 'Lễ Hình'
-                          phone: '0302008891'
-                          last_login: null
-                          created_at: '2021-07-21T10:28:49.000000Z'
-                          updated_at: '2021-07-21T10:28:49.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897154039808'
-                      -
-                        type: user
-                        id: 716924897170817024
-                        attributes:
-                          first_name: Văn
-                          last_name: Khương
-                          email: mla@example.org
-                          is_customer: true
-                          full_name: 'Văn Khương'
-                          phone: '0906281107'
-                          last_login: null
-                          created_at: '2021-07-02T08:57:12.000000Z'
-                          updated_at: '2021-07-02T08:57:12.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897170817024'
-                      -
-                        type: user
-                        id: 716924897187594240
-                        attributes:
-                          first_name: Sơn
-                          last_name: Ông
-                          email: jhoa@example.org
-                          is_customer: true
-                          full_name: 'Sơn Ông'
-                          phone: '0770789204'
-                          last_login: null
-                          created_at: '2023-07-31T02:38:43.000000Z'
-                          updated_at: '2023-07-31T02:38:43.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897187594240'
-                      -
-                        type: user
-                        id: 716924897200177152
-                        attributes:
-                          first_name: My
-                          last_name: Bì
-                          email: atong@example.net
-                          is_customer: true
-                          full_name: 'My Bì'
-                          phone: '0787400390'
-                          last_login: null
-                          created_at: '2022-03-04T07:49:38.000000Z'
-                          updated_at: '2022-03-04T07:49:38.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897200177152'
-                      -
-                        type: user
-                        id: 716924897212760064
-                        attributes:
-                          first_name: Kiện
-                          last_name: Bửu
-                          email: tien51@example.com
-                          is_customer: true
-                          full_name: 'Kiện Bửu'
-                          phone: '0337575900'
-                          last_login: null
-                          created_at: '2020-08-04T00:59:56.000000Z'
-                          updated_at: '2020-08-04T00:59:56.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897212760064'
-                      -
-                        type: user
-                        id: 716924897229537280
-                        attributes:
-                          first_name: Chiểu
-                          last_name: Chế
-                          email: rdai@example.org
-                          is_customer: true
-                          full_name: 'Chiểu Chế'
-                          phone: '0974667283'
-                          last_login: null
-                          created_at: '2020-05-03T18:41:38.000000Z'
-                          updated_at: '2020-05-03T18:41:38.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897229537280'
-                      -
-                        type: user
-                        id: 716924897250508800
-                        attributes:
-                          first_name: Thọ
-                          last_name: Phan
-                          email: thoi.dai@example.net
-                          is_customer: true
-                          full_name: 'Thọ Phan'
-                          phone: '0776279553'
-                          last_login: null
-                          created_at: '2022-08-11T23:06:17.000000Z'
-                          updated_at: '2022-08-11T23:06:17.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897250508800'
-                      -
-                        type: user
-                        id: 716924897263091712
-                        attributes:
-                          first_name: Nương
-                          last_name: Trương
-                          email: my.tong@example.net
-                          is_customer: true
-                          full_name: 'Nương Trương'
-                          phone: '0562682928'
-                          last_login: null
-                          created_at: '2021-08-07T16:12:26.000000Z'
-                          updated_at: '2021-08-07T16:12:26.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897263091712'
-                      -
-                        type: user
-                        id: 716924897275674624
-                        attributes:
-                          first_name: Châu
-                          last_name: Trịnh
-                          email: vhy@example.net
-                          is_customer: true
-                          full_name: 'Châu Trịnh'
-                          phone: '0833019270'
-                          last_login: null
-                          created_at: '2023-12-24T23:03:38.000000Z'
-                          updated_at: '2023-12-24T23:03:38.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897275674624'
-                      -
-                        type: user
-                        id: 716924897292451840
-                        attributes:
-                          first_name: Quân
-                          last_name: Phạm
-                          email: thanh95@example.org
-                          is_customer: true
-                          full_name: 'Quân Phạm'
-                          phone: '0351160949'
-                          last_login: null
-                          created_at: '2020-07-30T12:25:36.000000Z'
-                          updated_at: '2020-07-30T12:25:36.000000Z'
-                          deleted_at: null
-                        relationships:
-                          cart_items: ''
-                        links:
-                          self: 'http://localhost:8000/api/v1/users/716924897292451840'
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                          example: user
-                        id:
-                          type: integer
-                          example: 716924897057570816
-                        attributes:
-                          type: object
-                          properties:
-                            first_name:
-                              type: string
-                              example: Đàn
-                            last_name:
-                              type: string
-                              example: Hùng
-                            email:
-                              type: string
-                              example: nguy.ky@example.com
-                            is_customer:
-                              type: boolean
-                              example: true
-                            full_name:
-                              type: string
-                              example: 'Đàn Hùng'
-                            phone:
-                              type: string
-                              example: '0857678050'
-                            last_login:
-                              type: string
-                              example: null
-                            created_at:
-                              type: string
-                              example: '2023-02-21T07:07:26.000000Z'
-                            updated_at:
-                              type: string
-                              example: '2023-02-21T07:07:26.000000Z'
-                            deleted_at:
-                              type: string
-                              example: null
-                        relationships:
-                          type: object
-                          properties:
-                            cart_items:
-                              type: string
-                              example: ''
-                        links:
-                          type: object
-                          properties:
-                            self:
-                              type: string
-                              example: 'http://localhost:8000/api/v1/users/716924897057570816'
-                  included:
-                    type: array
-                    example: []
-                  links:
-                    type: object
-                    properties:
-                      first:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/users?page=1'
-                      last:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/users?page=3'
-                      prev:
-                        type: string
-                        example: null
-                      next:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/users?page=2'
-                  meta:
-                    type: object
-                    properties:
-                      current_page:
-                        type: integer
-                        example: 1
-                      from:
-                        type: integer
-                        example: 1
-                      last_page:
-                        type: integer
-                        example: 3
-                      links:
-                        type: array
-                        example:
-                          -
-                            url: null
-                            label: '&laquo; Previous'
-                            active: false
-                          -
-                            url: 'http://localhost:8000/api/v1/users?page=1'
-                            label: '1'
-                            active: true
-                          -
-                            url: 'http://localhost:8000/api/v1/users?page=2'
-                            label: '2'
-                            active: false
-                          -
-                            url: 'http://localhost:8000/api/v1/users?page=3'
-                            label: '3'
-                            active: false
-                          -
-                            url: 'http://localhost:8000/api/v1/users?page=2'
-                            label: 'Next &raquo;'
-                            active: false
-                        items:
-                          type: object
-                          properties:
-                            url:
-                              type: string
-                              example: null
-                            label:
-                              type: string
-                              example: '&laquo; Previous'
-                            active:
-                              type: boolean
-                              example: false
-                      path:
-                        type: string
-                        example: 'http://localhost:8000/api/v1/users'
-                      per_page:
-                        type: integer
-                        example: 15
-                      to:
-                        type: integer
-                        example: 15
-                      total:
-                        type: integer
-                        example: 33
+                  message:
+                    type: string
+                    example: Unauthenticated.
       tags:
-        - Endpoints
+        - Users
   '/api/v1/users/{id}':
     get:
-      summary: ''
-      operationId: getApiV1UsersId
+      summary: 'Get a user'
+      operationId: getAUser
       description: ''
       parameters: []
       responses:
-        200:
+        401:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  data:
-                    type: user
-                    id: 716924897057570816
-                    attributes:
-                      first_name: Đàn
-                      last_name: Hùng
-                      email: nguy.ky@example.com
-                      is_customer: true
-                      full_name: 'Đàn Hùng'
-                      phone: '0857678050'
-                      last_login: null
-                      created_at: '2023-02-21T07:07:26.000000Z'
-                      updated_at: '2023-02-21T07:07:26.000000Z'
-                      deleted_at: null
-                    relationships:
-                      cart_items: ''
-                    links:
-                      self: 'http://localhost:8000/api/v1/users/716924897057570816'
+                  message: Unauthenticated.
                 properties:
-                  data:
-                    type: object
-                    properties:
-                      type:
-                        type: string
-                        example: user
-                      id:
-                        type: integer
-                        example: 716924897057570816
-                      attributes:
-                        type: object
-                        properties:
-                          first_name:
-                            type: string
-                            example: Đàn
-                          last_name:
-                            type: string
-                            example: Hùng
-                          email:
-                            type: string
-                            example: nguy.ky@example.com
-                          is_customer:
-                            type: boolean
-                            example: true
-                          full_name:
-                            type: string
-                            example: 'Đàn Hùng'
-                          phone:
-                            type: string
-                            example: '0857678050'
-                          last_login:
-                            type: string
-                            example: null
-                          created_at:
-                            type: string
-                            example: '2023-02-21T07:07:26.000000Z'
-                          updated_at:
-                            type: string
-                            example: '2023-02-21T07:07:26.000000Z'
-                          deleted_at:
-                            type: string
-                            example: null
-                      relationships:
-                        type: object
-                        properties:
-                          cart_items:
-                            type: string
-                            example: ''
-                      links:
-                        type: object
-                        properties:
-                          self:
-                            type: string
-                            example: 'http://localhost:8000/api/v1/users/716924897057570816'
+                  message:
+                    type: string
+                    example: Unauthenticated.
       tags:
-        - Endpoints
+        - Users
     put:
-      summary: ''
-      operationId: putApiV1UsersId
+      summary: 'Update a user'
+      operationId: updateAUser
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Users
       requestBody:
         required: false
         content:
@@ -7865,94 +7059,19 @@ paths:
                           example: null
                           nullable: false
     delete:
-      summary: ''
-      operationId: deleteApiV1UsersId
+      summary: 'Delete a user'
+      operationId: deleteAUser
       description: ''
       parameters: []
       responses: {  }
       tags:
-        - Endpoints
+        - Users
     parameters:
       -
         in: path
         name: id
         description: 'The ID of the user.'
         example: 716924897057570816
-        required: true
-        schema:
-          type: string
-  /api/v1/discounts:
-    get:
-      summary: ''
-      operationId: getApiV1Discounts
-      description: ''
-      parameters: []
-      responses:
-        500:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  message: 'Server Error'
-                properties:
-                  message:
-                    type: string
-                    example: 'Server Error'
-      tags:
-        - Endpoints
-    post:
-      summary: ''
-      operationId: postApiV1Discounts
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-  '/api/v1/discounts/{id}':
-    get:
-      summary: ''
-      operationId: getApiV1DiscountsId
-      description: ''
-      parameters: []
-      responses:
-        500:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  message: 'Server Error'
-                properties:
-                  message:
-                    type: string
-                    example: 'Server Error'
-      tags:
-        - Endpoints
-    put:
-      summary: ''
-      operationId: putApiV1DiscountsId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    delete:
-      summary: ''
-      operationId: deleteApiV1DiscountsId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: id
-        description: 'The ID of the discount.'
-        example: 716924903336443904
         required: true
         schema:
           type: string
