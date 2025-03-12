@@ -25,7 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
 
-        //
+		// Disable CSRF token validation for API routes.
+		// Because Sanctum is stateful, CSRF tokens are not needed.
+		$middleware->validateCsrfTokens(except: [
+			'api/*',
+		]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
