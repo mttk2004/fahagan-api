@@ -25,6 +25,7 @@ class BookController extends Controller
 	 * Get all books
 	 *
 	 * @param Request $request
+	 *
 	 * @return BookCollection
 	 * @group Books
 	 * @unauthenticated
@@ -41,6 +42,7 @@ class BookController extends Controller
 	 * Create a new book
 	 *
 	 * @param BookStoreRequest $request
+	 *
 	 * @return BookResource
 	 * @group Books
 	 */
@@ -80,6 +82,7 @@ class BookController extends Controller
 	 * Get a book
 	 *
 	 * @param Book $book
+	 *
 	 * @return BookResource
 	 * @group Books
 	 * @unauthenticated
@@ -93,7 +96,8 @@ class BookController extends Controller
 	 * Update a book
 	 *
 	 * @param BookUpdateRequest $request
-	 * @param $book_id
+	 * @param                   $book_id
+	 *
 	 * @return JsonResponse|BookResource
 	 * @group Books
 	 */
@@ -103,22 +107,31 @@ class BookController extends Controller
 			$book = Book::findOrFail($book_id);
 			$validatedData = $request->validated();
 			$bookData = $validatedData['data']['attributes'];
-			$bookData['publisher_id'] = $validatedData['data']['relationships']['publisher']['id'];
+
+			if (isset($validatedData['data']['relationships']['publisher']['id'])) {
+				$bookData['publisher_id']
+					= $validatedData['data']['relationships']['publisher']['id'];
+			}
 
 			$book->update($bookData);
 
-			$authorIds = collect($validatedData['data']['relationships']['authors']['data'])
-				->pluck('id')
-				->toArray();
-			$genreIds = collect($validatedData['data']['relationships']['genres']['data'])
-				->pluck('id')
-				->toArray();
+			if (isset($validatedData['data']['relationships']['authors']['data'])) {
+				$authorIds = collect($validatedData['data']['relationships']['authors']['data'])
+					->pluck('id')
+					->toArray();
+				$book->authors()->sync($authorIds);
+			}
 
-			// Sync authors and genres
-			$book->authors()->sync($authorIds);
-			$book->genres()->sync($genreIds);
+			if (isset($validatedData['data']['relationships']['genres']['data'])) {
+				$genreIds = collect($validatedData['data']['relationships']['genres']['data'])
+					->pluck('id')
+					->toArray();
+				$book->genres()->sync($genreIds);
+			}
 
-			return new BookResource($book);
+			return $this->ok('Cập nhật sách thành công.', [
+				'book' => new BookResource($book),
+			]);
 		} catch (ModelNotFoundException) {
 			return $this->error('Sách không tồn tại.', 404);
 		}
@@ -128,7 +141,8 @@ class BookController extends Controller
 	 * Delete a book
 	 *
 	 * @param Request $request
-	 * @param $bookId
+	 * @param         $bookId
+	 *
 	 * @return JsonResponse
 	 * @group Books
 	 */
