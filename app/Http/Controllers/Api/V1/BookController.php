@@ -98,7 +98,7 @@ class BookController extends Controller
 	 * @param BookUpdateRequest $request
 	 * @param                   $book_id
 	 *
-	 * @return JsonResponse|BookResource
+	 * @return JsonResponse
 	 * @group Books
 	 */
 	public function update(BookUpdateRequest $request, $book_id)

@@ -13,6 +13,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\App;
 
 
+/**
+ * @method static findOrFail($book_id)
+ * @method static create(mixed $bookData)
+ */
 class Book extends Model
 {
 	use HasFactory, SoftDeletes;
