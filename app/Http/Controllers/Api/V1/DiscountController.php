@@ -31,7 +31,7 @@ class DiscountController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
-			$this->error('Bạn không có quyền thực hiện hành động này.', 403);
+			$this->forbidden();
 		}
 
 		$discountSort = new DiscountSort($request);
@@ -63,13 +63,13 @@ class DiscountController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
-			$this->error('Bạn không có quyền thực hiện hành động này.', 403);
+			$this->forbidden();
 		}
 
 		try {
 			return new DiscountResource(Discount::findOrFails($discount_id));
 		} catch (ModelNotFoundException) {
-			return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+			return $this->forbidden();
 		}
 	}
 

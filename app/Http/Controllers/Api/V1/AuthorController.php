@@ -107,12 +107,11 @@ class AuthorController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_authors')) {
-			return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+			return $this->forbidden();
 		}
 
 		try {
-			$author = Author::findOrFail($author_id);
-			$author->delete();
+			Author::findOrFail($author_id)->delete();
 
 			return $this->ok('Xóa tác giả thành công.');
 		} catch (ModelNotFoundException) {

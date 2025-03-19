@@ -80,7 +80,7 @@ class UserController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_users') || $user->id != $user_id) {
-			return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+			return $this->forbidden();
 		}
 
 		try {

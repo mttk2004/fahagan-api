@@ -150,7 +150,7 @@ class BookController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_books')) {
-			return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+			return $this->forbidden();
 		}
 
 		try {
