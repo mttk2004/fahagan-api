@@ -43,4 +43,9 @@ trait ApiResponses
 	{
 		return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
 	}
+
+	protected function notFound(string $message): JsonResponse
+	{
+		return $this->error($message, 404);
+	}
 }
