@@ -84,8 +84,7 @@ class UserController extends Controller
 		}
 
 		try {
-			$userToDelete = User::findOrFail($user_id);
-			$userToDelete->delete();
+			User::findOrFail($user_id)->delete();
 
 			return $this->ok('Xóa người dùng thành công.');
 		} catch (ModelNotFoundException) {

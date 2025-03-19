@@ -13,6 +13,9 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 
+/**
+ * @method static findOrFail($user_id)
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */

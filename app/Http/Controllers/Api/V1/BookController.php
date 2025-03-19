@@ -154,8 +154,7 @@ class BookController extends Controller
 		}
 
 		try {
-			$book = Book::findOrFail($bookId);
-			$book->delete();
+			Book::findOrFail($bookId)->delete();
 
 			return $this->ok('Xóa sách thành công.');
 		} catch (ModelNotFoundException) {

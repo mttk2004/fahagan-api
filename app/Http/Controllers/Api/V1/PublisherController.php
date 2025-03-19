@@ -75,9 +75,8 @@ class PublisherController extends Controller
 	public function update(PublisherUpdateRequest $request, $publisher_id)
 	{
 		try {
-			$publisher = Publisher::findOrFail($publisher_id);
 			$publisherData = $request->validated();
-			$publisher->update($publisherData);
+			$publisher = Publisher::findOrFail($publisher_id)->update($publisherData);
 
 			return new PublisherResource($publisher);
 		} catch (ModelNotFoundException) {

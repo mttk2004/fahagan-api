@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 
+/**
+ * @method static findOrFail($publisher_id)
+ * @method static create(mixed $publisherData)
+ */
 class Publisher extends Model
 {
 	use HasFactory;
