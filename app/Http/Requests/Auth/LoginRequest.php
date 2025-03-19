@@ -31,7 +31,6 @@ class LoginRequest extends FormRequest
 				'string',
 				'email',
 				'max:50',
-				'exists:users,email',
 			],
 			'password' => [
 				'required',
@@ -50,7 +49,6 @@ class LoginRequest extends FormRequest
 				'string' => 'Email nên là một chuỗi.',
 				'email' => 'Email không hợp lệ.',
 				'max:50' => 'Email nên có độ dài tối đa 50.',
-				'exists' => 'Email này không tồn tại.',
 			],
 			'password' => [
 				'required' => 'Mật khẩu là trường bắt buộc.',
