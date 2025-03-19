@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\AuthorCollection;
+use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
 use Illuminate\Http\Request;
 
@@ -13,13 +15,16 @@ class AuthorController extends Controller
 	/**
 	 * Get all authors
 	 *
-	 * @return void
+	 * @return AuthorCollection
 	 * @group Authors
 	 * @unauthenticated
 	 */
-	public function index()
+	public function index(Request $request)
 	{
+		$authorSort = new AuthorSort($request);
+		$authors = $authorSort->apply(Author::query())->paginate();
 
+		return new AuthorCollection($authors);
 	}
 
 	/**
