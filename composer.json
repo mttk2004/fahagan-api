@@ -1,11 +1,12 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "mttk2004/fahagan-api",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "The API for Fahagan.",
     "keywords": [
         "laravel",
-        "framework"
+        "api",
+        "fahagan"
     ],
     "license": "MIT",
     "require": {
