@@ -12,12 +12,14 @@ use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
 use App\Traits\ApiResponses;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
 class AuthorController extends Controller
 {
 	use ApiResponses;
+
 
 	/**
 	 * Get all authors
@@ -61,20 +63,22 @@ class AuthorController extends Controller
 	 * @group Authors
 	 * @unauthenticated
 	 */
-	public function show(Author $author) {
+	public function show(Author $author)
+	{
 		return new AuthorResource($author);
 	}
 
 	/**
 	 * Update an author
 	 *
-	 * @param Request $request
-	 * @param Author  $author
+	 * @param AuthorUpdateRequest $request
+	 * @param                     $author_id
 	 *
-	 * @return \Illuminate\Http\JsonResponse
+	 * @return JsonResponse
 	 * @group Authors
 	 */
-	public function update(AuthorUpdateRequest $request, $author_id) {
+	public function update(AuthorUpdateRequest $request, $author_id)
+	{
 		try {
 			$author = Author::findOrFail($author_id);
 			$validatedData = $request->validated();
@@ -93,10 +97,20 @@ class AuthorController extends Controller
 	/**
 	 * Delete an author
 	 *
-	 * @param Author $author
+	 * @param $author_id
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 * @group Authors
 	 */
-	public function destroy(Author $author) {}
+	public function destroy($author_id)
+	{
+		try {
+			$author = Author::findOrFail($author_id);
+			$author->delete();
+
+			return $this->ok('Xóa tác giả thành công.');
+		} catch (ModelNotFoundException) {
+			return $this->error('Tác giả không tồn tại.', 404);
+		}
+	}
 }
