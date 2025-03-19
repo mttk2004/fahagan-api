@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @method static create(mixed $authorData)
+ * @method static findOrFail($author_id)
  */
 class Author extends Model
 {

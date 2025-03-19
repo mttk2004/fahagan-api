@@ -5,15 +5,20 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AuthorStoreRequest;
+use App\Http\Requests\V1\AuthorUpdateRequest;
 use App\Http\Resources\V1\AuthorCollection;
 use App\Http\Resources\V1\AuthorResource;
 use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
+use App\Traits\ApiResponses;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 
 class AuthorController extends Controller
 {
+	use ApiResponses;
+
 	/**
 	 * Get all authors
 	 *
@@ -64,10 +69,24 @@ class AuthorController extends Controller
 	 * @param Request $request
 	 * @param Author  $author
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\JsonResponse
 	 * @group Authors
 	 */
-	public function update(Request $request, Author $author) {}
+	public function update(AuthorUpdateRequest $request, $author_id) {
+		try {
+			$author = Author::findOrFail($author_id);
+			$validatedData = $request->validated();
+			$authorData = $validatedData['data']['attributes'];
+
+			$author->update($authorData);
+
+			return $this->ok('Cập nhật tác giả thành công.', [
+				'author' => new AuthorResource($author),
+			]);
+		} catch (ModelNotFoundException) {
+			return $this->error('Tác giả không tồn tại.', 404);
+		}
+	}
 
 	/**
 	 * Delete an author
