@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\App;
 
 
+/**
+ * @method static findOrFails($discount_id)
+ */
 class Discount extends Model
 {
 	use SoftDeletes;
