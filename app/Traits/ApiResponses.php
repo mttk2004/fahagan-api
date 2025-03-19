@@ -38,4 +38,9 @@ trait ApiResponses
 	{
 		return $this->success($message, $data);
 	}
+
+	protected function forbidden(): JsonResponse
+	{
+		return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+	}
 }
