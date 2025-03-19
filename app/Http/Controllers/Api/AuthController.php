@@ -51,10 +51,10 @@ class AuthController extends Controller
 	 */
 	public function login(LoginRequest $request)
 	{
-		$request->validated($request->only(['email', 'password']));
+		$request->validated();
 
 		if (!Auth::attempt($request->only(['email', 'password']))) {
-			return $this->error('Thông tin đăng nhập không đúng! Vui lòng kiểm tra lại', 401);
+			return $this->error('Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.', 401);
 		}
 
 		$user = User::where('email', $request->email)->first();
