@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 
+/**
+ * @method static create(mixed $authorData)
+ */
 class Author extends Model
 {
 	use HasFactory;
