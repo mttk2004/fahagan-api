@@ -133,7 +133,7 @@ class BookController extends Controller
 				'book' => new BookResource($book),
 			]);
 		} catch (ModelNotFoundException) {
-			return $this->error('Sách không tồn tại.', 404);
+			return $this->notFound('Sách không tồn tại.');
 		}
 	}
 
@@ -158,7 +158,7 @@ class BookController extends Controller
 
 			return $this->ok('Xóa sách thành công.');
 		} catch (ModelNotFoundException) {
-			return $this->error('Sách không tồn tại.', 404);
+			return $this->notFound('Sách không tồn tại.');
 		}
 	}
 }

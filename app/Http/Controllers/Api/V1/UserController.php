@@ -64,7 +64,7 @@ class UserController extends Controller
 
 			return new UserResource($user);
 		} catch (ModelNotFoundException) {
-			return $this->error('Người dùng không tồn tại.', 404);
+			return $this->notFound('Người dùng không tồn tại.');
 		}
 	}
 
@@ -88,7 +88,7 @@ class UserController extends Controller
 
 			return $this->ok('Xóa người dùng thành công.');
 		} catch (ModelNotFoundException) {
-			return $this->error('Người dùng không tồn tại.', 404);
+			return $this->notFound('Người dùng không tồn tại.');
 		}
 	}
 }

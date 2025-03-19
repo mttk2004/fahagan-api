@@ -69,7 +69,7 @@ class DiscountController extends Controller
 		try {
 			return new DiscountResource(Discount::findOrFails($discount_id));
 		} catch (ModelNotFoundException) {
-			return $this->forbidden();
+			return $this->notFound('Giảm giá không tồn tại.');
 		}
 	}
 

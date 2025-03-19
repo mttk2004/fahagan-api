@@ -80,7 +80,7 @@ class PublisherController extends Controller
 
 			return new PublisherResource($publisher);
 		} catch (ModelNotFoundException) {
-			return $this->error('Nhà xuất bản không tồn tại.', 404);
+			return $this->notFound('Nhà xuất bản không tồn tại.');
 		}
 	}
 
@@ -105,7 +105,7 @@ class PublisherController extends Controller
 
 			return $this->ok('Xóa nhà xuất bản thành công.');
 		} catch (ModelNotFoundException) {
-			return $this->error('Nhà xuất bản không tồn tại.', 404);
+			return $this->notFound('Nhà xuất bản không tồn tại.');
 		}
 	}
 }

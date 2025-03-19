@@ -90,7 +90,7 @@ class AuthorController extends Controller
 				'author' => new AuthorResource($author),
 			]);
 		} catch (ModelNotFoundException) {
-			return $this->error('Tác giả không tồn tại.', 404);
+			return $this->notFound('Tác giả không tồn tại.');
 		}
 	}
 
@@ -115,7 +115,7 @@ class AuthorController extends Controller
 
 			return $this->ok('Xóa tác giả thành công.');
 		} catch (ModelNotFoundException) {
-			return $this->error('Tác giả không tồn tại.', 404);
+			return $this->notFound('Tác giả không tồn tại.');
 		}
 	}
 }
