@@ -57,11 +57,13 @@ class AuthorController extends Controller
 	 *
 	 * @param Author $author
 	 *
-	 * @return void
+	 * @return AuthorResource
 	 * @group Authors
 	 * @unauthenticated
 	 */
-	public function show(Author $author) {}
+	public function show(Author $author) {
+		return new AuthorResource($author);
+	}
 
 	/**
 	 * Update an author
