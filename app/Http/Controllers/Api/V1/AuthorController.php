@@ -97,13 +97,19 @@ class AuthorController extends Controller
 	/**
 	 * Delete an author
 	 *
-	 * @param $author_id
+	 * @param Request $request
+	 * @param         $author_id
 	 *
 	 * @return JsonResponse
 	 * @group Authors
 	 */
-	public function destroy($author_id)
+	public function destroy(Request $request, $author_id)
 	{
+		$user = $request->user();
+		if (!$user->hasPermissionTo('delete_authors')) {
+			return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+		}
+
 		try {
 			$author = Author::findOrFail($author_id);
 			$author->delete();
