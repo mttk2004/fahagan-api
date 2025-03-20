@@ -8,7 +8,18 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 
-/** @mixin Discount */
+/** @mixin Discount
+ * @property mixed $id
+ * @property mixed $name
+ * @property mixed $discount_type
+ * @property mixed $discount_value
+ * @property mixed $start_date
+ * @property mixed $end_date
+ * @property mixed $created_at
+ * @property mixed $updated_at
+ * @property mixed $deleted_at
+ * @property mixed $targets
+ */
 class DiscountResource extends JsonResource
 {
 	public function toArray(Request $request): array
