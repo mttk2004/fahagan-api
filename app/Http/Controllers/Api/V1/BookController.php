@@ -154,7 +154,14 @@ class BookController extends Controller
 		}
 
 		try {
-			Book::findOrFail($bookId)->delete();
+			$book = Book::findOrFail($bookId);
+
+			// Delete all discount targets (discount_targets pivot table) that target this book
+			$book->getAllActiveDiscounts()->each(function ($discount) use ($book) {
+				$discount->targets()->where('target_id', $book->id)->delete();
+			});
+
+			$book->delete();
 
 			return $this->ok('Xóa sách thành công.');
 		} catch (ModelNotFoundException) {
