@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\App;
 
 
 /**
- * @method static findOrFails($discount_id)
+ * @method static findOrFail($discount_id)
  */
 class Discount extends Model
 {
