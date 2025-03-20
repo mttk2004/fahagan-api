@@ -8,7 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 
-/** @mixin User */
+/** @mixin User
+ * @property mixed $id
+ * @property mixed $first_name
+ * @property mixed $last_name
+ * @property mixed $email
+ * @property mixed $is_customer
+ * @property mixed $full_name
+ * @property mixed $phone
+ * @property mixed $last_login
+ * @property mixed $created_at
+ * @property mixed $updated_at
+ * @property mixed $deleted_at
+ */
 class UserResource extends JsonResource
 {
 	public function toArray(Request $request): array
