@@ -8,7 +8,23 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 
-/** @mixin Book */
+/** @mixin Book
+ * @property mixed $id
+ * @property mixed $title
+ * @property mixed $price
+ * @property mixed $edition
+ * @property mixed $publication_date
+ * @property mixed $pages
+ * @property mixed $available_count
+ * @property mixed $sold_count
+ * @property mixed $description
+ * @property mixed $created_at
+ * @property mixed $updated_at
+ * @property mixed $deleted_at
+ * @property mixed $authors
+ * @property mixed $genres
+ * @property mixed $publisher
+ */
 class BookResource extends JsonResource
 {
 	public function toArray(Request $request): array
