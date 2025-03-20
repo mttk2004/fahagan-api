@@ -11,10 +11,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin Genre
  * @property mixed $id
  * @property mixed $name
+ * @property mixed $book_count
  * @property mixed $description
- * @property mixed $created_at
- * @property mixed $updated_at
- * @property mixed $deleted_at
  * @property mixed $books
  */
 class GenreResource extends JsonResource

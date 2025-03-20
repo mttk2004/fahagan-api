@@ -8,7 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 
-/** @mixin Publisher */
+/** @mixin Publisher
+ * @property mixed $id
+ * @property mixed $name
+ * @property mixed $biography
+ * @property mixed $books
+ */
 class PublisherResource extends JsonResource
 {
 	public function toArray(Request $request): array
