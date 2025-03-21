@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\BookStoreRequest;
 use App\Http\Requests\V1\BookUpdateRequest;
@@ -43,7 +44,7 @@ class BookController extends Controller
 	 *
 	 * @param BookStoreRequest $request
 	 *
-	 * @return BookResource
+	 * @return JsonResponse
 	 * @group Books
 	 */
 	public function store(BookStoreRequest $request)
@@ -75,7 +76,9 @@ class BookController extends Controller
 				->toArray()
 		);
 
-		return new BookResource($book);
+		return $this->ok(ResponseMessage::CREATED_BOOK->value, [
+			'book' => new BookResource($book),
+		]);
 	}
 
 	/**
@@ -92,7 +95,7 @@ class BookController extends Controller
 		try {
 			return new BookResource(Book::findOrFail($book_id));
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Sách không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_BOOK->value);
 		}
 	}
 
@@ -133,11 +136,11 @@ class BookController extends Controller
 				$book->genres()->sync($genreIds);
 			}
 
-			return $this->ok('Cập nhật sách thành công.', [
+			return $this->ok(ResponseMessage::UPDATED_BOOK->value, [
 				'book' => new BookResource($book),
 			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Sách không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_BOOK->value);
 		}
 	}
 
@@ -167,9 +170,9 @@ class BookController extends Controller
 
 			$book->delete();
 
-			return $this->ok('Xóa sách thành công.');
+			return $this->ok(ResponseMessage::DELETED_BOOK->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Sách không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_BOOK->value);
 		}
 	}
 }
