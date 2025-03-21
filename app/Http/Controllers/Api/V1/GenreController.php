@@ -48,7 +48,7 @@ class GenreController extends Controller
 
 		$genre = Genre::create($genreData);
 
-		return $this->ok('Thể loại đã được tạo thành công', [
+		return $this->ok('Thể loại đã được tạo thành công.', [
 			'genre' => new GenreResource($genre)
 		]);
 	}
@@ -67,7 +67,7 @@ class GenreController extends Controller
 		try {
 			return new GenreResource(Genre::findOrFail($genre_id));
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Thể loại không tồn tại');
+			return $this->notFound('Thể loại không tồn tại.');
 		}
 	}
 

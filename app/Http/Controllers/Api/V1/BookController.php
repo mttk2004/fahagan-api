@@ -92,7 +92,7 @@ class BookController extends Controller
 		try {
 			return new BookResource(Book::findOrFail($book_id));
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Sách không tồn tại');
+			return $this->notFound('Sách không tồn tại.');
 		}
 	}
 
