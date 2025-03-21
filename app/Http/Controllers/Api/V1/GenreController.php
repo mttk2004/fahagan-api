@@ -98,10 +98,25 @@ class GenreController extends Controller
 	/**
 	 * Delete a genre
 	 *
-	 * @param Genre $genre
+	 * @param Request $request
+	 * @param         $genre_id
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 * @group Genres
 	 */
-	public function destroy(Genre $genre) {}
+	public function destroy(Request $request, $genre_id)
+	{
+		$user = $request->user();
+		if (!$user->hasPermissionTo('delete_genres')) {
+			return $this->forbidden();
+		}
+
+		try {
+			Genre::findOrFail($genre_id)->delete();
+
+			return $this->ok('Thể loại đã được xóa thành công.');
+		} catch (ModelNotFoundException) {
+			return $this->notFound('Thể loại không tồn tại.');
+		}
+	}
 }
