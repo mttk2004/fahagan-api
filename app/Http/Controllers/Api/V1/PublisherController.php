@@ -20,10 +20,12 @@ class PublisherController extends Controller
 {
 	use ApiResponses;
 
+
 	/**
 	 * Get all publishers
 	 *
 	 * @param Request $request
+	 *
 	 * @return PublisherCollection
 	 * @group Publishers
 	 * @unauthenticated
@@ -40,6 +42,7 @@ class PublisherController extends Controller
 	 * Create a new publisher
 	 *
 	 * @param PublisherStoreRequest $request
+	 *
 	 * @return PublisherResource
 	 * @group Publishers
 	 */
@@ -54,21 +57,27 @@ class PublisherController extends Controller
 	/**
 	 * Get a publisher
 	 *
-	 * @param Publisher $publisher
-	 * @return PublisherResource
+	 * @param $publisher_id
+	 *
+	 * @return PublisherResource|JsonResponse
 	 * @group Publishers
 	 * @unauthenticated
 	 */
-	public function show(Publisher $publisher)
+	public function show($publisher_id)
 	{
-		return new PublisherResource($publisher);
+		try {
+			return new PublisherResource(Publisher::findOrFail($publisher_id));
+		} catch (ModelNotFoundException) {
+			return $this->notFound('Nhà xuất bản không tồn tại.');
+		}
 	}
 
 	/**
 	 * Update a publisher
 	 *
 	 * @param PublisherUpdateRequest $request
-	 * @param $publisher_id
+	 * @param                        $publisher_id
+	 *
 	 * @return JsonResponse|PublisherResource
 	 * @group Publishers
 	 */
@@ -88,7 +97,8 @@ class PublisherController extends Controller
 	 * Delete a publisher
 	 *
 	 * @param Request $request
-	 * @param $publisherId
+	 * @param         $publisherId
+	 *
 	 * @return JsonResponse
 	 * @group Publishers
 	 */
@@ -100,6 +110,7 @@ class PublisherController extends Controller
 		}
 
 		try {
+			// TODO: handle books that targets to the publisher before deleting it
 			$publisher = Publisher::findOrFail($publisherId);
 			$publisher->delete();
 
