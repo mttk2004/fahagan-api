@@ -84,10 +84,12 @@ class PublisherController extends Controller
 	public function update(PublisherUpdateRequest $request, $publisher_id)
 	{
 		try {
-			$publisherData = $request->validated();
+			$publisherData = $request->validated()['data']['attributes'];
 			$publisher = Publisher::findOrFail($publisher_id)->update($publisherData);
 
-			return new PublisherResource($publisher);
+			return $this->ok('Nhà xuất bản đã được cập nhật thành công.', [
+				'publisher' => new PublisherResource($publisher),
+			]);
 		} catch (ModelNotFoundException) {
 			return $this->notFound('Nhà xuất bản không tồn tại.');
 		}
