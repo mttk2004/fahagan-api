@@ -24,6 +24,7 @@ class UserController extends Controller
 	 * Get all users
 	 *
 	 * @param Request $request
+	 *
 	 * @return UserCollection
 	 * @group Users
 	 */
@@ -38,20 +39,26 @@ class UserController extends Controller
 	/**
 	 * Get a user
 	 *
-	 * @param User $user
-	 * @return UserResource
+	 * @param $user_id
+	 *
+	 * @return UserResource|JsonResponse
 	 * @group Users
 	 */
-	public function show(User $user)
+	public function show($user_id)
 	{
-		return new UserResource($user);
+		try {
+			return new UserResource(User::findOrFail($user_id));
+		} catch (ModelNotFoundException) {
+			return $this->notFound('Người dùng không tồn tại.');
+		}
 	}
 
 	/**
 	 * Update a user
 	 *
 	 * @param UserUpdateRequest $request
-	 * @param $user_id
+	 * @param                   $user_id
+	 *
 	 * @return JsonResponse|UserResource
 	 * @group Users
 	 */
@@ -72,7 +79,8 @@ class UserController extends Controller
 	 * Delete a user
 	 *
 	 * @param Request $request
-	 * @param $user_id
+	 * @param         $user_id
+	 *
 	 * @return JsonResponse
 	 * @group Users
 	 */
