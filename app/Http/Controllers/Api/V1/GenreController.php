@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\GenreStoreRequest;
 use App\Http\Resources\V1\GenreCollection;
 use App\Http\Resources\V1\GenreResource;
 use App\Http\Sorts\V1\GenreSort;
@@ -37,12 +38,20 @@ class GenreController extends Controller
 	/**
 	 * Create a new genre
 	 *
-	 * @param Request $request
+	 * @param GenreStoreRequest $request
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 * @group Genres
 	 */
-	public function store(Request $request) {}
+	public function store(GenreStoreRequest $request) {
+		$genreData = $request->validated()['data']['attributes'];
+
+		$genre = Genre::create($genreData);
+
+		return $this->ok('Thể loại đã được tạo thành công', [
+			'genre' => new GenreResource($genre)
+		]);
+	}
 
 	/**
 	 * Get a genre

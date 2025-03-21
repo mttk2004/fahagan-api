@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @method static findOrFail($genre_id)
+ * @method static create(mixed $genreData)
  */
 class Genre extends Model
 {
