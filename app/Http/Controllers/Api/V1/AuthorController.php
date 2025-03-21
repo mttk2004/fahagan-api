@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AuthorStoreRequest;
 use App\Http\Requests\V1\AuthorUpdateRequest;
@@ -41,7 +42,7 @@ class AuthorController extends Controller
 	 *
 	 * @param AuthorStoreRequest $request
 	 *
-	 * @return AuthorResource
+	 * @return JsonResponse
 	 * @group Authors
 	 */
 	public function store(AuthorStoreRequest $request)
@@ -51,7 +52,9 @@ class AuthorController extends Controller
 
 		$author = Author::create($authorData);
 
-		return new AuthorResource($author);
+		return $this->ok(ResponseMessage::CREATED_AUTHOR->value, [
+			'author' => new AuthorResource($author),
+		]);
 	}
 
 	/**
@@ -68,7 +71,7 @@ class AuthorController extends Controller
 		try {
 			return new AuthorResource(Author::findOrFail($author_id));
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Tác giả không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
 		}
 	}
 
@@ -90,11 +93,11 @@ class AuthorController extends Controller
 
 			$author->update($authorData);
 
-			return $this->ok('Cập nhật tác giả thành công.', [
+			return $this->ok(ResponseMessage::UPDATED_AUTHOR->value, [
 				'author' => new AuthorResource($author),
 			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Tác giả không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
 		}
 	}
 
@@ -117,9 +120,9 @@ class AuthorController extends Controller
 		try {
 			Author::findOrFail($author_id)->delete();
 
-			return $this->ok('Xóa tác giả thành công.');
+			return $this->ok(ResponseMessage::DELETED_AUTHOR->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Tác giả không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
 		}
 	}
 }
