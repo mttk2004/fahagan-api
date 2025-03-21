@@ -12,7 +12,7 @@ class PublisherStoreRequest extends BaseRequest
 	public function rules(): array
 	{
 		return [
-			'data.attributes.name' => ['required', 'string'],
+			'data.attributes.name' => ['required', 'string', 'max:255', 'unique:publishers,name'],
 			'data.attributes.biography' => ['required', 'string'],
 		];
 	}
@@ -22,6 +22,8 @@ class PublisherStoreRequest extends BaseRequest
 		return [
 			'data.attributes.name.required' => 'Tên nhà xuất bản là trường bắt buộc.',
 			'data.attributes.name.string' => 'Tên nhà xuất bản nên là một chuỗi.',
+			'data.attributes.name.max' => 'Tên nhà xuất bản nên có độ dài tối đa 255.',
+			'data.attributes.name.unique' => 'Tên nhà xuất bản đã tồn tại.',
 			'data.attributes.biography.required' => 'Tiểu sử nhà xuất bản là trường bắt buộc.',
 			'data.attributes.biography.string' => 'Tiểu sử nhà xuất bản nên là một chuỗi.',
 		];
