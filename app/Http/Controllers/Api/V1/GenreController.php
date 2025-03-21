@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\GenreStoreRequest;
 use App\Http\Requests\V1\GenreUpdateRequest;
@@ -49,7 +50,7 @@ class GenreController extends Controller
 		$genreData = $request->validated()['data']['attributes'];
 		$genre = Genre::create($genreData);
 
-		return $this->ok('Thể loại đã được tạo thành công.', [
+		return $this->ok(ResponseMessage::CREATED_GENRE->value, [
 			'genre' => new GenreResource($genre),
 		]);
 	}
@@ -68,7 +69,7 @@ class GenreController extends Controller
 		try {
 			return new GenreResource(Genre::findOrFail($genre_id));
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Thể loại không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_GENRE->value);
 		}
 	}
 
@@ -87,11 +88,11 @@ class GenreController extends Controller
 			$genreData = $request->validated()['data']['attributes'];
 			$genre = Genre::findOrFail($genre_id)->update($genreData);
 
-			return $this->ok('Thể loại đã được cập nhật thành công.', [
+			return $this->ok(ResponseMessage::UPDATED_GENRE->value, [
 				'genre' => new GenreResource($genre),
 			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Thể loại không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_GENRE->value);
 		}
 	}
 
@@ -114,9 +115,9 @@ class GenreController extends Controller
 		try {
 			Genre::findOrFail($genre_id)->delete();
 
-			return $this->ok('Thể loại đã được xóa thành công.');
+			return $this->ok(ResponseMessage::DELETED_GENRE->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Thể loại không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_GENRE->value);
 		}
 	}
 }
