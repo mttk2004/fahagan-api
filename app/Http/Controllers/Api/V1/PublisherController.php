@@ -43,15 +43,17 @@ class PublisherController extends Controller
 	 *
 	 * @param PublisherStoreRequest $request
 	 *
-	 * @return PublisherResource
+	 * @return JsonResponse
 	 * @group Publishers
 	 */
 	public function store(PublisherStoreRequest $request)
 	{
-		$publisherData = $request->validated();
+		$publisherData = $request->validated()['data']['attributes'];
 		$publisher = Publisher::create($publisherData);
 
-		return new PublisherResource($publisher);
+		return $this->ok('Nhà xuất bản đã được tạo thành công.', [
+			'publisher' => new PublisherResource($publisher),
+		]);
 	}
 
 	/**
@@ -78,7 +80,7 @@ class PublisherController extends Controller
 	 * @param PublisherUpdateRequest $request
 	 * @param                        $publisher_id
 	 *
-	 * @return JsonResponse|PublisherResource
+	 * @return JsonResponse
 	 * @group Publishers
 	 */
 	public function update(PublisherUpdateRequest $request, $publisher_id)
