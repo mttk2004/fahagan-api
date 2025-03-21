@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserCollection;
@@ -49,7 +50,7 @@ class UserController extends Controller
 		try {
 			return new UserResource(User::findOrFail($user_id));
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Người dùng không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
 	}
 
@@ -59,7 +60,7 @@ class UserController extends Controller
 	 * @param UserUpdateRequest $request
 	 * @param                   $user_id
 	 *
-	 * @return JsonResponse|UserResource
+	 * @return JsonResponse
 	 * @group Users
 	 */
 	public function update(UserUpdateRequest $request, $user_id)
@@ -67,11 +68,14 @@ class UserController extends Controller
 		try {
 			$user = User::findOrFail($user_id);
 			$userData = $request->validated()['data']['attributes'];
+
 			$user->update($userData);
 
-			return new UserResource($user);
+			return $this->ok(ResponseMessage::UPDATED_USER->value, [
+				'user' => new UserResource($user),
+			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Người dùng không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
 	}
 
@@ -94,9 +98,9 @@ class UserController extends Controller
 		try {
 			User::findOrFail($user_id)->delete();
 
-			return $this->ok('Xóa người dùng thành công.');
+			return $this->ok(ResponseMessage::DELETED_USER->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Người dùng không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
 	}
 }
