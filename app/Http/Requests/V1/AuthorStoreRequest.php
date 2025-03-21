@@ -3,12 +3,11 @@
 namespace App\Http\Requests\V1;
 
 
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Http\Request;
 
 
-class AuthorStoreRequest extends FormRequest
+class AuthorStoreRequest extends BaseRequest
 {
 	public function rules(): array
 	{
@@ -40,10 +39,5 @@ class AuthorStoreRequest extends FormRequest
 	public function authorize(Request $request): bool
 	{
 		return $request->user()->checkPermissionTo('create_authors');
-	}
-
-	public function failedAuthorization()
-	{
-		throw new AuthorizationException('Bạn không có quyền thực hiện hành động này.');
 	}
 }

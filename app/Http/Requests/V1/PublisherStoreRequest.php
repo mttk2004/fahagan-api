@@ -3,12 +3,11 @@
 namespace App\Http\Requests\V1;
 
 
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Http\Request;
 
 
-class PublisherStoreRequest extends FormRequest
+class PublisherStoreRequest extends BaseRequest
 {
 	public function rules(): array
 	{
@@ -31,10 +30,5 @@ class PublisherStoreRequest extends FormRequest
 	public function authorize(Request $request): bool
 	{
 		return $request->user()->hasPermissionTo('create_publishers');
-	}
-
-	public function failedAuthorization()
-	{
-		throw new AuthorizationException('Bạn không có quyền thực hiện hành động này.');
 	}
 }

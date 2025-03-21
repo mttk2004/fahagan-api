@@ -3,14 +3,13 @@
 namespace App\Http\Requests\V1;
 
 
+use App\Http\Requests\BaseRequest;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 
 
-class UserUpdateRequest extends FormRequest
+class UserUpdateRequest extends BaseRequest
 {
 	public function rules(): array
 	{
@@ -69,10 +68,5 @@ class UserUpdateRequest extends FormRequest
 	{
 		return $request->user()->hasPermissionTo('edit_users')
 			|| $request->user()->id == $request->route('user');
-	}
-
-	public function failedAuthorization()
-	{
-		throw new AuthorizationException('Bạn không có quyền thực hiện hành động này.');
 	}
 }

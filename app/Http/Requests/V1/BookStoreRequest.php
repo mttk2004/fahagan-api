@@ -3,12 +3,11 @@
 namespace App\Http\Requests\V1;
 
 
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Http\Request;
 
 
-class BookStoreRequest extends FormRequest
+class BookStoreRequest extends BaseRequest
 {
 	public function rules(): array
 	{
@@ -87,10 +86,5 @@ class BookStoreRequest extends FormRequest
 	public function authorize(Request $request): bool
 	{
 		return $request->user()->checkPermissionTo('create_books');
-	}
-
-	public function failedAuthorization()
-	{
-		throw new AuthorizationException('Bạn không có quyền thực hiện hành động này.');
 	}
 }

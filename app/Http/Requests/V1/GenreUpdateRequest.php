@@ -3,12 +3,11 @@
 namespace App\Http\Requests\V1;
 
 
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Http\Request;
 
 
-class GenreUpdateRequest extends FormRequest
+class GenreUpdateRequest extends BaseRequest
 {
 	public function rules(): array
 	{
@@ -29,10 +28,5 @@ class GenreUpdateRequest extends FormRequest
 	public function authorize(Request $request): bool
 	{
 		return $request->user()->hasPermissionTo('edit_genres');
-	}
-
-	public function failedAuthorization()
-	{
-		throw new AuthorizationException('Bạn không có quyền thực hiện hành động này.');
 	}
 }
