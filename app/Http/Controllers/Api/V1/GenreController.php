@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\GenreCollection;
 use App\Http\Resources\V1\GenreResource;
+use App\Http\Sorts\V1\GenreSort;
 use App\Models\Genre;
 use App\Traits\ApiResponses;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -25,9 +26,12 @@ class GenreController extends Controller
 	 * @group Genres
 	 * @unauthenticated
 	 */
-	public function index()
+	public function index(Request $request)
 	{
-		return new GenreCollection(Genre::paginate());
+		$genreSort = new GenreSort($request);
+		$genres = $genreSort->apply(Genre::query())->paginate();
+
+		return new GenreCollection($genres);
 	}
 
 	/**
