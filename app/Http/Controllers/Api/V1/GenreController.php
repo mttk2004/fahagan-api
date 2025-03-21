@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\GenreStoreRequest;
+use App\Http\Requests\V1\GenreUpdateRequest;
 use App\Http\Resources\V1\GenreCollection;
 use App\Http\Resources\V1\GenreResource;
 use App\Http\Sorts\V1\GenreSort;
@@ -43,13 +44,13 @@ class GenreController extends Controller
 	 * @return JsonResponse
 	 * @group Genres
 	 */
-	public function store(GenreStoreRequest $request) {
+	public function store(GenreStoreRequest $request)
+	{
 		$genreData = $request->validated()['data']['attributes'];
-
 		$genre = Genre::create($genreData);
 
 		return $this->ok('Thể loại đã được tạo thành công.', [
-			'genre' => new GenreResource($genre)
+			'genre' => new GenreResource($genre),
 		]);
 	}
 
@@ -74,13 +75,25 @@ class GenreController extends Controller
 	/**
 	 * Update a genre
 	 *
-	 * @param Request $request
-	 * @param Genre   $genre
+	 * @param GenreUpdateRequest $request
+	 * @param                    $genre_id
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 * @group Genres
 	 */
-	public function update(Request $request, Genre $genre) {}
+	public function update(GenreUpdateRequest $request, $genre_id)
+	{
+		try {
+			$genreData = $request->validated()['data']['attributes'];
+			$genre = Genre::findOrFail($genre_id)->update($genreData);
+
+			return $this->ok('Thể loại đã được cập nhật thành công.', [
+				'genre' => new GenreResource($genre),
+			]);
+		} catch (ModelNotFoundException) {
+			return $this->notFound('Thể loại không tồn tại.');
+		}
+	}
 
 	/**
 	 * Delete a genre
