@@ -81,15 +81,19 @@ class BookController extends Controller
 	/**
 	 * Get a book
 	 *
-	 * @param Book $book
+	 * @param $book_id
 	 *
-	 * @return BookResource
+	 * @return BookResource|JsonResponse
 	 * @group Books
 	 * @unauthenticated
 	 */
-	public function show(Book $book)
+	public function show($book_id)
 	{
-		return new BookResource($book);
+		try {
+			return new BookResource(Book::findOrFail($book_id));
+		} catch (ModelNotFoundException) {
+			return $this->notFound('Sách không tồn tại');
+		}
 	}
 
 	/**
@@ -157,7 +161,7 @@ class BookController extends Controller
 			$book = Book::findOrFail($bookId);
 
 			// Delete all discount targets (discount_targets pivot table) that target this book
-			$book->getAllActiveDiscounts()->each(function ($discount) use ($book) {
+			$book->getAllActiveDiscounts()->each(function($discount) use ($book) {
 				$discount->targets()->where('target_id', $book->id)->delete();
 			});
 
