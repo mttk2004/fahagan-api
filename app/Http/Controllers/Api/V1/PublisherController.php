@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\PublisherStoreRequest;
 use App\Http\Requests\V1\PublisherUpdateRequest;
@@ -51,7 +52,7 @@ class PublisherController extends Controller
 		$publisherData = $request->validated()['data']['attributes'];
 		$publisher = Publisher::create($publisherData);
 
-		return $this->ok('Nhà xuất bản đã được tạo thành công.', [
+		return $this->ok(ResponseMessage::CREATED_PUBLISHER->value, [
 			'publisher' => new PublisherResource($publisher),
 		]);
 	}
@@ -70,7 +71,7 @@ class PublisherController extends Controller
 		try {
 			return new PublisherResource(Publisher::findOrFail($publisher_id));
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Nhà xuất bản không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
 		}
 	}
 
@@ -89,11 +90,11 @@ class PublisherController extends Controller
 			$publisherData = $request->validated()['data']['attributes'];
 			$publisher = Publisher::findOrFail($publisher_id)->update($publisherData);
 
-			return $this->ok('Nhà xuất bản đã được cập nhật thành công.', [
+			return $this->ok(ResponseMessage::UPDATED_PUBLISHER->value, [
 				'publisher' => new PublisherResource($publisher),
 			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Nhà xuất bản không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
 		}
 	}
 
@@ -118,9 +119,9 @@ class PublisherController extends Controller
 			$publisher = Publisher::findOrFail($publisherId);
 			$publisher->delete();
 
-			return $this->ok('Xóa nhà xuất bản thành công.');
+			return $this->ok(ResponseMessage::DELETED_PUBLISHER->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound('Nhà xuất bản không tồn tại.');
+			return $this->notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
 		}
 	}
 }
