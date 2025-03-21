@@ -7,11 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\GenreCollection;
 use App\Http\Resources\V1\GenreResource;
 use App\Models\Genre;
+use App\Traits\ApiResponses;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
 class GenreController extends Controller
 {
+	use ApiResponses;
+
+
 	/**
 	 * Get all genres
 	 *
@@ -28,6 +34,7 @@ class GenreController extends Controller
 	 * Create a new genre
 	 *
 	 * @param Request $request
+	 *
 	 * @return void
 	 * @group Genres
 	 */
@@ -36,20 +43,27 @@ class GenreController extends Controller
 	/**
 	 * Get a genre
 	 *
-	 * @param Genre $genre
-	 * @return GenreResource
+	 * @param $genre_id
+	 *
+	 * @return GenreResource|JsonResponse
 	 * @group Genres
 	 * @unauthenticated
 	 */
-	public function show(Genre $genre) {
-		return new GenreResource($genre);
+	public function show($genre_id)
+	{
+		try {
+			return new GenreResource(Genre::findOrFail($genre_id));
+		} catch (ModelNotFoundException) {
+			return $this->notFound('Thể loại không tồn tại');
+		}
 	}
 
 	/**
 	 * Update a genre
 	 *
 	 * @param Request $request
-	 * @param Genre $genre
+	 * @param Genre   $genre
+	 *
 	 * @return void
 	 * @group Genres
 	 */
@@ -59,6 +73,7 @@ class GenreController extends Controller
 	 * Delete a genre
 	 *
 	 * @param Genre $genre
+	 *
 	 * @return void
 	 * @group Genres
 	 */

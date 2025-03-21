@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 
+/**
+ * @method static findOrFail($genre_id)
+ */
 class Genre extends Model
 {
 	public $timestamps = false;
