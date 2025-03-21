@@ -24,8 +24,8 @@ class WhoAmI extends Controller
 	{
 		$user = $request->user();
 
-		return $this->ok('Success', [
-			'you_are' => $user->is_customer ? 'Customer' : 'Not a Customer',
+		return $this->ok('Thành công.', [
+			'you_are' => $user->is_customer ? 'Khách hàng' : 'Không phải khách hàng',
 			'id' => $user->id,
 			'attributes' => [
 				'first_name' => $user->first_name,
