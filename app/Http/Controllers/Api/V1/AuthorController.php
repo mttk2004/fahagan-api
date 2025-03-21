@@ -57,15 +57,19 @@ class AuthorController extends Controller
 	/**
 	 * Get an author
 	 *
-	 * @param Author $author
+	 * @param $author_id
 	 *
-	 * @return AuthorResource
+	 * @return AuthorResource|JsonResponse
 	 * @group Authors
 	 * @unauthenticated
 	 */
-	public function show(Author $author)
+	public function show($author_id)
 	{
-		return new AuthorResource($author);
+		try {
+			return new AuthorResource(Author::findOrFail($author_id));
+		} catch (ModelNotFoundException) {
+			return $this->notFound('Tác giả không tồn tại.');
+		}
 	}
 
 	/**
