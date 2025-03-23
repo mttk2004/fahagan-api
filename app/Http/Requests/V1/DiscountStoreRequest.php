@@ -15,7 +15,7 @@ class DiscountStoreRequest extends FormRequest
 			'data.attributes.name' => ['required', 'string', 'max:255', 'unique:discounts,name'],
 			'data.attributes.discount_type' => ['sometimes', 'string', 'in:percent,fixed'],
 			'data.attributes.discount_value' => ['required', 'decimal:', 'min:0'],
-			'data.attributes.start_date' => ['required', 'date'],
+			'data.attributes.start_date' => ['required', 'date', 'after:today'],
 			'data.attributes.end_date' => ['required', 'date', 'after:data.attributes.start_date'],
 
 			'data.relationships.targets' => ['required', 'array'],
@@ -38,6 +38,7 @@ class DiscountStoreRequest extends FormRequest
 			'data.attributes.discount_value.min' => 'Giá trị giảm giá không hợp lệ.',
 			'data.attributes.start_date.required' => 'Ngày bắt đầu là trường bắt buộc.',
 			'data.attributes.start_date.date' => 'Ngày bắt đầu không hợp lệ.',
+			'data.attributes.start_date.after' => 'Ngày bắt đầu phải sau ngày hiện tại.',
 			'data.attributes.end_date.required' => 'Ngày kết thúc là trường bắt buộc.',
 			'data.attributes.end_date.date' => 'Ngày kết thúc không hợp lệ.',
 			'data.attributes.end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
