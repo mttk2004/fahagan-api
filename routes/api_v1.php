@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\UserController;
-use App\Http\Controllers\Api\V1\WhoAmI;
 
 
 // Public-area
@@ -19,8 +18,6 @@ Route::apiResources([
 
 // Authenticated-area
 Route::middleware('auth:sanctum')->group(function() {
-	Route::get('/whoami', [WhoAmI::class, 'whoAmI']);
-
 	Route::apiResources([
 		'books' => BookController::class,
 		'authors' => AuthorController::class,
