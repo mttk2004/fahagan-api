@@ -158,7 +158,7 @@ class DiscountController extends Controller
 	 * @param Request $request
 	 * @param         $discount_id
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 * @group Discounts
 	 */
 	public function destroy(Request $request, $discount_id)
@@ -170,8 +170,10 @@ class DiscountController extends Controller
 
 		try {
 			Discount::findOrFail($discount_id)->delete();
+
+			return $this->ok(ResponseMessage::DELETED_DISCOUNT->value);
 		} catch (ModelNotFoundException) {
-			$this->notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
+			return $this->notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
 		}
 	}
 }
