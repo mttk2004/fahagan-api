@@ -41,6 +41,10 @@ class UserResource extends JsonResource
 					'updated_at' => $this->updated_at,
 					'deleted_at' => $this->deleted_at,
 				]),
+				$this->mergeWhen(!$this->is_customer, [
+					'roles' => $this->getRoleNames(),
+					'permissions' => $this->getAllPermissions()->pluck('name'),
+				]),
 			],
 			'relationships' => $this->when(
 				$request->routeIs('users.*'),
