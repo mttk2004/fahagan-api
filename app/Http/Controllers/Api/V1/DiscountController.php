@@ -22,6 +22,7 @@ class DiscountController extends Controller
 {
 	use ApiResponses;
 
+
 	/**
 	 * Validate and map targets
 	 *
@@ -35,6 +36,7 @@ class DiscountController extends Controller
 			return collect($targetsData)->map(function($target) {
 				$targetType = 'App\Models\\' . ucfirst($target['type']);
 				$targetType::findOrFail($target['id']);
+
 				return ['target_type' => $targetType, 'target_id' => $target['id']];
 			});
 		} catch (ModelNotFoundException) {
@@ -153,10 +155,23 @@ class DiscountController extends Controller
 	/**
 	 * Delete a discount
 	 *
-	 * @param Discount $discount
+	 * @param Request $request
+	 * @param         $discount_id
 	 *
 	 * @return void
 	 * @group Discounts
 	 */
-	public function destroy(Discount $discount) {}
+	public function destroy(Request $request, $discount_id)
+	{
+		$user = $request->user();
+		if (!$user->hasPermissionTo('delete_discounts')) {
+			$this->forbidden();
+		}
+
+		try {
+			Discount::findOrFail($discount_id)->delete();
+		} catch (ModelNotFoundException) {
+			$this->notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
+		}
+	}
 }
