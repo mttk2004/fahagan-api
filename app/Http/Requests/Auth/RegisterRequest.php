@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 
 
@@ -73,8 +74,8 @@ class RegisterRequest extends FormRequest
 		];
 	}
 
-	public function authorize(): bool
+	public function authorize(Request $request): bool
 	{
-		return true;
+		return $request->user() === null;
 	}
 }

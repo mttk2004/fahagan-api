@@ -32,10 +32,12 @@ class AuthController extends Controller
 	{
 		$data = $request->validated();
 
-		$user = User::create(array_merge($data, [
+		$user = User::create([
+			'name' => $data['name'],
+			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
 			'is_customer' => $data['is_customer'] ?? true,
-		]));
+		]);
 
 		return $this->ok('Đăng ký thành công.', [
 			'user' => new UserResource($user),
