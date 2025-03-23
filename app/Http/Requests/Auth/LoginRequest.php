@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 
 
@@ -13,9 +14,9 @@ class LoginRequest extends FormRequest
 	/**
 	 * Determine if the user is authorized to make this request.
 	 */
-	public function authorize(): bool
+	public function authorize(Request $request): bool
 	{
-		return true;
+		return $request->user() === null;
 	}
 
 	/**

@@ -23,6 +23,7 @@ class AuthController extends Controller
 	 * Register a new user
 	 *
 	 * @param RegisterRequest $request
+	 *
 	 * @return JsonResponse
 	 * @group Auth
 	 * @unauthenticated
@@ -45,6 +46,7 @@ class AuthController extends Controller
 	 * Login
 	 *
 	 * @param LoginRequest $request
+	 *
 	 * @return JsonResponse
 	 * @group Auth
 	 * @unauthenticated
@@ -58,15 +60,12 @@ class AuthController extends Controller
 		}
 
 		$user = User::where('email', $request->email)->first();
-
-		// Update last login
 		$user->update(['last_login' => now()]);
 
-		// Create token
 		$token = $user->createToken(
 			'API token for ' . $request->email,
 			['*'],
-			now()->addHour()
+			now()->addDay()
 		)->plainTextToken;
 
 		return $this->ok('Đăng nhập thành công!', [
@@ -79,6 +78,7 @@ class AuthController extends Controller
 	 * Logout
 	 *
 	 * @param Request $request
+	 *
 	 * @return JsonResponse
 	 * @group Auth
 	 */
