@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\App;
 
 /**
  * @method static findOrFail($discount_id)
+ * @method static create(mixed $discountData)
  */
 class Discount extends Model
 {

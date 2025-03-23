@@ -11,6 +11,7 @@ enum ResponseMessage: string
 	case NOT_FOUND_USER = 'Không tìm thấy người dùng.';
 	case NOT_FOUND_AUTHOR = 'Không tìm thấy tác giả.';
 	case NOT_FOUND_DISCOUNT = 'Không tìm thấy giảm giá.';
+	case NOT_FOUND_TARGET_OBJECT = 'Đối tượng áp dụng không tồn tại.';
 
 	case CREATED_BOOK = 'Sách đã được tạo thành công.';
 	case CREATED_GENRE = 'Thể loại đã được tạo thành công.';

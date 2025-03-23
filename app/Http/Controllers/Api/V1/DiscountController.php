@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\DiscountStoreRequest;
 use App\Http\Resources\V1\DiscountCollection;
 use App\Http\Resources\V1\DiscountResource;
 use App\Http\Sorts\V1\DiscountSort;
@@ -12,6 +14,8 @@ use App\Traits\ApiResponses;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+
+use function PHPUnit\Framework\throwException;
 
 
 class DiscountController extends Controller
@@ -43,12 +47,34 @@ class DiscountController extends Controller
 	/**
 	 * Create a new discount
 	 *
-	 * @param Request $request
+	 * @param DiscountStoreRequest $request
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 * @group Discounts
 	 */
-	public function store(Request $request) {}
+	public function store(DiscountStoreRequest $request)
+	{
+		$validatedData = $request->validated();
+		$targetsData = $validatedData['data']['relationships']['targets'];
+
+		try {
+			$targets = collect($targetsData)->map(function($target) {
+				$targetType = 'App\Models\\' . ucfirst($target['type']);
+				$targetType::findOrFail($target['id']);
+
+				return ['target_type' => $targetType, 'target_id' => $target['id']];
+			});
+		} catch (ModelNotFoundException) {
+			return $this->notFound(ResponseMessage::NOT_FOUND_TARGET_OBJECT->value);
+		}
+
+		$discount = Discount::create($validatedData['data']['attributes']);
+		$discount->targets()->createMany($targets);
+
+		return $this->ok(ResponseMessage::CREATED_DISCOUNT->value, [
+			'discount' => new DiscountResource($discount),
+		]);
+	}
 
 	/**
 	 * Get a discount
