@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -39,7 +40,7 @@ class AuthController extends Controller
 			'is_customer' => $data['is_customer'] ?? true,
 		]);
 
-		return $this->ok('Đăng ký thành công.', [
+		return $this->ok(ResponseMessage::REGISTER_SUCCESS->value, [
 			'user' => new UserResource($user),
 		]);
 	}
@@ -58,7 +59,7 @@ class AuthController extends Controller
 		$request->validated();
 
 		if (!Auth::attempt($request->only(['email', 'password']))) {
-			return $this->error('Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.', 401);
+			return $this->error(ResponseMessage::LOGIN_FAILED->value, 401);
 		}
 
 		$user = User::where('email', $request->email)->first();
@@ -70,7 +71,7 @@ class AuthController extends Controller
 			now()->addDay()
 		)->plainTextToken;
 
-		return $this->ok('Đăng nhập thành công!', [
+		return $this->ok(ResponseMessage::LOGIN_SUCCESS->value, [
 			'token' => $token,
 			'user' => new UserResource($user),
 		]);
@@ -88,6 +89,6 @@ class AuthController extends Controller
 	{
 		$request->user()->currentAccessToken()->delete();
 
-		return $this->ok('Đăng xuất thành công.');
+		return $this->ok(ResponseMessage::LOGOUT_SUCCESS->value);
 	}
 }

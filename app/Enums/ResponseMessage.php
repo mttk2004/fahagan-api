@@ -33,4 +33,10 @@ enum ResponseMessage: string
 	case DELETED_USER = 'Người dùng đã được xóa thành công.';
 	case DELETED_AUTHOR = 'Tác giả đã được xóa thành công.';
 	case DELETED_DISCOUNT = 'Giảm giá đã được xóa thành công.';
+
+	case LOGIN_SUCCESS = 'Đăng nhập thành công.';
+	case LOGIN_FAILED = 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.';
+	case LOGOUT_SUCCESS = 'Đăng xuất thành công.';
+	case REGISTER_SUCCESS = 'Đăng ký thành công.';
+	case REGISTER_FAILED = 'Đăng ký thất bại. Vui lòng thử lại sau.';
 }
