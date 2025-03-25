@@ -111,7 +111,7 @@ class PublisherController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_books')) {
-			return $this->forbidden();
+			return $this->unauthorized();
 		}
 
 		try {

@@ -39,9 +39,9 @@ trait ApiResponses
 		return $this->success($message, $data);
 	}
 
-	protected function forbidden(): JsonResponse
+	protected function unauthorized(): JsonResponse
 	{
-		return $this->error('Bạn không có quyền thực hiện hành động này.', 403);
+		return $this->error('Bạn không có quyền thực hiện hành động này.', 401);
 	}
 
 	protected function notFound(string $message): JsonResponse

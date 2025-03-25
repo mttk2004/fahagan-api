@@ -56,7 +56,7 @@ class DiscountController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
-			return $this->forbidden();
+			return $this->unauthorized();
 		}
 
 		$discountSort = new DiscountSort($request);
@@ -104,7 +104,7 @@ class DiscountController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
-			return $this->forbidden();
+			return $this->unauthorized();
 		}
 
 		try {
@@ -165,7 +165,7 @@ class DiscountController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_discounts')) {
-			return $this->forbidden();
+			return $this->unauthorized();
 		}
 
 		try {

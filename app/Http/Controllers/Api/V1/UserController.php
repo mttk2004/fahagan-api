@@ -92,7 +92,7 @@ class UserController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_users') || $user->id != $user_id) {
-			return $this->forbidden();
+			return $this->unauthorized();
 		}
 
 		try {

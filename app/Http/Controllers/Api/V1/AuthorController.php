@@ -114,7 +114,7 @@ class AuthorController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_authors')) {
-			return $this->forbidden();
+			return $this->unauthorized();
 		}
 
 		try {

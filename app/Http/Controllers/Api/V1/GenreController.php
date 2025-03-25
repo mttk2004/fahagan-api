@@ -109,7 +109,7 @@ class GenreController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_genres')) {
-			return $this->forbidden();
+			return $this->unauthorized();
 		}
 
 		try {
