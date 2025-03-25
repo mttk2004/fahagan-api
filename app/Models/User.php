@@ -82,4 +82,13 @@ class User extends Authenticatable
 		);
 	}
 
+	public function scopeCustomers($query)
+	{
+		return $query->where('is_customer', true);
+	}
+
+	public function scopeEmployees($query)
+	{
+		return $query->where('is_customer', false);
+	}
 }
