@@ -42,6 +42,7 @@ class Book extends Model
 			'edition',
 			'pages',
 			'publication_date',
+			'image_url',
 			'available_count',
 			'sold_count',
 			'publisher_id',

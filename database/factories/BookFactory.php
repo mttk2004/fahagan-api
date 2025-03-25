@@ -29,8 +29,8 @@ class BookFactory extends Factory
 			'edition' => $this->faker->numberBetween(1, 6),
 			'pages' => $this->faker->numberBetween(234, 876),
 			'publication_date' => $fakePublicationDate->format('d-m-Y'),
-			'available_count' => $this->faker->numberBetween(9, 9999),
-			'sold_count' => $this->faker->numberBetween(99, 9999),
+			'available_count' => $this->faker->numberBetween(99, 9999),
+			'sold_count' => $this->faker->numberBetween(9, 999),
 			'created_at' => $fakeCreatedAt,
 			'updated_at' => $fakeCreatedAt,
 

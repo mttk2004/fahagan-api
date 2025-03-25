@@ -22,6 +22,7 @@ class BookStoreRequest extends BaseRequest
 			'data.attributes.price' => ['required', 'numeric', 'min:200000', 'max:10000000'],
 			'data.attributes.edition' => ['required', 'integer', 'min:1', 'max:30'],
 			'data.attributes.pages' => ['required', 'integer', 'min:50', 'max:5000'],
+			'data.attributes.image_url' => ['sometimes', 'string'],
 			'data.attributes.publication_date' => ['required', 'date', 'before:today'],
 			'data.relationships.authors.data.*.id' => ['required', 'integer', 'exists:authors,id'],
 			'data.relationships.genres.data.*.id' => ['required', 'integer', 'exists:genres,id'],
@@ -59,6 +60,9 @@ class BookStoreRequest extends BaseRequest
 				'integer' => 'Số trang nên là một số nguyên',
 				'min:50' => 'Số trang nên có giá thi tối thiểu 50',
 				'max:5000' => 'Số trang nên có giá trị tối đa 5000',
+			],
+			'data.attributes.image_url' => [
+				'string' => 'URL hình ảnh nên là một chuỗi',
 			],
 			'data.attributes.publication_date' => [
 				'required' => 'Ngày xuất bản là trường bắt buộc',

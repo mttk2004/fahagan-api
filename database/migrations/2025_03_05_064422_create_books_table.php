@@ -16,6 +16,7 @@ return new class extends Migration {
 			$table->unsignedSmallInteger('edition')->default(1);
 			$table->unsignedSmallInteger('pages');
 			$table->date('publication_date');
+			$table->string('image_url')->default('');
 			$table->unsignedSmallInteger('available_count')->default(0);
 			$table->unsignedInteger('sold_count')->default(0);
 			$table->timestamps();
