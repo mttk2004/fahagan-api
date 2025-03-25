@@ -49,14 +49,14 @@ class DiscountController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return DiscountCollection
+	 * @return DiscountCollection|JsonResponse
 	 * @group Discounts
 	 */
 	public function index(Request $request)
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
-			$this->forbidden();
+			return $this->forbidden();
 		}
 
 		$discountSort = new DiscountSort($request);
@@ -104,7 +104,7 @@ class DiscountController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
-			$this->forbidden();
+			return $this->forbidden();
 		}
 
 		try {
@@ -165,7 +165,7 @@ class DiscountController extends Controller
 	{
 		$user = $request->user();
 		if (!$user->hasPermissionTo('delete_discounts')) {
-			$this->forbidden();
+			return $this->forbidden();
 		}
 
 		try {
