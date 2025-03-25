@@ -34,5 +34,16 @@ Route::middleware('auth:sanctum')->group(function() {
 	]);
 
 	// Customer area
-	Route::post('add-to-cart', [CartItemController::class, 'addToCart']);
+	Route::get('cart', [CartItemController::class, 'index'])
+		 ->name('cart.index');
+	Route::post('cart/add', [CartItemController::class, 'addToCart'])
+		 ->name('cart.add');
+	Route::post('cart/update-quantity', [CartItemController::class, 'updateCartItemQuantity'])
+		 ->name('cart.update-quantity');
+	Route::delete(
+		'cart/remove/{book_id}',
+		[CartItemController::class, 'removeFromCart']
+	)
+		 ->whereNumber('book_id')
+		 ->name('cart.remove');
 });

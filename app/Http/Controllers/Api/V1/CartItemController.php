@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddToCartRequest;
+use App\Http\Resources\V1\CartItemCollection;
+use App\Http\Resources\V1\CartItemResource;
 use App\Traits\ApiResponses;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 
 class CartItemController extends Controller
@@ -13,25 +18,110 @@ class CartItemController extends Controller
 	use ApiResponses;
 
 
+	/**
+	 * Get all cart items of the customer.
+	 *
+	 * @param Request $request
+	 *
+	 * @return CartItemCollection|JsonResponse
+	 * @group Cart
+	 */
+	public function index(Request $request)
+	{
+		$user = $request->user();
+
+		if (!$user->is_customer) {
+			return $this->unauthorized();
+		}
+
+		$cartItems = $user->cartItems()
+						  ->with('book')
+						  ->get();
+
+		return new CartItemCollection($cartItems);
+	}
+
+	/**
+	 * Update the quantity of a cart item or add a new book to the cart if it doesn't exist.
+	 *
+	 * @param AddToCartRequest $request
+	 *
+	 * @return JsonResponse
+	 * @group Cart
+	 */
+	public function updateCartItemQuantity(AddToCartRequest $request)
+	{
+		$user = $request->user();
+		$validatedData = $request->validated();
+
+		if ($user->isBookInCart($validatedData['book_id'])) {
+			// Update the quantity of the existing cart item
+			$user->booksInCart()->updateExistingPivot($validatedData['book_id'], [
+				'quantity' => $validatedData['quantity'],
+			]);
+
+			return $this->ok(ResponseMessage::UPDATED_CART_ITEM->value, [
+				'cart_item' => new CartItemResource(
+					$user->getCartItemByBook($validatedData['book_id'])
+				),
+			]);
+		} else {
+			return $this->addToCart($request);
+		}
+	}
+
+	/**
+	 * Add a book to the cart or return an error if it already exists.
+	 *
+	 * @param AddToCartRequest $request
+	 *
+	 * @return JsonResponse
+	 * @group Cart
+	 */
 	public function addToCart(AddToCartRequest $request)
 	{
 		$user = $request->user();
 		$validatedData = $request->validated();
 
-		if ($user->cartItemExists($request->book_id)) {
-			// Update the quantity of the existing cart item
-			$user->cartItems()
-				 ->where('book_id', $validatedData['book_id'])
-				 ->update([
-					 'quantity' => \DB::raw('quantity + ' . $validatedData['quantity'])
-				 ]);
-
-			return $this->ok('Đã cập nhật số lượng sách trong giỏ hàng.');
+		if ($user->isBookInCart($validatedData['book_id'])) {
+			return $this->error(ResponseMessage::ALREADY_IN_CART->value, 409);
 		} else {
-			// Create a new cart item
-			$user->cartItems()->create($validatedData);
+			// Create a new cart item for the user
+			$user->booksInCart()->attach($validatedData['book_id'], [
+				'quantity' => $validatedData['quantity'],
+			]);
 
-			return $this->ok('Đã thêm sách vào giỏ hàng.');
+			return $this->ok(ResponseMessage::ADDED_TO_CART->value, [
+				'cart_item' => new CartItemResource(
+					$user->getCartItemByBook($validatedData['book_id'])
+				),
+			]);
 		}
+	}
+
+	/**
+	 * Remove a book from the cart.
+	 *
+	 * @param Request $request
+	 * @param int     $book_id
+	 *
+	 * @return JsonResponse
+	 * @group Cart
+	 */
+	public function removeFromCart(Request $request, int $book_id)
+	{
+		$user = $request->user();
+
+		if (!$user->is_customer) {
+			return $this->unauthorized();
+		}
+
+		if (!$user->isBookInCart($book_id)) {
+			return $this->notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);
+		}
+
+		$user->booksInCart()->detach($book_id);
+
+		return $this->ok(ResponseMessage::REMOVED_FROM_CART->value);
 	}
 }

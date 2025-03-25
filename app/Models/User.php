@@ -7,6 +7,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -96,13 +97,36 @@ class User extends Authenticatable
 		return $query->where('is_customer', false);
 	}
 
+	/**
+	 * Lấy tất cả item trong giỏ hàng của user
+	 */
 	public function cartItems(): HasMany
 	{
 		return $this->hasMany(CartItem::class);
 	}
 
-	public function cartItemExists($book_id): bool
+	/**
+	 * Kiểm tra xem sách đã có trong giỏ hàng chưa
+	 */
+	public function isBookInCart($bookId): bool
 	{
-		return $this->cartItems()->where('book_id', $book_id)->exists();
+		return $this->cartItems()->where('book_id', $bookId)->exists();
+	}
+
+	/**
+	 * Lấy danh sách sách trong giỏ hàng thông qua bảng pivot
+	 */
+	public function booksInCart(): BelongsToMany
+	{
+		return $this->belongsToMany(Book::class, 'cart_items', 'user_id', 'book_id')
+					->withPivot('quantity');
+	}
+
+	/**
+	 * Lấy thông tin mục giỏ hàng của một sách cụ thể (CartItem)
+	 */
+	public function getCartItemByBook($bookId): ?CartItem
+	{
+		return $this->cartItems()->where('book_id', $bookId)->first();
 	}
 }

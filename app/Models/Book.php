@@ -134,4 +134,11 @@ class Book extends Model
 					 ->get()
 					 ->pluck('discount');
 	}
+
+	public function usersWithBookInCart(): BelongsToMany
+	{
+		return $this->belongsToMany(User::class, 'cart_items', 'book_id', 'user_id')
+					->withPivot('quantity');
+	}
+
 }

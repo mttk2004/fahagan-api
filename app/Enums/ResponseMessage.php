@@ -39,4 +39,10 @@ enum ResponseMessage: string
 	case LOGOUT_SUCCESS = 'Đăng xuất thành công.';
 	case REGISTER_SUCCESS = 'Đăng ký thành công.';
 	case REGISTER_FAILED = 'Đăng ký thất bại. Vui lòng thử lại sau.';
+
+	case ADDED_TO_CART = 'Sách đã được thêm vào giỏ hàng.';
+	case REMOVED_FROM_CART = 'Sách đã được xóa khỏi giỏ hàng.';
+	case UPDATED_CART_ITEM = 'Số lượng sách trong giỏ hàng đã được cập nhật.';
+	case NOT_FOUND_CART_ITEM = 'Sách không tồn tại trong giỏ hàng.';
+	case ALREADY_IN_CART = 'Sách đã tồn tại trong giỏ hàng.';
 }

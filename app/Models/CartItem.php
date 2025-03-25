@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CartItem extends Model
 {
 	public $timestamps = false;
+	public $incrementing = false;
+	protected $primaryKey = null;
 	protected $fillable
 		= [
 			'user_id',
