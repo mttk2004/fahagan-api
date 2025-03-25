@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthorController;
 use App\Http\Controllers\Api\V1\BookController;
+use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\PublisherController;
@@ -31,4 +32,7 @@ Route::middleware('auth:sanctum')->group(function() {
 	Route::apiResources([
 		'discounts' => DiscountController::class,
 	]);
+
+	// Customer area
+	Route::post('add-to-cart', [CartItemController::class, 'addToCart']);
 });

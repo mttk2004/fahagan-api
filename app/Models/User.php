@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\App;
@@ -19,8 +21,9 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, HasApiTokens, HasRoles, Notifiable;
+	/** @use HasFactory<UserFactory> */
+	use HasFactory, HasApiTokens, HasRoles, Notifiable;
+
 
 	public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 	protected $keyType = 'string'; // Kiểu khóa chính là string
@@ -29,51 +32,52 @@ class User extends Authenticatable
 	{
 		parent::boot();
 
-		static::creating(function ($model) {
+		static::creating(function($model) {
 			$model->{$model->getKeyName()} = App::make('snowflake')->id();
 		});
 	}
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'first_name',
-		'last_name',
-		'phone',
-        'email',
-        'password',
-		'is_customer',
-		'last_login',
-    ];
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var list<string>
+	 */
+	protected $fillable
+		= [
+			'first_name',
+			'last_name',
+			'phone',
+			'email',
+			'password',
+			'is_customer',
+			'last_login',
+		];
+	/**
+	 * The attributes that should be hidden for serialization.
+	 *
+	 * @var list<string>
+	 */
+	protected $hidden
+		= [
+			'password',
+		];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
+	/**
+	 * Get the attributes that should be cast.
+	 *
+	 * @return array<string, string>
+	 */
+	protected function casts(): array
+	{
+		return [
+			'password' => 'hashed',
 			'is_customer' => 'boolean',
 			'last_login' => 'datetime',
 			'created_at' => 'datetime',
 			'updated_at' => 'datetime',
 			'deleted_at' => 'datetime',
-        ];
-    }
+		];
+	}
 
 	protected function fullName(): Attribute
 	{
@@ -90,5 +94,15 @@ class User extends Authenticatable
 	public function scopeEmployees($query)
 	{
 		return $query->where('is_customer', false);
+	}
+
+	public function cartItems(): HasMany
+	{
+		return $this->hasMany(CartItem::class);
+	}
+
+	public function cartItemExists($book_id): bool
+	{
+		return $this->cartItems()->where('book_id', $book_id)->exists();
 	}
 }
