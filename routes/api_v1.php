@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Middleware\EnsureCustomer;
 
 
 // Public-area
@@ -34,16 +35,18 @@ Route::middleware('auth:sanctum')->group(function() {
 	]);
 
 	// Customer area
-	Route::get('cart', [CartItemController::class, 'index'])
-		 ->name('cart.index');
-	Route::post('cart/add', [CartItemController::class, 'addToCart'])
-		 ->name('cart.add');
-	Route::post('cart/update-quantity', [CartItemController::class, 'updateCartItemQuantity'])
-		 ->name('cart.update-quantity');
-	Route::delete(
-		'cart/remove/{book_id}',
-		[CartItemController::class, 'removeFromCart']
-	)
-		 ->whereNumber('book_id')
-		 ->name('cart.remove');
+	Route::middleware(EnsureCustomer::class)->group(function() {
+		Route::get('cart', [CartItemController::class, 'index'])
+			 ->name('cart.index');
+		Route::post('cart/add', [CartItemController::class, 'addToCart'])
+			 ->name('cart.add');
+		Route::post('cart/update-quantity', [CartItemController::class, 'updateCartItemQuantity'])
+			 ->name('cart.update-quantity');
+		Route::delete(
+			'cart/remove/{book_id}',
+			[CartItemController::class, 'removeFromCart']
+		)
+			 ->whereNumber('book_id')
+			 ->name('cart.remove');
+	});
 });

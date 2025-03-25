@@ -17,9 +17,18 @@ class EnsureCustomer
 	{
 		$user = $request->user();
 
-		if (!$user || !$user->is_customer) {
+		// Nếu user chưa đăng nhập => 401 Unauthorized
+		if (!$user) {
 			return response()->json([
-				'message' => 'Bị từ chối truy cập. Chỉ khách hàng mới được phép thực hiện hành động này.',
+				'message' => 'Truy cập bị từ chối. Vui lòng đăng nhập.',
+				'status' => 401,
+			], 401);
+		}
+
+		// Nếu user không phải khách hàng => 403 Forbidden
+		if (!$user->is_customer) {
+			return response()->json([
+				'message' => 'Truy cập bị từ chối. Chỉ khách hàng mới được phép thực hiện hành động này.',
 				'status' => 403,
 			], 403);
 		}

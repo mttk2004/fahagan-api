@@ -23,16 +23,12 @@ class CartItemController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return CartItemCollection|JsonResponse
+	 * @return CartItemCollection
 	 * @group Cart
 	 */
 	public function index(Request $request)
 	{
 		$user = $request->user();
-
-		if (!$user->is_customer) {
-			return $this->unauthorized();
-		}
 
 		$cartItems = $user->cartItems()
 						  ->with('book')
@@ -111,10 +107,6 @@ class CartItemController extends Controller
 	public function removeFromCart(Request $request, int $book_id)
 	{
 		$user = $request->user();
-
-		if (!$user->is_customer) {
-			return $this->unauthorized();
-		}
 
 		if (!$user->isBookInCart($book_id)) {
 			return $this->notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);
