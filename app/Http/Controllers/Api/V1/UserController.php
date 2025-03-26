@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use App\Traits\ApiResponses;
+use Auth;
+use Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -82,15 +85,14 @@ class UserController extends Controller
 	/**
 	 * Delete a user
 	 *
-	 * @param Request $request
 	 * @param         $user_id
 	 *
 	 * @return JsonResponse
 	 * @group Users
 	 */
-	public function destroy(Request $request, $user_id)
+	public function destroy($user_id)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		if (!$user->hasPermissionTo('delete_users') || $user->id != $user_id) {
 			return $this->unauthorized();
 		}
@@ -102,5 +104,35 @@ class UserController extends Controller
 		} catch (ModelNotFoundException) {
 			return $this->notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
+	}
+
+	/**
+	 * Change password
+	 *
+	 * @param ChangePasswordRequest $request
+	 *
+	 * @return JsonResponse
+	 * @group Users
+	 */
+	public function changePassword(ChangePasswordRequest $request)
+	{
+		$user = Auth::guard('sanctum')->user();
+
+		if (!$user) {
+			return $this->unauthorized();
+		}
+
+		$validatedData = $request->validated();
+
+		// Check if the old password is correct
+		if (!Hash::check($validatedData['old_password'], $user->password)) {
+			return $this->error('Mật khẩu cũ không chính xác.', 422);
+		}
+
+		$user->update([
+			'password' => bcrypt($validatedData['new_password']),
+		]);
+
+		return $this->ok(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
 	}
 }
