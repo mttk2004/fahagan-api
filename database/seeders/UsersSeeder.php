@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 
+use App\Models\Address;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -11,13 +12,15 @@ class UsersSeeder extends Seeder
 {
 	public function run(): void
 	{
-		// 20 customers
-		User::factory(30)->create();
+		// 30 customers
+		User::factory(30)->has(
+			Address::factory()->count(fake()->numberBetween(1, 3))
+		)->create();
 
 		// 1 admin
 		$admin = User::create([
-			'first_name' => 'Admin',
-			'last_name' => 'Kiet',
+			'first_name' => 'Phạm',
+			'last_name' => 'Thị Hổm',
 			'phone' => '0123456789',
 			'email' => 'admin@example.com',
 			'password' => bcrypt('password'),

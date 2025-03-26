@@ -97,6 +97,11 @@ class User extends Authenticatable
 		return $query->where('is_customer', false);
 	}
 
+	public function addresses(): HasMany
+	{
+		return $this->hasMany(Address::class);
+	}
+
 	/**
 	 * Lấy tất cả item trong giỏ hàng của user
 	 */
