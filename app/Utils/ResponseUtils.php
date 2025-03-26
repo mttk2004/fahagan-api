@@ -11,7 +11,7 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 200 OK
 	 */
-	public static function success(string $message = 'Thành công.', array $data = []): JsonResponse
+	public static function success(array $data = [], string $message = 'Thành công.'): JsonResponse
 	{
 		return response()->json([
 			'status' => 200,
@@ -23,7 +23,7 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 201 Created
 	 */
-	public static function created(string $message = 'Tạo mới thành công.', array $data = []):
+	public static function created(array $data = [], string $message = 'Tạo mới thành công.'):
 	JsonResponse {
 		return response()->json([
 			'status' => 201,
