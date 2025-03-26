@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
-use Auth;
+use App\Utils\AuthUtils;
 
 
 class GenreUpdateRequest extends BaseRequest
@@ -29,6 +29,6 @@ class GenreUpdateRequest extends BaseRequest
 
 	public function authorize(): bool
 	{
-		return Auth::guard('sanctum')->user()->hasPermissionTo('edit_genres');
+		return AuthUtils::userCan('edit_genres');
 	}
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Requests\V1;
 
 
-use Auth;
+use App\Utils\AuthUtils;
 use Illuminate\Foundation\Http\FormRequest;
 
 
@@ -58,6 +58,6 @@ class DiscountStoreRequest extends FormRequest
 
 	public function authorize(): bool
 	{
-		return Auth::guard('sanctum')->user()->hasPermissionTo('create_discounts');
+		return AuthUtils::userCan('create_discounts');
 	}
 }

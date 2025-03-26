@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
-use Auth;
+use App\Utils\AuthUtils;
 
 
 class PublisherStoreRequest extends BaseRequest
@@ -31,6 +31,6 @@ class PublisherStoreRequest extends BaseRequest
 
 	public function authorize(): bool
 	{
-		return Auth::guard('sanctum')->user()->hasPermissionTo('create_publishers');
+		return AuthUtils::userCan('create_publishers');
 	}
 }

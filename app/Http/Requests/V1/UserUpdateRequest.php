@@ -5,7 +5,7 @@ namespace App\Http\Requests\V1;
 
 use App\Http\Requests\BaseRequest;
 use App\Models\User;
-use Auth;
+use App\Utils\AuthUtils;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 
@@ -67,9 +67,9 @@ class UserUpdateRequest extends BaseRequest
 
 	public function authorize(Request $request): bool
 	{
-		$user = Auth::guard('sanctum')->user();
+		$user = AuthUtils::user();
 
-		return $user->hasPermissionTo('edit_users')
+		return AuthUtils::userCan('edit_users')
 			|| $user->id == $request->route('user');
 	}
 }

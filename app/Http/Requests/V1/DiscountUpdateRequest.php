@@ -3,7 +3,7 @@
 namespace App\Http\Requests\V1;
 
 
-use Auth;
+use App\Utils\AuthUtils;
 use Illuminate\Foundation\Http\FormRequest;
 
 
@@ -51,6 +51,6 @@ class DiscountUpdateRequest extends FormRequest
 
 	public function authorize(): bool
 	{
-		return Auth::guard('sanctum')->user()->hasPermissionTo('edit_discounts');
+		return AuthUtils::userCan('edit_discounts');
 	}
 }
