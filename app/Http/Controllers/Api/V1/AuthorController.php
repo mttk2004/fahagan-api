@@ -11,7 +11,6 @@ use App\Http\Resources\V1\AuthorCollection;
 use App\Http\Resources\V1\AuthorResource;
 use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
-use App\Traits\ApiResponses;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -21,13 +20,10 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-	use ApiResponses;
-
-
 	/**
 	 * Get all authors
 	 *
-	 * @return AuthorCollection
+	 * @return JsonResponse
 	 * @group Authors
 	 * @unauthenticated
 	 */
@@ -36,7 +32,9 @@ class AuthorController extends Controller
 		$authorSort = new AuthorSort($request);
 		$authors = $authorSort->apply(Author::query())->paginate();
 
-		return new AuthorCollection($authors);
+		return ResponseUtils::success([
+			'authors' => new AuthorCollection($authors),
+		]);
 	}
 
 	/**
@@ -54,9 +52,9 @@ class AuthorController extends Controller
 
 		$author = Author::create($authorData);
 
-		return $this->ok(ResponseMessage::CREATED_AUTHOR->value, [
+		return ResponseUtils::created([
 			'author' => new AuthorResource($author),
-		]);
+		], ResponseMessage::CREATED_AUTHOR->value);
 	}
 
 	/**
@@ -64,16 +62,18 @@ class AuthorController extends Controller
 	 *
 	 * @param $author_id
 	 *
-	 * @return AuthorResource|JsonResponse
+	 * @return JsonResponse
 	 * @group Authors
 	 * @unauthenticated
 	 */
 	public function show($author_id)
 	{
 		try {
-			return new AuthorResource(Author::findOrFail($author_id));
+			return ResponseUtils::success([
+				'author' => new AuthorResource(Author::findOrFail($author_id)),
+			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
 		}
 	}
 
@@ -95,11 +95,11 @@ class AuthorController extends Controller
 
 			$author->update($authorData);
 
-			return $this->ok(ResponseMessage::UPDATED_AUTHOR->value, [
+			return ResponseUtils::success([
 				'author' => new AuthorResource($author),
-			]);
+			], ResponseMessage::UPDATED_AUTHOR->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
 		}
 	}
 
@@ -120,9 +120,9 @@ class AuthorController extends Controller
 		try {
 			Author::findOrFail($author_id)->delete();
 
-			return $this->ok(ResponseMessage::DELETED_AUTHOR->value);
+			return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
 		}
 	}
 }
