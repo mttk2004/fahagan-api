@@ -7,7 +7,6 @@ use App\Http\Requests\BaseRequest;
 use App\Models\User;
 use App\Utils\AuthUtils;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Password;
 
 
 class UserUpdateRequest extends BaseRequest
@@ -31,7 +30,6 @@ class UserUpdateRequest extends BaseRequest
 				'max:50',
 				'unique:' . User::class,
 			],
-			'data.attributes.password' => ['sometimes', 'confirmed', Password::default()],
 		];
 	}
 
@@ -57,10 +55,6 @@ class UserUpdateRequest extends BaseRequest
 				'email' => 'Email không hợp lệ.',
 				'max:50' => 'Email nên có độ dài tối đa 50.',
 				'unique' => 'Email đã được sử dụng.',
-			],
-			'data.attributes.password' => [
-				'confirmed' => 'Mật khẩu không khớp.',
-				'password' => 'Mật khẩu nên chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
 			],
 		];
 	}
