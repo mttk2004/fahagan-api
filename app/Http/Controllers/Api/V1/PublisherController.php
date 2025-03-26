@@ -12,6 +12,7 @@ use App\Http\Resources\V1\PublisherResource;
 use App\Http\Sorts\V1\PublisherSort;
 use App\Models\Publisher;
 use App\Traits\ApiResponses;
+use Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -101,15 +102,14 @@ class PublisherController extends Controller
 	/**
 	 * Delete a publisher
 	 *
-	 * @param Request $request
 	 * @param         $publisherId
 	 *
 	 * @return JsonResponse
 	 * @group Publishers
 	 */
-	public function destroy(Request $request, $publisherId)
+	public function destroy($publisherId)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		if (!$user->hasPermissionTo('delete_books')) {
 			return $this->unauthorized();
 		}

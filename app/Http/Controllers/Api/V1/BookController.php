@@ -12,6 +12,7 @@ use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
 use App\Models\Book;
 use App\Traits\ApiResponses;
+use Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -147,15 +148,14 @@ class BookController extends Controller
 	/**
 	 * Delete a book
 	 *
-	 * @param Request $request
 	 * @param         $bookId
 	 *
 	 * @return JsonResponse
 	 * @group Books
 	 */
-	public function destroy(Request $request, $bookId)
+	public function destroy($bookId)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		if (!$user->hasPermissionTo('delete_books')) {
 			return $this->unauthorized();
 		}

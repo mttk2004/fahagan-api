@@ -9,8 +9,8 @@ use App\Http\Requests\V1\AddToCartRequest;
 use App\Http\Resources\V1\CartItemCollection;
 use App\Http\Resources\V1\CartItemResource;
 use App\Traits\ApiResponses;
+use Auth;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 
 class CartItemController extends Controller
@@ -21,14 +21,12 @@ class CartItemController extends Controller
 	/**
 	 * Get all cart items of the customer.
 	 *
-	 * @param Request $request
-	 *
 	 * @return CartItemCollection
 	 * @group Cart
 	 */
-	public function index(Request $request)
+	public function index()
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 
 		$cartItems = $user->cartItems()
 						  ->with('book')
@@ -47,7 +45,7 @@ class CartItemController extends Controller
 	 */
 	public function updateCartItemQuantity(AddToCartRequest $request)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		$validatedData = $request->validated();
 
 		if ($user->isBookInCart($validatedData['book_id'])) {
@@ -76,7 +74,7 @@ class CartItemController extends Controller
 	 */
 	public function addToCart(AddToCartRequest $request)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		$validatedData = $request->validated();
 
 		if ($user->isBookInCart($validatedData['book_id'])) {
@@ -98,15 +96,14 @@ class CartItemController extends Controller
 	/**
 	 * Remove a book from the cart.
 	 *
-	 * @param Request $request
-	 * @param int     $book_id
+	 * @param int $book_id
 	 *
 	 * @return JsonResponse
 	 * @group Cart
 	 */
-	public function removeFromCart(Request $request, int $book_id)
+	public function removeFromCart(int $book_id)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 
 		if (!$user->isBookInCart($book_id)) {
 			return $this->notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);

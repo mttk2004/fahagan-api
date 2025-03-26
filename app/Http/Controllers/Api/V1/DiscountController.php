@@ -12,6 +12,7 @@ use App\Http\Resources\V1\DiscountResource;
 use App\Http\Sorts\V1\DiscountSort;
 use App\Models\Discount;
 use App\Traits\ApiResponses;
+use Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class DiscountController extends Controller
 	 */
 	public function index(Request $request)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
 			return $this->unauthorized();
 		}
@@ -94,15 +95,14 @@ class DiscountController extends Controller
 	/**
 	 * Get a discount
 	 *
-	 * @param Request $request
 	 * @param         $discount_id
 	 *
 	 * @return DiscountResource|JsonResponse
 	 * @group Discounts
 	 */
-	public function show(Request $request, $discount_id)
+	public function show($discount_id)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		if (!$user->hasPermissionTo('view_discounts')) {
 			return $this->unauthorized();
 		}
@@ -155,15 +155,14 @@ class DiscountController extends Controller
 	/**
 	 * Delete a discount
 	 *
-	 * @param Request $request
 	 * @param         $discount_id
 	 *
 	 * @return JsonResponse
 	 * @group Discounts
 	 */
-	public function destroy(Request $request, $discount_id)
+	public function destroy($discount_id)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		if (!$user->hasPermissionTo('delete_discounts')) {
 			return $this->unauthorized();
 		}

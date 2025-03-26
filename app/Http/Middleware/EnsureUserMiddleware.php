@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 
+use Auth;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ class EnsureUserMiddleware
 	 */
 	public function handle(Request $request, Closure $next): Response
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 
 		// Nếu user chưa đăng nhập => 401 Unauthorized
 		if (!$user) {

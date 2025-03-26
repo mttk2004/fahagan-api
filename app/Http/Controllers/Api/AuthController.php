@@ -12,7 +12,6 @@ use App\Models\User;
 use App\Traits\ApiResponses;
 use Auth;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 
 class AuthController extends Controller
@@ -80,14 +79,12 @@ class AuthController extends Controller
 	/**
 	 * Logout
 	 *
-	 * @param Request $request
-	 *
 	 * @return JsonResponse
 	 * @group Auth
 	 */
-	public function logout(Request $request)
+	public function logout()
 	{
-		$request->user()->currentAccessToken()->delete();
+		Auth::guard('sanctum')->user()->currentAccessToken()->delete();
 
 		return $this->ok(ResponseMessage::LOGOUT_SUCCESS->value);
 	}

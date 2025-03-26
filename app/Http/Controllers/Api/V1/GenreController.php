@@ -12,6 +12,7 @@ use App\Http\Resources\V1\GenreResource;
 use App\Http\Sorts\V1\GenreSort;
 use App\Models\Genre;
 use App\Traits\ApiResponses;
+use Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -99,15 +100,14 @@ class GenreController extends Controller
 	/**
 	 * Delete a genre
 	 *
-	 * @param Request $request
 	 * @param         $genre_id
 	 *
 	 * @return JsonResponse
 	 * @group Genres
 	 */
-	public function destroy(Request $request, $genre_id)
+	public function destroy($genre_id)
 	{
-		$user = $request->user();
+		$user = Auth::guard('sanctum')->user();
 		if (!$user->hasPermissionTo('delete_genres')) {
 			return $this->unauthorized();
 		}

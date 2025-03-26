@@ -4,8 +4,8 @@ namespace App\Http\Requests\Auth;
 
 
 use App\Models\User;
+use Auth;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 
 
@@ -74,8 +74,8 @@ class RegisterRequest extends FormRequest
 		];
 	}
 
-	public function authorize(Request $request): bool
+	public function authorize(): bool
 	{
-		return $request->user() === null;
+		return Auth::guard('sanctum')->user() === null;
 	}
 }

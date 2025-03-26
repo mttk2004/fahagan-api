@@ -3,8 +3,8 @@
 namespace App\Http\Requests\V1;
 
 
+use Auth;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 
 
 class DiscountStoreRequest extends FormRequest
@@ -19,7 +19,11 @@ class DiscountStoreRequest extends FormRequest
 			'data.attributes.end_date' => ['required', 'date', 'after:data.attributes.start_date'],
 
 			'data.relationships.targets' => ['required', 'array'],
-			'data.relationships.targets.*.type' => ['required', 'string', 'in:book,author,publisher,genre'],
+			'data.relationships.targets.*.type' => [
+				'required',
+				'string',
+				'in:book,author,publisher,genre',
+			],
 			'data.relationships.targets.*.id' => ['required', 'integer'],
 		];
 	}
@@ -52,8 +56,8 @@ class DiscountStoreRequest extends FormRequest
 		];
 	}
 
-	public function authorize(Request $request): bool
+	public function authorize(): bool
 	{
-		return $request->user()->hasPermissionTo('create_discounts');
+		return Auth::guard('sanctum')->user()->hasPermissionTo('create_discounts');
 	}
 }

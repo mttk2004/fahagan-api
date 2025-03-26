@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
-use Illuminate\Http\Request;
+use Auth;
 
 
 class BookUpdateRequest extends BaseRequest
@@ -78,8 +78,8 @@ class BookUpdateRequest extends BaseRequest
 		];
 	}
 
-	public function authorize(Request $request): bool
+	public function authorize(): bool
 	{
-		return $request->user()->hasPermissionTo('edit_books');
+		return Auth::guard('sanctum')->user()->hasPermissionTo('edit_books');
 	}
 }
