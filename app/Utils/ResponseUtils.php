@@ -11,7 +11,7 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 200 OK
 	 */
-	public static function success($data = [], $message = 'Thành công'): JsonResponse
+	public static function success($data = [], $message = 'Thành công.'): JsonResponse
 	{
 		return response()->json([
 			'status' => 200,
@@ -23,7 +23,7 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 201 Created
 	 */
-	public static function created($data = [], $message = 'Tạo mới thành công'): JsonResponse
+	public static function created($data = [], $message = 'Tạo mới thành công.'): JsonResponse
 	{
 		return response()->json([
 			'status' => 201,
@@ -35,7 +35,8 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 400 Bad Request
 	 */
-	public static function badRequest($message = 'Yêu cầu không hợp lệ', $errors = []): JsonResponse
+	public static function badRequest($message = 'Yêu cầu không hợp lệ.', $errors = []):
+	JsonResponse
 	{
 		return response()->json([
 			'status' => 400,
@@ -47,7 +48,7 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 401 Unauthorized
 	 */
-	public static function unauthorized($message = 'Bạn không có quyền truy cập'): JsonResponse
+	public static function unauthorized($message = 'Bạn không có quyền truy cập.'): JsonResponse
 	{
 		return response()->json([
 			'status' => 401,
@@ -58,7 +59,7 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 403 Forbidden
 	 */
-	public static function forbidden($message = 'Bạn không được phép thực hiện hành động này',
+	public static function forbidden($message = 'Bạn không được phép thực hiện hành động này.',
 	): JsonResponse {
 		return response()->json([
 			'status' => 403,
@@ -69,7 +70,7 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 404 Not Found
 	 */
-	public static function notFound($message = 'Không tìm thấy dữ liệu'): JsonResponse
+	public static function notFound($message = 'Không tìm thấy dữ liệu.'): JsonResponse
 	{
 		return response()->json([
 			'status' => 404,
@@ -82,7 +83,7 @@ class ResponseUtils
 	 */
 	public static function validationError(
 		$errors = [],
-		$message = 'Dữ liệu không hợp lệ',
+		$message = 'Dữ liệu không hợp lệ.',
 	): JsonResponse {
 		return response()->json([
 			'status' => 422,
@@ -95,7 +96,7 @@ class ResponseUtils
 	 * Trả về phản hồi 429 Too Many Requests
 	 */
 	public static function tooManyRequests(
-		$message = 'Bạn đã gửi quá nhiều yêu cầu, vui lòng thử lại sau',
+		$message = 'Bạn đã gửi quá nhiều yêu cầu, vui lòng thử lại sau.',
 	): JsonResponse {
 		return response()->json([
 			'status' => 429,
@@ -106,7 +107,8 @@ class ResponseUtils
 	/**
 	 * Trả về phản hồi 500 Internal Server Error
 	 */
-	public static function serverError($message = 'Lỗi máy chủ, vui lòng thử lại sau'): JsonResponse
+	public static function serverError($message = 'Lỗi máy chủ, vui lòng thử lại sau.'):
+	JsonResponse
 	{
 		return response()->json([
 			'status' => 500,
@@ -118,7 +120,7 @@ class ResponseUtils
 	 * Trả về phản hồi 503 Service Unavailable
 	 */
 	public static function serviceUnavailable(
-		$message = 'Dịch vụ hiện không khả dụng, vui lòng thử lại sau',
+		$message = 'Dịch vụ hiện không khả dụng, vui lòng thử lại sau.',
 	): JsonResponse {
 		return response()->json([
 			'status' => 503,
