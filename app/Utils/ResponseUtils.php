@@ -33,6 +33,17 @@ class ResponseUtils
 	}
 
 	/**
+	 * Trả về phản hồi 204 No Content
+	 */
+	public static function noContent(string $message = 'Không có nội dung.'): JsonResponse
+	{
+		return response()->json([
+			'status' => 204,
+			'message' => $message,
+		], 204);
+	}
+
+	/**
 	 * Trả về phản hồi 400 Bad Request
 	 */
 	public static function badRequest(
