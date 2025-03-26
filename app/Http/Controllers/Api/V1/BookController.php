@@ -11,7 +11,6 @@ use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
 use App\Models\Book;
-use App\Traits\ApiResponses;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -21,15 +20,12 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-	use ApiResponses;
-
-
 	/**
 	 * Get all books
 	 *
 	 * @param Request $request
 	 *
-	 * @return BookCollection
+	 * @return JsonResponse
 	 * @group Books
 	 * @unauthenticated
 	 */
@@ -38,7 +34,9 @@ class BookController extends Controller
 		$bookSort = new BookSort($request);
 		$books = $bookSort->apply(Book::query())->paginate();
 
-		return new BookCollection($books);
+		return ResponseUtils::success([
+			'books' => new BookCollection($books),
+		]);
 	}
 
 	/**
@@ -78,9 +76,9 @@ class BookController extends Controller
 				->toArray()
 		);
 
-		return $this->ok(ResponseMessage::CREATED_BOOK->value, [
+		return ResponseUtils::created([
 			'book' => new BookResource($book),
-		]);
+		], ResponseMessage::CREATED_BOOK->value);
 	}
 
 	/**
@@ -88,16 +86,18 @@ class BookController extends Controller
 	 *
 	 * @param $book_id
 	 *
-	 * @return BookResource|JsonResponse
+	 * @return JsonResponse
 	 * @group Books
 	 * @unauthenticated
 	 */
 	public function show($book_id)
 	{
 		try {
-			return new BookResource(Book::findOrFail($book_id));
+			return ResponseUtils::success([
+				'book' => new BookResource(Book::findOrFail($book_id)),
+			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_BOOK->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
 		}
 	}
 
@@ -138,11 +138,11 @@ class BookController extends Controller
 				$book->genres()->sync($genreIds);
 			}
 
-			return $this->ok(ResponseMessage::UPDATED_BOOK->value, [
+			return ResponseUtils::success([
 				'book' => new BookResource($book),
-			]);
+			], ResponseMessage::UPDATED_BOOK->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_BOOK->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
 		}
 	}
 
@@ -170,9 +170,11 @@ class BookController extends Controller
 
 			$book->delete();
 
-			return $this->ok(ResponseMessage::DELETED_BOOK->value);
+			return ResponseUtils::success([
+				'book' => new BookResource($book),
+			], ResponseMessage::DELETED_BOOK->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_BOOK->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
 		}
 	}
 }
