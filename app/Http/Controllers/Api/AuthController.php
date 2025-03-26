@@ -9,16 +9,13 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
-use App\Traits\ApiResponses;
+use App\Utils\ResponseUtils;
 use Auth;
 use Illuminate\Http\JsonResponse;
 
 
 class AuthController extends Controller
 {
-	use ApiResponses;
-
-
 	/**
 	 * Register a new user
 	 *
@@ -39,7 +36,7 @@ class AuthController extends Controller
 			'is_customer' => $data['is_customer'] ?? true,
 		]);
 
-		return $this->ok(ResponseMessage::REGISTER_SUCCESS->value, [
+		return ResponseUtils::created(ResponseMessage::REGISTER_SUCCESS->value, [
 			'user' => new UserResource($user),
 		]);
 	}
@@ -58,7 +55,7 @@ class AuthController extends Controller
 		$request->validated();
 
 		if (!Auth::attempt($request->only(['email', 'password']))) {
-			return $this->error(ResponseMessage::LOGIN_FAILED->value, 401);
+			return ResponseUtils::unauthorized(ResponseMessage::LOGIN_FAILED->value);
 		}
 
 		$user = User::where('email', $request->email)->first();
@@ -70,7 +67,7 @@ class AuthController extends Controller
 			now()->addDay()
 		)->plainTextToken;
 
-		return $this->ok(ResponseMessage::LOGIN_SUCCESS->value, [
+		return ResponseUtils::success(ResponseMessage::LOGIN_SUCCESS->value, [
 			'token' => $token,
 			'user' => new UserResource($user),
 		]);
@@ -86,6 +83,6 @@ class AuthController extends Controller
 	{
 		Auth::guard('sanctum')->user()->currentAccessToken()->delete();
 
-		return $this->ok(ResponseMessage::LOGOUT_SUCCESS->value);
+		return ResponseUtils::success(ResponseMessage::LOGOUT_SUCCESS->value);
 	}
 }
