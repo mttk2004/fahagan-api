@@ -12,6 +12,8 @@ use App\Http\Resources\V1\UserResource;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use App\Traits\ApiResponses;
+use App\Utils\AuthUtils;
+use App\Utils\ResponseUtils;
 use Auth;
 use Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -92,9 +94,9 @@ class UserController extends Controller
 	 */
 	public function destroy($user_id)
 	{
-		$user = Auth::guard('sanctum')->user();
-		if (!$user->hasPermissionTo('delete_users') || $user->id != $user_id) {
-			return $this->unauthorized();
+		if (!AuthUtils::userCan('delete_users')
+			|| AuthUtils::user()->id != $user_id) {
+			return ResponseUtils::forbidden();
 		}
 
 		try {

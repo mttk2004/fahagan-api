@@ -12,7 +12,8 @@ use App\Http\Resources\V1\AuthorResource;
 use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
 use App\Traits\ApiResponses;
-use Auth;
+use App\Utils\AuthUtils;
+use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -112,9 +113,8 @@ class AuthorController extends Controller
 	 */
 	public function destroy($author_id)
 	{
-		$user = Auth::guard('sanctum')->user();
-		if (!$user->hasPermissionTo('delete_authors')) {
-			return $this->unauthorized();
+		if (!AuthUtils::userCan('delete_authors')) {
+			return ResponseUtils::forbidden();
 		}
 
 		try {
