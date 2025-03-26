@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Auth;
+use Hash;
 use Illuminate\Http\JsonResponse;
 
 
@@ -85,5 +87,34 @@ class AuthController extends Controller
 		AuthUtils::user()->currentAccessToken()->delete();
 
 		return ResponseUtils::noContent(ResponseMessage::LOGOUT_SUCCESS->value);
+	}
+
+	/**
+	 * Change password
+	 *
+	 * @param ChangePasswordRequest $request
+	 *
+	 * @return JsonResponse
+	 * @group Auth
+	 */
+	public function changePassword(ChangePasswordRequest $request)
+	{
+		$user = AuthUtils::user();
+		if (!$user) {
+			return ResponseUtils::unauthorized();
+		}
+
+		$validatedData = $request->validated();
+
+		// Check if the old password is correct
+		if (!Hash::check($validatedData['old_password'], $user->password)) {
+			return ResponseUtils::validationError(ResponseMessage::WRONG_OLD_PASSWORD->value);
+		}
+
+		$user->update([
+			'password' => bcrypt($validatedData['new_password']),
+		]);
+
+		return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
 	}
 }

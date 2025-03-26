@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
@@ -13,7 +12,6 @@ use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
-use Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -105,34 +103,5 @@ class UserController extends Controller
 		} catch (ModelNotFoundException) {
 			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
-	}
-
-	/**
-	 * Change password
-	 *
-	 * @param ChangePasswordRequest $request
-	 *
-	 * @return JsonResponse
-	 * @group Users
-	 */
-	public function changePassword(ChangePasswordRequest $request)
-	{
-		$user = AuthUtils::user();
-		if (!$user) {
-			return ResponseUtils::unauthorized();
-		}
-
-		$validatedData = $request->validated();
-
-		// Check if the old password is correct
-		if (!Hash::check($validatedData['old_password'], $user->password)) {
-			return ResponseUtils::validationError(ResponseMessage::WRONG_OLD_PASSWORD->value);
-		}
-
-		$user->update([
-			'password' => bcrypt($validatedData['new_password']),
-		]);
-
-		return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
 	}
 }
