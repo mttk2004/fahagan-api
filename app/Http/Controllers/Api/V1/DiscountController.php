@@ -11,7 +11,6 @@ use App\Http\Resources\V1\DiscountCollection;
 use App\Http\Resources\V1\DiscountResource;
 use App\Http\Sorts\V1\DiscountSort;
 use App\Models\Discount;
-use App\Traits\ApiResponses;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,9 +21,6 @@ use Illuminate\Support\Collection;
 
 class DiscountController extends Controller
 {
-	use ApiResponses;
-
-
 	/**
 	 * Validate and map targets
 	 *
@@ -42,7 +38,7 @@ class DiscountController extends Controller
 				return ['target_type' => $targetType, 'target_id' => $target['id']];
 			});
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_TARGET_OBJECT->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_TARGET_OBJECT->value);
 		}
 	}
 
@@ -51,7 +47,7 @@ class DiscountController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return DiscountCollection|JsonResponse
+	 * @return JsonResponse
 	 * @group Discounts
 	 */
 	public function index(Request $request)
@@ -63,7 +59,9 @@ class DiscountController extends Controller
 		$discountSort = new DiscountSort($request);
 		$discounts = $discountSort->apply(Discount::query())->paginate();
 
-		return new DiscountCollection($discounts);
+		return ResponseUtils::success([
+			'discounts' => new DiscountCollection($discounts),
+		]);
 	}
 
 	/**
@@ -87,9 +85,9 @@ class DiscountController extends Controller
 		$discount = Discount::create($validatedData['data']['attributes']);
 		$discount->targets()->createMany($targets);
 
-		return $this->ok(ResponseMessage::CREATED_DISCOUNT->value, [
+		return ResponseUtils::created([
 			'discount' => new DiscountResource($discount),
-		]);
+		], ResponseMessage::CREATED_DISCOUNT->value);
 	}
 
 	/**
@@ -97,7 +95,7 @@ class DiscountController extends Controller
 	 *
 	 * @param         $discount_id
 	 *
-	 * @return DiscountResource|JsonResponse
+	 * @return JsonResponse
 	 * @group Discounts
 	 */
 	public function show($discount_id)
@@ -107,9 +105,11 @@ class DiscountController extends Controller
 		}
 
 		try {
-			return new DiscountResource(Discount::findOrFail($discount_id));
+			return ResponseUtils::success([
+				'discount' => new DiscountResource(Discount::findOrFail($discount_id)),
+			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
 		}
 	}
 
@@ -143,11 +143,11 @@ class DiscountController extends Controller
 
 			$discount->update($discountData);
 
-			return $this->ok(ResponseMessage::UPDATED_DISCOUNT->value, [
+			return ResponseUtils::success([
 				'discount' => new DiscountResource($discount),
-			]);
+			], ResponseMessage::UPDATED_DISCOUNT->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
 		}
 	}
 
@@ -168,9 +168,9 @@ class DiscountController extends Controller
 		try {
 			Discount::findOrFail($discount_id)->delete();
 
-			return $this->ok(ResponseMessage::DELETED_DISCOUNT->value);
+			return ResponseUtils::noContent(ResponseMessage::DELETED_DISCOUNT->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
 		}
 	}
 }
