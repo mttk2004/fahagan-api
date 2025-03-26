@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
-use Auth;
+use App\Utils\AuthUtils;
 
 
 class BookStoreRequest extends BaseRequest
@@ -89,6 +89,6 @@ class BookStoreRequest extends BaseRequest
 
 	public function authorize(): bool
 	{
-		return Auth::guard('sanctum')->user()->checkPermissionTo('create_books');
+		return AuthUtils::userCan('create_books');
 	}
 }

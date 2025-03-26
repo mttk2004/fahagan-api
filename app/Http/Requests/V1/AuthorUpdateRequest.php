@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
-use Auth;
+use App\Utils\AuthUtils;
 
 
 class AuthorUpdateRequest extends BaseRequest
@@ -36,8 +36,6 @@ class AuthorUpdateRequest extends BaseRequest
 
 	public function authorize(): bool
 	{
-		return Auth::guard('sanctum')
-				   ->user()
-				   ->checkPermissionTo('edit_authors');
+		return AuthUtils::userCan('edit_authors');
 	}
 }

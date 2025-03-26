@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddToCartRequest;
 use App\Http\Resources\V1\CartItemCollection;
 use App\Http\Resources\V1\CartItemResource;
+use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Auth;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +24,7 @@ class CartItemController extends Controller
 	 */
 	public function index()
 	{
-		$user = Auth::guard('sanctum')->user();
+		$user = AuthUtils::user();
 
 		$cartItems = $user->cartItems()
 						  ->with('book')
@@ -44,7 +45,7 @@ class CartItemController extends Controller
 	 */
 	public function updateCartItemQuantity(AddToCartRequest $request)
 	{
-		$user = Auth::guard('sanctum')->user();
+		$user = AuthUtils::user();
 		$validatedData = $request->validated();
 
 		if ($user->isBookInCart($validatedData['book_id'])) {
@@ -73,7 +74,7 @@ class CartItemController extends Controller
 	 */
 	public function addToCart(AddToCartRequest $request)
 	{
-		$user = Auth::guard('sanctum')->user();
+		$user = AuthUtils::user();
 		$validatedData = $request->validated();
 
 		if ($user->isBookInCart($validatedData['book_id'])) {
@@ -102,7 +103,7 @@ class CartItemController extends Controller
 	 */
 	public function removeFromCart(int $book_id)
 	{
-		$user = Auth::guard('sanctum')->user();
+		$user = AuthUtils::user();
 
 		if (!$user->isBookInCart($book_id)) {
 			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);

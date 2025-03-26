@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
+use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Auth;
 use Illuminate\Http\JsonResponse;
@@ -36,9 +37,9 @@ class AuthController extends Controller
 			'is_customer' => $data['is_customer'] ?? true,
 		]);
 
-		return ResponseUtils::created(ResponseMessage::REGISTER_SUCCESS->value, [
+		return ResponseUtils::created([
 			'user' => new UserResource($user),
-		]);
+		], ResponseMessage::REGISTER_SUCCESS->value);
 	}
 
 	/**
@@ -64,13 +65,13 @@ class AuthController extends Controller
 		$token = $user->createToken(
 			'API token for ' . $request->email,
 			['*'],
-			now()->addDay()
+			now()->addWeek()
 		)->plainTextToken;
 
-		return ResponseUtils::success(ResponseMessage::LOGIN_SUCCESS->value, [
+		return ResponseUtils::success([
 			'token' => $token,
 			'user' => new UserResource($user),
-		]);
+		], ResponseMessage::LOGIN_SUCCESS->value);
 	}
 
 	/**
@@ -81,8 +82,8 @@ class AuthController extends Controller
 	 */
 	public function logout()
 	{
-		Auth::guard('sanctum')->user()->currentAccessToken()->delete();
+		AuthUtils::user()->currentAccessToken()->delete();
 
-		return ResponseUtils::success(ResponseMessage::LOGOUT_SUCCESS->value);
+		return ResponseUtils::noContent(ResponseMessage::LOGOUT_SUCCESS->value);
 	}
 }
