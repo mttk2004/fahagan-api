@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class EnsureCustomer
+class EnsureCustomerMiddleware
 {
 	/**
 	 * Kiểm tra nếu user là khách hàng, nếu không trả về 403 Unauthorized.

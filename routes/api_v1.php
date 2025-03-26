@@ -7,7 +7,6 @@ use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\UserController;
-use App\Http\Middleware\EnsureCustomer;
 
 
 // Public-area
@@ -19,7 +18,7 @@ Route::apiResources([
 ], ['only' => ['index', 'show']]);
 
 // Authenticated-area
-Route::middleware('auth:sanctum')->group(function() {
+Route::middleware('auth.*')->group(function() {
 	Route::apiResources([
 		'books' => BookController::class,
 		'authors' => AuthorController::class,
@@ -34,8 +33,8 @@ Route::middleware('auth:sanctum')->group(function() {
 		'discounts' => DiscountController::class,
 	]);
 
-	// Customer area
-	Route::middleware(EnsureCustomer::class)->group(function() {
+	// Customer only area
+	Route::middleware('auth.customer')->group(function() {
 		Route::get('cart', [CartItemController::class, 'index'])
 			 ->name('cart.index');
 		Route::post('cart/add', [CartItemController::class, 'addToCart'])

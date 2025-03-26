@@ -4,7 +4,6 @@ namespace App\Http\Requests\V1;
 
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 
 
 class AddToCartRequest extends FormRequest
@@ -29,8 +28,8 @@ class AddToCartRequest extends FormRequest
 		];
 	}
 
-	public function authorize(Request $request): bool
+	public function authorize(): bool
 	{
-		return $request->user()->is_customer;
+		return true;
 	}
 }
