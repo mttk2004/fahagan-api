@@ -25,6 +25,7 @@ enum ResponseMessage: string
 	case CREATED_USER = 'Người dùng đã được tạo thành công.';
 	case CREATED_AUTHOR = 'Tác giả đã được tạo thành công.';
 	case CREATED_DISCOUNT = 'Giảm giá đã được tạo thành công.';
+	case CREATED_ADDRESS = 'Địa chỉ đã được tạo thành công.';
 
 	/**
 	 * @group Update
