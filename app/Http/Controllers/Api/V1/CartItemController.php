@@ -8,20 +8,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddToCartRequest;
 use App\Http\Resources\V1\CartItemCollection;
 use App\Http\Resources\V1\CartItemResource;
-use App\Traits\ApiResponses;
+use App\Utils\ResponseUtils;
 use Auth;
 use Illuminate\Http\JsonResponse;
 
 
 class CartItemController extends Controller
 {
-	use ApiResponses;
-
-
 	/**
 	 * Get all cart items of the customer.
 	 *
-	 * @return CartItemCollection
+	 * @return JsonResponse
 	 * @group Cart
 	 */
 	public function index()
@@ -32,7 +29,9 @@ class CartItemController extends Controller
 						  ->with('book')
 						  ->get();
 
-		return new CartItemCollection($cartItems);
+		return ResponseUtils::success([
+			'cart_items' => new CartItemCollection($cartItems),
+		]);
 	}
 
 	/**
@@ -54,11 +53,11 @@ class CartItemController extends Controller
 				'quantity' => $validatedData['quantity'],
 			]);
 
-			return $this->ok(ResponseMessage::UPDATED_CART_ITEM->value, [
+			return ResponseUtils::success([
 				'cart_item' => new CartItemResource(
 					$user->getCartItemByBook($validatedData['book_id'])
 				),
-			]);
+			], ResponseMessage::UPDATED_CART_ITEM->value);
 		} else {
 			return $this->addToCart($request);
 		}
@@ -78,18 +77,18 @@ class CartItemController extends Controller
 		$validatedData = $request->validated();
 
 		if ($user->isBookInCart($validatedData['book_id'])) {
-			return $this->error(ResponseMessage::ALREADY_IN_CART->value, 409);
+			return ResponseUtils::badRequest(ResponseMessage::ALREADY_IN_CART->value);
 		} else {
 			// Create a new cart item for the user
 			$user->booksInCart()->attach($validatedData['book_id'], [
 				'quantity' => $validatedData['quantity'],
 			]);
 
-			return $this->ok(ResponseMessage::ADDED_TO_CART->value, [
+			return ResponseUtils::created([
 				'cart_item' => new CartItemResource(
 					$user->getCartItemByBook($validatedData['book_id'])
 				),
-			]);
+			], ResponseMessage::ADDED_TO_CART->value);
 		}
 	}
 
@@ -106,11 +105,11 @@ class CartItemController extends Controller
 		$user = Auth::guard('sanctum')->user();
 
 		if (!$user->isBookInCart($book_id)) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);
 		}
 
 		$user->booksInCart()->detach($book_id);
 
-		return $this->ok(ResponseMessage::REMOVED_FROM_CART->value);
+		return ResponseUtils::noContent(ResponseMessage::REMOVED_FROM_CART->value);
 	}
 }
