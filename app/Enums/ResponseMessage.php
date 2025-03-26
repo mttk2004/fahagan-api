@@ -55,6 +55,8 @@ enum ResponseMessage: string
 	case REGISTER_SUCCESS = 'Đăng ký thành công.';
 	case REGISTER_FAILED = 'Đăng ký thất bại. Vui lòng thử lại sau.';
 	case CHANGE_PASSWORD_SUCCESS = 'Đổi mật khẩu thành công.';
+	case CHANGE_PASSWORD_FAIL = 'Đổi mật khẩu thất bại.';
+	case WRONG_OLD_PASSWORD = 'Mật khẩu cũ không chính xác.';
 
 	/**
 	 * @group Cart
