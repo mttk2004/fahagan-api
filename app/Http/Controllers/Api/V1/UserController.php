@@ -11,10 +11,8 @@ use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
-use App\Traits\ApiResponses;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
-use Auth;
 use Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -23,15 +21,12 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-	use ApiResponses;
-
-
 	/**
 	 * Get all users
 	 *
 	 * @param Request $request
 	 *
-	 * @return UserCollection
+	 * @return JsonResponse
 	 * @group Users
 	 */
 	public function index(Request $request)
@@ -39,7 +34,9 @@ class UserController extends Controller
 		$userSort = new UserSort($request);
 		$users = $userSort->apply(User::query())->paginate();
 
-		return new UserCollection($users);
+		return ResponseUtils::success([
+			'users' => new UserCollection($users),
+		]);
 	}
 
 	/**
@@ -47,15 +44,17 @@ class UserController extends Controller
 	 *
 	 * @param $user_id
 	 *
-	 * @return UserResource|JsonResponse
+	 * @return JsonResponse
 	 * @group Users
 	 */
 	public function show($user_id)
 	{
 		try {
-			return new UserResource(User::findOrFail($user_id));
+			return ResponseUtils::success([
+				'user' => new UserResource(User::findOrFail($user_id)),
+			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_USER->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
 	}
 
@@ -76,11 +75,11 @@ class UserController extends Controller
 
 			$user->update($userData);
 
-			return $this->ok(ResponseMessage::UPDATED_USER->value, [
+			return ResponseUtils::success([
 				'user' => new UserResource($user),
-			]);
+			], ResponseMessage::UPDATED_USER->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_USER->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
 	}
 
@@ -102,9 +101,9 @@ class UserController extends Controller
 		try {
 			User::findOrFail($user_id)->delete();
 
-			return $this->ok(ResponseMessage::DELETED_USER->value);
+			return ResponseUtils::noContent(ResponseMessage::DELETED_USER->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_USER->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
 		}
 	}
 
@@ -118,23 +117,22 @@ class UserController extends Controller
 	 */
 	public function changePassword(ChangePasswordRequest $request)
 	{
-		$user = Auth::guard('sanctum')->user();
-
+		$user = AuthUtils::user();
 		if (!$user) {
-			return $this->unauthorized();
+			return ResponseUtils::unauthorized();
 		}
 
 		$validatedData = $request->validated();
 
 		// Check if the old password is correct
 		if (!Hash::check($validatedData['old_password'], $user->password)) {
-			return $this->error('Mật khẩu cũ không chính xác.', 422);
+			return ResponseUtils::validationError(ResponseMessage::WRONG_OLD_PASSWORD->value);
 		}
 
 		$user->update([
 			'password' => bcrypt($validatedData['new_password']),
 		]);
 
-		return $this->ok(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
+		return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
 	}
 }
