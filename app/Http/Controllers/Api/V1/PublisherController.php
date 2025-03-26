@@ -11,10 +11,8 @@ use App\Http\Resources\V1\PublisherCollection;
 use App\Http\Resources\V1\PublisherResource;
 use App\Http\Sorts\V1\PublisherSort;
 use App\Models\Publisher;
-use App\Traits\ApiResponses;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
-use Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,15 +20,12 @@ use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
-	use ApiResponses;
-
-
 	/**
 	 * Get all publishers
 	 *
 	 * @param Request $request
 	 *
-	 * @return PublisherCollection
+	 * @return JsonResponse
 	 * @group Publishers
 	 * @unauthenticated
 	 */
@@ -39,7 +34,9 @@ class PublisherController extends Controller
 		$publisherSort = new PublisherSort($request);
 		$publishers = $publisherSort->apply(Publisher::query())->paginate();
 
-		return new PublisherCollection($publishers);
+		return ResponseUtils::success([
+			'publishers' => new PublisherCollection($publishers),
+		]);
 	}
 
 	/**
@@ -55,9 +52,9 @@ class PublisherController extends Controller
 		$publisherData = $request->validated()['data']['attributes'];
 		$publisher = Publisher::create($publisherData);
 
-		return $this->ok(ResponseMessage::CREATED_PUBLISHER->value, [
+		return ResponseUtils::created([
 			'publisher' => new PublisherResource($publisher),
-		]);
+		], ResponseMessage::CREATED_PUBLISHER->value);
 	}
 
 	/**
@@ -65,16 +62,18 @@ class PublisherController extends Controller
 	 *
 	 * @param $publisher_id
 	 *
-	 * @return PublisherResource|JsonResponse
+	 * @return JsonResponse
 	 * @group Publishers
 	 * @unauthenticated
 	 */
 	public function show($publisher_id)
 	{
 		try {
-			return new PublisherResource(Publisher::findOrFail($publisher_id));
+			return ResponseUtils::success([
+				'publisher' => new PublisherResource(Publisher::findOrFail($publisher_id)),
+			]);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
 		}
 	}
 
@@ -93,11 +92,11 @@ class PublisherController extends Controller
 			$publisherData = $request->validated()['data']['attributes'];
 			$publisher = Publisher::findOrFail($publisher_id)->update($publisherData);
 
-			return $this->ok(ResponseMessage::UPDATED_PUBLISHER->value, [
+			return ResponseUtils::success([
 				'publisher' => new PublisherResource($publisher),
-			]);
+			], ResponseMessage::UPDATED_PUBLISHER->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
 		}
 	}
 
@@ -120,9 +119,9 @@ class PublisherController extends Controller
 			$publisher = Publisher::findOrFail($publisherId);
 			$publisher->delete();
 
-			return $this->ok(ResponseMessage::DELETED_PUBLISHER->value);
+			return ResponseUtils::noContent(ResponseMessage::DELETED_PUBLISHER->value);
 		} catch (ModelNotFoundException) {
-			return $this->notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
 		}
 	}
 }
