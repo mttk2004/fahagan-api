@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\AuthorController;
 use App\Http\Controllers\Api\V1\BookController;
 use App\Http\Controllers\Api\V1\CartItemController;
@@ -35,6 +36,7 @@ Route::middleware('auth.*')->group(function() {
 
 	// Customer only area
 	Route::middleware('auth.customer')->group(function() {
+		// Cart
 		Route::get('cart', [CartItemController::class, 'index'])
 			 ->name('cart.index');
 		Route::post('cart/add', [CartItemController::class, 'addToCart'])
@@ -47,5 +49,12 @@ Route::middleware('auth.*')->group(function() {
 		)
 			 ->whereNumber('book_id')
 			 ->name('cart.remove');
+
+		// My account
+		Route::prefix('my-account')->group(function() {
+			// Addresses
+			Route::apiResource('addresses', AddressController::class)
+				 ->except('show');
+		});
 	});
 });
