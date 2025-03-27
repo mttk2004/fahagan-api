@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureCustomerMiddleware;
 use App\Http\Middleware\EnsureEmailIsVerified;
+use App\Http\Middleware\EnsureEmployeeMiddleware;
 use App\Http\Middleware\EnsureUserMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -30,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailIsVerified::class,
 			'auth.*' => EnsureUserMiddleware::class,
 			'auth.customer' => EnsureCustomerMiddleware::class,
+			'auth.employee' => EnsureEmployeeMiddleware::class,
         ]);
 
 		// Disable CSRF token validation for API routes.
