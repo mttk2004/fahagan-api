@@ -14,11 +14,20 @@ use App\Models\Supplier;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
 class SupplierController extends Controller
 {
+	/**
+	 * Get all suppliers
+	 *
+	 * @param Request $request
+	 *
+	 * @return JsonResponse
+	 * @group Supplier
+	 */
 	public function index(Request $request)
 	{
 		if (!AuthUtils::userCan('view_suppliers')) {
@@ -33,6 +42,14 @@ class SupplierController extends Controller
 		]);
 	}
 
+	/**
+	 * Create a new supplier
+	 *
+	 * @param SupplierStoreRequest $request
+	 *
+	 * @return JsonResponse
+	 * @group Supplier
+	 */
 	public function store(SupplierStoreRequest $request)
 	{
 		$validatedData = $request->validated()['data'];
@@ -50,6 +67,14 @@ class SupplierController extends Controller
 		], ResponseMessage::CREATED_SUPPLIER->value);
 	}
 
+	/**
+	 * Get a supplier
+	 *
+	 * @param $supplier_id
+	 *
+	 * @return JsonResponse
+	 * @group Supplier
+	 */
 	public function show($supplier_id)
 	{
 		try {
@@ -63,6 +88,15 @@ class SupplierController extends Controller
 		}
 	}
 
+	/**
+	 * Update a supplier
+	 *
+	 * @param SupplierUpdateRequest $request
+	 * @param                       $supplier_id
+	 *
+	 * @return JsonResponse
+	 * @group Supplier
+	 */
 	public function update(SupplierUpdateRequest $request, $supplier_id)
 	{
 		try {
@@ -89,6 +123,14 @@ class SupplierController extends Controller
 		}
 	}
 
+	/**
+	 * Delete a supplier
+	 *
+	 * @param $supplier_id
+	 *
+	 * @return JsonResponse
+	 * @group Supplier
+	 */
 	public function destroy($supplier_id)
 	{
 		if (!AuthUtils::userCan('delete_suppliers')) {
