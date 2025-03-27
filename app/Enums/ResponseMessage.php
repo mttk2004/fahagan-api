@@ -16,6 +16,7 @@ enum ResponseMessage: string
 	case NOT_FOUND_DISCOUNT = 'Không tìm thấy giảm giá.';
 	case NOT_FOUND_TARGET_OBJECT = 'Đối tượng áp dụng không tồn tại.';
 	case NOT_FOUND_ADDRESS = 'Không tìm thấy địa chỉ.';
+	case NOT_FOUND_SUPPLIER = 'Không tìm thấy nhà cung cấp.';
 
 	/**
 	 * @group Create
@@ -27,6 +28,7 @@ enum ResponseMessage: string
 	case CREATED_AUTHOR = 'Tác giả đã được tạo thành công.';
 	case CREATED_DISCOUNT = 'Giảm giá đã được tạo thành công.';
 	case CREATED_ADDRESS = 'Địa chỉ đã được tạo thành công.';
+	case CREATED_SUPPLIER = 'Nhà cung cấp đã được tạo thành công.';
 
 	/**
 	 * @group Update
@@ -38,6 +40,7 @@ enum ResponseMessage: string
 	case UPDATED_AUTHOR = 'Tác giả đã được cập nhật thành công.';
 	case UPDATED_DISCOUNT = 'Giảm giá đã được cập nhật thành công.';
 	case UPDATED_ADDRESS = 'Địa chỉ đã được cập nhật thành công.';
+	case UPDATED_SUPPLIER = 'Nhà cung cấp đã được cập nhật thành công.';
 
 	/**
 	 * @group Delete
@@ -49,6 +52,7 @@ enum ResponseMessage: string
 	case DELETED_AUTHOR = 'Tác giả đã được xóa thành công.';
 	case DELETED_DISCOUNT = 'Giảm giá đã được xóa thành công.';
 	case DELETED_ADDRESS = 'Địa chỉ đã được xóa thành công.';
+	case DELETED_SUPPLIER = 'Nhà cung cấp đã được xóa thành công.';
 
 	/**
 	 * @group Auth
