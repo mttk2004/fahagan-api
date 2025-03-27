@@ -48,6 +48,7 @@ enum ResponseMessage: string
 	case DELETED_USER = 'Người dùng đã được xóa thành công.';
 	case DELETED_AUTHOR = 'Tác giả đã được xóa thành công.';
 	case DELETED_DISCOUNT = 'Giảm giá đã được xóa thành công.';
+	case DELETED_ADDRESS = 'Địa chỉ đã được xóa thành công.';
 
 	/**
 	 * @group Auth

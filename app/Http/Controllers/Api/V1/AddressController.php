@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddressStoreRequest;
 use App\Http\Requests\V1\AddressUpdateRequest;
 use App\Http\Resources\V1\AddressCollection;
-use App\Models\Address;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,6 +15,12 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AddressController extends Controller
 {
+	/*
+	 * Show all addresses of the authenticated user.
+	 *
+	 * @return \Illuminate\Http\JsonResponse
+	 * @group Address
+	 */
 	public function index()
 	{
 		return ResponseUtils::success([
@@ -23,6 +28,13 @@ class AddressController extends Controller
 		]);
 	}
 
+	/*
+	 * Store a new address for the authenticated user.
+	 *
+	 * @param AddressStoreRequest $request
+	 * @return \Illuminate\Http\JsonResponse
+	 * @group Address
+	 */
 	public function store(AddressStoreRequest $request)
 	{
 		$address = AuthUtils::user()->addresses()->create($request->validated());
@@ -32,6 +44,14 @@ class AddressController extends Controller
 		], ResponseMessage::CREATED_ADDRESS->value);
 	}
 
+	/*
+	 * Update an address of the authenticated user.
+	 *
+	 * @param AddressUpdateRequest $request
+	 * @param $address_id
+	 * @return \Illuminate\Http\JsonResponse
+	 * @group Address
+	 */
 	public function update(AddressUpdateRequest $request, $address_id)
 	{
 		try {
@@ -46,5 +66,22 @@ class AddressController extends Controller
 		}
 	}
 
-	public function destroy(Address $address) {}
+	/*
+	 * Delete an address of the authenticated user.
+	 *
+	 * @param $address_id
+	 * @return \Illuminate\Http\JsonResponse
+	 * @group Address
+	 */
+	public function destroy($address_id)
+	{
+		try {
+			$address = AuthUtils::user()->addresses()->findOrFail($address_id);
+			$address->delete();
+
+			return ResponseUtils::noContent(ResponseMessage::DELETED_ADDRESS->value);
+		} catch (ModelNotFoundException) {
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_ADDRESS->value);
+		}
+	}
 }
