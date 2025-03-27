@@ -32,6 +32,7 @@ class BookFactory extends Factory
 			'available_count' => fake()->numberBetween(99, 9999),
 			'sold_count' => fake()->numberBetween(9, 999),
 			'created_at' => $fakeCreatedAt,
+			'updated_at' => null,
 
 			'publisher_id' => Publisher::inRandomOrder()->first()->id,
 		];
