@@ -31,7 +31,7 @@ class SupplierResource extends JsonResource
 				'phone' => $this->phone,
 				'email' => $this->email,
 				'books_count' => $this->books->count(),
-				$this->mergeWhen($request->routeIs('suppliers.show'), [
+				$this->mergeWhen($request->routeIs(['suppliers.show', 'suppliers.store']), [
 					'city' => $this->city,
 					'ward' => $this->ward,
 					'address_line' => $this->address_line,
@@ -40,7 +40,7 @@ class SupplierResource extends JsonResource
 				]),
 			],
 			'relationships' => $this->when(
-				$request->routeIs('suppliers.show'),
+				$request->routeIs(['suppliers.show', 'suppliers.store']),
 				[
 					'books' => new BookCollection($this->books),
 				]

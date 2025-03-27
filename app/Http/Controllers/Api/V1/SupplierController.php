@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\SupplierStoreRequest;
 use App\Http\Resources\V1\SupplierCollection;
 use App\Http\Resources\V1\SupplierResource;
 use App\Http\Sorts\V1\SupplierSort;
@@ -25,7 +26,22 @@ class SupplierController extends Controller
 		]);
 	}
 
-	public function store(Request $request) {}
+	public function store(SupplierStoreRequest $request)
+	{
+		$validatedData = $request->validated()['data'];
+		$supplier = Supplier::create($validatedData['attributes']);
+
+		// Attach books to the supplier
+		$supplier->books()->attach(
+			collect($validatedData['relationships']['books']['data'])
+				->pluck('id')
+				->toArray()
+		);
+
+		return ResponseUtils::created([
+			'supplier' => new SupplierResource($supplier),
+		]);
+	}
 
 	public function show($supplier_id)
 	{

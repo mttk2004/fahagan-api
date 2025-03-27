@@ -46,6 +46,10 @@ class RolesSeeder extends Seeder
 			'create_permissions',
 			'edit_permissions',
 			'delete_permissions',
+			'view_suppliers',
+			'create_suppliers',
+			'edit_suppliers',
+			'delete_suppliers',
 		]);
 
 		$warehouseStaff->syncPermissions([
