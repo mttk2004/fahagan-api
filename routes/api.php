@@ -13,5 +13,5 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth.*')->group(function() {
 	Route::post('/logout', [AuthController::class, 'logout']);
-	Route::post('/change-password', [AuthController::class, 'changePassword']);
+	Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
 });
