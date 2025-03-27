@@ -23,7 +23,6 @@ class AddressFactory extends Factory
 			'ward' => AddressNames::WARD_NAMES[array_rand(AddressNames::WARD_NAMES)],
 			'address_line' => fake('vi_VN')->streetAddress(),
 			'created_at' => Carbon::now(),
-			'updated_at' => Carbon::now(),
 
 			'user_id' => User::factory(),
 		];

@@ -15,6 +15,8 @@ class SupplierFactory extends Factory
 
 	public function definition(): array
 	{
+		$fakeCreatedAt = fake()->dateTimeBetween('-10 year');
+
 		return [
 			'name' => fake('vi_VN')->company(),
 			'phone' => fake('vi_VN')->phoneNumber(),
@@ -22,8 +24,7 @@ class SupplierFactory extends Factory
 			'city' => AddressNames::CITY_NAMES[array_rand(AddressNames::CITY_NAMES)],
 			'ward' => AddressNames::WARD_NAMES[array_rand(AddressNames::WARD_NAMES)],
 			'address_line' => fake('vi_VN')->streetAddress(),
-			'created_at' => Carbon::now(),
-			'updated_at' => Carbon::now(),
+			'created_at' => $fakeCreatedAt,
 		];
 	}
 }

@@ -14,8 +14,8 @@ class BookFactory extends Factory
 
 	public function definition(): array
 	{
-		$fakePublicationDate = $this->faker->dateTimeBetween('-10 years');
-		$fakeCreatedAt = $this->faker->dateTimeBetween($fakePublicationDate);
+		$fakePublicationDate = fake()->dateTimeBetween('-10 years');
+		$fakeCreatedAt = fake()->dateTimeBetween($fakePublicationDate);
 
 		return [
 			'title' => ucfirst(fake()->words(
@@ -26,13 +26,12 @@ class BookFactory extends Factory
 				true
 			),
 			'price' => fake()->randomFloat(0, 48, 144) * 10000,
-			'edition' => $this->faker->numberBetween(1, 6),
-			'pages' => $this->faker->numberBetween(234, 876),
+			'edition' => fake()->numberBetween(1, 6),
+			'pages' => fake()->numberBetween(234, 876),
 			'publication_date' => $fakePublicationDate->format('d-m-Y'),
-			'available_count' => $this->faker->numberBetween(99, 9999),
-			'sold_count' => $this->faker->numberBetween(9, 999),
+			'available_count' => fake()->numberBetween(99, 9999),
+			'sold_count' => fake()->numberBetween(9, 999),
 			'created_at' => $fakeCreatedAt,
-			'updated_at' => $fakeCreatedAt,
 
 			'publisher_id' => Publisher::inRandomOrder()->first()->id,
 		];

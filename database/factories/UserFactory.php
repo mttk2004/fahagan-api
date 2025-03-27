@@ -22,7 +22,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-		$fakeCreatedAt = $this->faker->dateTimeBetween('-5 year');
+		$fakeCreatedAt = fake()->dateTimeBetween('-5 year');
         return [
             'first_name' => fake('vi_VN')->firstName(),
             'last_name' => fake('vi_VN')->lastName(),
@@ -31,7 +31,6 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
 			'is_customer' => true,
 			'created_at' => $fakeCreatedAt,
-			'updated_at' => $fakeCreatedAt,
         ];
     }
 
