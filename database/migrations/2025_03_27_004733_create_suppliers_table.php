@@ -16,8 +16,8 @@ return new class extends Migration {
 			$table->string('name')->unique();
 			$table->string('phone')->unique();
 			$table->string('email')->unique();
-			$table->string('address_city');
-			$table->string('address_ward');
+			$table->string('city');
+			$table->string('ward');
 			$table->string('address_line');
 			$table->timestamps();
 		});
