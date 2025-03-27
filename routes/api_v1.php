@@ -7,10 +7,13 @@ use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\DiscountController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\PublisherController;
+use App\Http\Controllers\Api\V1\SupplierController;
 use App\Http\Controllers\Api\V1\UserController;
 
 
-// Public-area
+/**
+ * Unauthenticated area
+ */
 Route::apiResources([
 	'books' => BookController::class,
 	'authors' => AuthorController::class,
@@ -18,23 +21,19 @@ Route::apiResources([
 	'genres' => GenreController::class,
 ], ['only' => ['index', 'show']]);
 
-// Authenticated-area
+/**
+ * Authenticated area
+ */
 Route::middleware('auth.*')->group(function() {
-	Route::apiResources([
-		'books' => BookController::class,
-		'authors' => AuthorController::class,
-		'publishers' => PublisherController::class,
-		'genres' => GenreController::class,
-	], ['except' => ['index', 'show']]);
-
+	/**
+	 * Both customer and employee can access
+	 */
 	Route::apiResource('users', UserController::class)
 		 ->except('store');
 
-	Route::apiResources([
-		'discounts' => DiscountController::class,
-	]);
-
-	// Customer only area
+	/**
+	 * Customer only area
+	 */
 	Route::middleware('auth.customer')->group(function() {
 		// Cart
 		Route::get('cart', [CartItemController::class, 'index'])
@@ -56,5 +55,22 @@ Route::middleware('auth.*')->group(function() {
 			Route::apiResource('addresses', AddressController::class)
 				 ->except('show');
 		});
+	});
+
+	/**
+	 * Employee only area
+	 */
+	Route::middleware('auth.employee')->group(function() {
+		Route::apiResources([
+			'books' => BookController::class,
+			'authors' => AuthorController::class,
+			'publishers' => PublisherController::class,
+			'genres' => GenreController::class,
+		], ['except' => ['index', 'show']]);
+
+		Route::apiResources([
+			'discounts' => DiscountController::class,
+			'suppliers' => SupplierController::class,
+		]);
 	});
 });
