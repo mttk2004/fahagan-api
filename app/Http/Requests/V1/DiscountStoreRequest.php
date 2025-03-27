@@ -3,11 +3,11 @@
 namespace App\Http\Requests\V1;
 
 
+use App\Http\Requests\BaseRequest;
 use App\Utils\AuthUtils;
-use Illuminate\Foundation\Http\FormRequest;
 
 
-class DiscountStoreRequest extends FormRequest
+class DiscountStoreRequest extends BaseRequest
 {
 	public function rules(): array
 	{

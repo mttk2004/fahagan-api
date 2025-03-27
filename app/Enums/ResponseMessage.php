@@ -15,6 +15,7 @@ enum ResponseMessage: string
 	case NOT_FOUND_AUTHOR = 'Không tìm thấy tác giả.';
 	case NOT_FOUND_DISCOUNT = 'Không tìm thấy giảm giá.';
 	case NOT_FOUND_TARGET_OBJECT = 'Đối tượng áp dụng không tồn tại.';
+	case NOT_FOUND_ADDRESS = 'Không tìm thấy địa chỉ.';
 
 	/**
 	 * @group Create
@@ -36,6 +37,7 @@ enum ResponseMessage: string
 	case UPDATED_USER = 'Người dùng đã được cập nhật thành công.';
 	case UPDATED_AUTHOR = 'Tác giả đã được cập nhật thành công.';
 	case UPDATED_DISCOUNT = 'Giảm giá đã được cập nhật thành công.';
+	case UPDATED_ADDRESS = 'Địa chỉ đã được cập nhật thành công.';
 
 	/**
 	 * @group Delete

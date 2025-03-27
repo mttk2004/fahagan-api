@@ -3,10 +3,10 @@
 namespace App\Http\Requests\V1;
 
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 
 
-class AddToCartRequest extends FormRequest
+class AddToCartRequest extends BaseRequest
 {
 	public function rules(): array
 	{
