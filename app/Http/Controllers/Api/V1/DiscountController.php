@@ -126,12 +126,11 @@ class DiscountController extends Controller
 	{
 		try {
 			$discount = Discount::findOrFail($discount_id);
-			$validatedData = $request->validated();
-			$discountData = $validatedData['data']['attributes'];
+			$validatedData = $request->validated()['data'];
 
-			if (isset($validatedData['data']['relationships']['targets'])) {
-				$targetsData = $validatedData['data']['relationships']['targets'];
-
+			// Update targets
+			$targetsData = $validatedData['relationships']['targets'] ?? null;
+			if ($targetsData) {
 				$targets = $this->validateAndMapTargets($targetsData);
 				if ($targets instanceof JsonResponse) {
 					return $targets;
@@ -141,7 +140,11 @@ class DiscountController extends Controller
 				$discount->targets()->createMany($targets);
 			}
 
-			$discount->update($discountData);
+			// Update discount data
+			$discountData = $validatedData['attributes'] ?? null;
+			if ($discountData) {
+				$discount->update($discountData);
+			}
 
 			return ResponseUtils::success([
 				'discount' => new DiscountResource($discount),
