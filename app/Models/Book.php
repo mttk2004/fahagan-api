@@ -78,6 +78,11 @@ class Book extends Model
 		return $this->morphMany(DiscountTarget::class, 'target');
 	}
 
+	public function suppliers(): BelongsToMany
+	{
+		return $this->belongsToMany(Supplier::class);
+	}
+
 	/**
 	 * Lấy tất cả giảm giá hợp lệ của sách (trực tiếp và gián tiếp)
 	 */
@@ -140,5 +145,4 @@ class Book extends Model
 		return $this->belongsToMany(User::class, 'cart_items', 'book_id', 'user_id')
 					->withPivot('quantity');
 	}
-
 }

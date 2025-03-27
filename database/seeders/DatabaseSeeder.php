@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
 			UsersSeeder::class,
 			PublishersSeeder::class,
 			GenresSeeder::class,
+			SuppliersSeeder::class,
 			BooksSeeder::class,
 			AuthorsSeeder::class,
 			DiscountsSeeder::class,
 			CartItemsSeeder::class,
-			SuppliersSeeder::class,
 		]);
 	}
 }

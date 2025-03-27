@@ -21,6 +21,24 @@ return new class extends Migration {
 			$table->string('address_line');
 			$table->timestamps();
 		});
+
+		Schema::create('book_supplier', function(Blueprint $table) {
+			$table->unsignedBigInteger('book_id');
+			$table->foreign('book_id')
+				  ->references('id')
+				  ->on('books')
+				  ->onDelete('cascade')
+				  ->onUpdate('cascade');
+
+			$table->unsignedSmallInteger('supplier_id');
+			$table->foreign('supplier_id')
+				  ->references('id')
+				  ->on('suppliers')
+				  ->onDelete('cascade')
+				  ->onUpdate('cascade');
+
+			$table->primary(['supplier_id', 'book_id']);
+		});
 	}
 
 	public function down(): void
