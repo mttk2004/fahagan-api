@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SupplierStoreRequest;
+use App\Http\Requests\V1\SupplierUpdateRequest;
 use App\Http\Resources\V1\SupplierCollection;
 use App\Http\Resources\V1\SupplierResource;
 use App\Http\Sorts\V1\SupplierSort;
@@ -62,9 +63,34 @@ class SupplierController extends Controller
 		}
 	}
 
-	public function update(Request $request, $id) {}
+	public function update(SupplierUpdateRequest $request, $supplier_id)
+	{
+		try {
+			$supplier = Supplier::findOrFail($supplier_id);
+			$validatedData = $request->validated()['data'];
 
-	public function destroy($supplier_id) {
+			// Sync books with the supplier
+			$books = $validatedData['relationships']['books']['data'] ?? null;
+			if ($books) {
+				$supplier->books()->sync(collect($books)->pluck('id')->toArray());
+			}
+
+			// Update supplier attributes
+			$attributes = $validatedData['attributes'] ?? null;
+			if ($attributes) {
+				$supplier->update($attributes);
+			}
+
+			return ResponseUtils::success([
+				'supplier' => new SupplierResource($supplier),
+			], ResponseMessage::UPDATED_SUPPLIER->value);
+		} catch (ModelNotFoundException) {
+			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_SUPPLIER->value);
+		}
+	}
+
+	public function destroy($supplier_id)
+	{
 		if (!AuthUtils::userCan('delete_suppliers')) {
 			return ResponseUtils::forbidden();
 		}
