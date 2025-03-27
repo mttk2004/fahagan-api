@@ -16,7 +16,7 @@ class CartItemsSeeder extends Seeder
 		$books = Book::all();
 
 		foreach ($users as $user) {
-			$cartItems = $books->random(fake()->numberBetween(1, 5));
+			$cartItems = $books->random(fake()->numberBetween(0, 5));
 			foreach ($cartItems as $book) {
 				$user->cartItems()->create([
 					'book_id' => $book->id,

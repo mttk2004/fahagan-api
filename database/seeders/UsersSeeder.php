@@ -13,7 +13,7 @@ class UsersSeeder extends Seeder
 	public function run(): void
 	{
 		// 30 customers
-		User::factory(30)->has(
+		User::factory(50)->has(
 			Address::factory()->count(fake()->numberBetween(1, 3))
 		)->create();
 
