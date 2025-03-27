@@ -74,15 +74,15 @@ class DiscountController extends Controller
 	 */
 	public function store(DiscountStoreRequest $request)
 	{
-		$validatedData = $request->validated();
-		$targetsData = $validatedData['data']['relationships']['targets'];
+		$validatedData = $request->validated()['data'];
 
+		$targetsData = $validatedData['relationships']['targets'];
 		$targets = $this->validateAndMapTargets($targetsData);
 		if ($targets instanceof JsonResponse) {
 			return $targets;
 		}
 
-		$discount = Discount::create($validatedData['data']['attributes']);
+		$discount = Discount::create($validatedData['attributes']);
 		$discount->targets()->createMany($targets);
 
 		return ResponseUtils::created([
