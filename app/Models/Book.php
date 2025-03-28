@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,13 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\App;
+use App\Interfaces\HasBookRelations;
+use App\Interfaces\Discountable;
 
 
 /**
  * @method static findOrFail($book_id)
  * @method static create(mixed $bookData)
  */
-class Book extends Model
+class Book extends Model implements HasBookRelations, Discountable
 {
 	use HasFactory, SoftDeletes;
 
@@ -86,7 +87,7 @@ class Book extends Model
 	/**
 	 * Lấy tất cả giảm giá hợp lệ của sách (trực tiếp và gián tiếp)
 	 */
-	public function getAllActiveDiscounts()
+	public function getAllActiveDiscounts(): \Illuminate\Support\Collection
 	{
 		$now = Carbon::now();
 		$discounts = collect(); // Tạo Collection rỗng để chứa danh sách giảm giá
@@ -117,7 +118,7 @@ class Book extends Model
 	/**
 	 * Tìm giảm giá cao nhất để áp dụng
 	 */
-	public function getBestDiscount()
+	public function getBestDiscount(): ?\App\Models\Discount
 	{
 		return $this->getAllActiveDiscounts()->sortByDesc(function($discount) {
 			return $discount->discount_type === 'percent'
@@ -129,7 +130,7 @@ class Book extends Model
 	/**
 	 * Lấy giảm giá hợp lệ từ một nguồn cụ thể
 	 */
-	private function getActiveDiscounts($query, $now)
+	public function getActiveDiscounts($query, $now): \Illuminate\Support\Collection
 	{
 		return $query->whereHas('discount', function($query) use ($now) {
 			$query->where('start_date', '<=', $now)

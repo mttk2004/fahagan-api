@@ -4,10 +4,11 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use App\Utils\AuthUtils;
 
 
-class BookUpdateRequest extends BaseRequest
+class BookUpdateRequest extends BaseRequest implements HasValidationMessages
 {
 	public function rules(): array
 	{
@@ -16,7 +17,7 @@ class BookUpdateRequest extends BaseRequest
 				'sometimes',
 				'string',
 				'max:255',
-				'unique:books,title,NULL,id,edition,' . $this->input('data.attributes.edition'),
+				'unique:books,title,NULL,id,edition,' . request('data.attributes.edition'),
 			],
 			'data.attributes.description' => ['sometimes', 'string'],
 			'data.attributes.price' => ['sometimes', 'numeric', 'min:200000', 'max:10000000'],

@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests\Auth;
 
-
+use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use App\Models\User;
 use App\Utils\AuthUtils;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
 
-class RegisterRequest extends FormRequest
+class RegisterRequest extends BaseRequest implements HasValidationMessages
 {
 	public function rules(): array
 	{

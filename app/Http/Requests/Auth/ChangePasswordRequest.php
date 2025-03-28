@@ -4,10 +4,11 @@ namespace App\Http\Requests\Auth;
 
 
 use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use Illuminate\Validation\Rules\Password;
 
 
-class ChangePasswordRequest extends BaseRequest
+class ChangePasswordRequest extends BaseRequest implements HasValidationMessages
 {
 	public function rules(): array
 	{

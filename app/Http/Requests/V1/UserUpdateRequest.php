@@ -4,12 +4,13 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use App\Models\User;
 use App\Utils\AuthUtils;
 use Illuminate\Http\Request;
 
 
-class UserUpdateRequest extends BaseRequest
+class UserUpdateRequest extends BaseRequest implements HasValidationMessages
 {
 	public function rules(): array
 	{

@@ -4,10 +4,11 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use App\Utils\AuthUtils;
 
 
-class GenreStoreRequest extends BaseRequest
+class GenreStoreRequest extends BaseRequest implements HasValidationMessages
 {
 	public function rules(): array
 	{

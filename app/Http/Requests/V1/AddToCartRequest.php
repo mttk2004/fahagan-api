@@ -4,9 +4,9 @@ namespace App\Http\Requests\V1;
 
 
 use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 
-
-class AddToCartRequest extends BaseRequest
+class AddToCartRequest extends BaseRequest implements HasValidationMessages
 {
 	public function rules(): array
 	{

@@ -14,13 +14,14 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\App;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\Interfaces\HasCart;
 
 
 /**
  * @method static findOrFail($user_id)
  * @method static create(array $array)
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasCart
 {
 	/** @use HasFactory<UserFactory> */
 	use HasFactory, HasApiTokens, HasRoles, Notifiable;

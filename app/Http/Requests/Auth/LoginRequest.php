@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests\Auth;
 
-
+use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use App\Utils\AuthUtils;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
 
-class LoginRequest extends FormRequest
+class LoginRequest extends BaseRequest implements HasValidationMessages
 {
 	/**
 	 * Determine if the user is authorized to make this request.
