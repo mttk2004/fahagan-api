@@ -16,9 +16,12 @@ use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Traits\HandlePagination;
 
 class BookController extends Controller
 {
+    use HandlePagination;
+
     /**
      * Get all books
      *
@@ -41,7 +44,7 @@ class BookController extends Controller
         $query = $bookSort->apply($query);
 
         // Get paginated results
-        $books = $query->paginate();
+        $books = $query->paginate($this->getPerPage($request));
 
         return new BookCollection($books);
     }
