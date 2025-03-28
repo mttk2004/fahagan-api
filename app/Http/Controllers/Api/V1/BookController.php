@@ -9,6 +9,7 @@ use App\Http\Requests\V1\BookUpdateRequest;
 use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
+use App\Filters\BookFilter;
 use App\Models\Book;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
@@ -29,12 +30,20 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $bookSort = new BookSort($request);
-        $books = $bookSort->apply(Book::query())->paginate();
+        $query = Book::query();
 
-        return ResponseUtils::success([
-            'books' => new BookCollection($books),
-        ]);
+        // Apply filters
+        $bookFilter = new BookFilter($request);
+        $query = $bookFilter->apply($query);
+
+        // Apply sorting
+        $bookSort = new BookSort($request);
+        $query = $bookSort->apply($query);
+
+        // Get paginated results
+        $books = $query->paginate();
+
+        return new BookCollection($books);
     }
 
     /**
