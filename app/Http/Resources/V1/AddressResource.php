@@ -2,10 +2,8 @@
 
 namespace App\Http\Resources\V1;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 
 /**
  * @property mixed $id
@@ -17,18 +15,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class AddressResource extends JsonResource
 {
-	public function toArray(Request $request): array
-	{
-		return [
-			'type' => 'address',
-			'id' => $this->id,
-			'attributes' => [
-				'name' => $this->name,
-				'phone' => $this->phone,
-				'city' => $this->city,
-				'ward' => $this->ward,
-				'address_line' => $this->address_line,
-			],
-		];
-	}
+    public function toArray(Request $request): array
+    {
+        return [
+            'type' => 'address',
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'city' => $this->city,
+                'ward' => $this->ward,
+                'address_line' => $this->address_line,
+            ],
+        ];
+    }
 }

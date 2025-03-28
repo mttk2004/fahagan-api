@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SupplierStoreRequest;
@@ -17,132 +16,131 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-
 class SupplierController extends Controller
 {
-	/**
-	 * Get all suppliers
-	 *
-	 * @param Request $request
-	 *
-	 * @return JsonResponse
-	 * @group Supplier
-	 */
-	public function index(Request $request)
-	{
-		if (!AuthUtils::userCan('view_suppliers')) {
-			return ResponseUtils::forbidden();
-		}
+    /**
+     * Get all suppliers
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @group Supplier
+     */
+    public function index(Request $request)
+    {
+        if (! AuthUtils::userCan('view_suppliers')) {
+            return ResponseUtils::forbidden();
+        }
 
-		$supplierSort = new SupplierSort($request);
-		$suppliers = $supplierSort->apply(Supplier::query())->paginate();
+        $supplierSort = new SupplierSort($request);
+        $suppliers = $supplierSort->apply(Supplier::query())->paginate();
 
-		return ResponseUtils::success([
-			'suppliers' => new SupplierCollection($suppliers),
-		]);
-	}
+        return ResponseUtils::success([
+            'suppliers' => new SupplierCollection($suppliers),
+        ]);
+    }
 
-	/**
-	 * Create a new supplier
-	 *
-	 * @param SupplierStoreRequest $request
-	 *
-	 * @return JsonResponse
-	 * @group Supplier
-	 */
-	public function store(SupplierStoreRequest $request)
-	{
-		$validatedData = $request->validated()['data'];
-		$supplier = Supplier::create($validatedData['attributes']);
+    /**
+     * Create a new supplier
+     *
+     * @param SupplierStoreRequest $request
+     *
+     * @return JsonResponse
+     * @group Supplier
+     */
+    public function store(SupplierStoreRequest $request)
+    {
+        $validatedData = $request->validated()['data'];
+        $supplier = Supplier::create($validatedData['attributes']);
 
-		// Attach books to the supplier
-		$supplier->books()->attach(
-			collect($validatedData['relationships']['books']['data'])
-				->pluck('id')
-				->toArray()
-		);
+        // Attach books to the supplier
+        $supplier->books()->attach(
+            collect($validatedData['relationships']['books']['data'])
+                ->pluck('id')
+                ->toArray()
+        );
 
-		return ResponseUtils::created([
-			'supplier' => new SupplierResource($supplier),
-		], ResponseMessage::CREATED_SUPPLIER->value);
-	}
+        return ResponseUtils::created([
+            'supplier' => new SupplierResource($supplier),
+        ], ResponseMessage::CREATED_SUPPLIER->value);
+    }
 
-	/**
-	 * Get a supplier
-	 *
-	 * @param $supplier_id
-	 *
-	 * @return JsonResponse
-	 * @group Supplier
-	 */
-	public function show($supplier_id)
-	{
-		try {
-			$supplier = Supplier::findOrFail($supplier_id);
+    /**
+     * Get a supplier
+     *
+     * @param $supplier_id
+     *
+     * @return JsonResponse
+     * @group Supplier
+     */
+    public function show($supplier_id)
+    {
+        try {
+            $supplier = Supplier::findOrFail($supplier_id);
 
-			return ResponseUtils::success([
-				'supplier' => new SupplierResource($supplier),
-			]);
-		} catch (ModelNotFoundException) {
-			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_SUPPLIER->value);
-		}
-	}
+            return ResponseUtils::success([
+                'supplier' => new SupplierResource($supplier),
+            ]);
+        } catch (ModelNotFoundException) {
+            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_SUPPLIER->value);
+        }
+    }
 
-	/**
-	 * Update a supplier
-	 *
-	 * @param SupplierUpdateRequest $request
-	 * @param                       $supplier_id
-	 *
-	 * @return JsonResponse
-	 * @group Supplier
-	 */
-	public function update(SupplierUpdateRequest $request, $supplier_id)
-	{
-		try {
-			$supplier = Supplier::findOrFail($supplier_id);
-			$validatedData = $request->validated()['data'];
+    /**
+     * Update a supplier
+     *
+     * @param SupplierUpdateRequest $request
+     * @param                       $supplier_id
+     *
+     * @return JsonResponse
+     * @group Supplier
+     */
+    public function update(SupplierUpdateRequest $request, $supplier_id)
+    {
+        try {
+            $supplier = Supplier::findOrFail($supplier_id);
+            $validatedData = $request->validated()['data'];
 
-			// Sync books with the supplier
-			$books = $validatedData['relationships']['books']['data'] ?? null;
-			if ($books) {
-				$supplier->books()->sync(collect($books)->pluck('id')->toArray());
-			}
+            // Sync books with the supplier
+            $books = $validatedData['relationships']['books']['data'] ?? null;
+            if ($books) {
+                $supplier->books()->sync(collect($books)->pluck('id')->toArray());
+            }
 
-			// Update supplier attributes
-			$attributes = $validatedData['attributes'] ?? null;
-			if ($attributes) {
-				$supplier->update($attributes);
-			}
+            // Update supplier attributes
+            $attributes = $validatedData['attributes'] ?? null;
+            if ($attributes) {
+                $supplier->update($attributes);
+            }
 
-			return ResponseUtils::success([
-				'supplier' => new SupplierResource($supplier),
-			], ResponseMessage::UPDATED_SUPPLIER->value);
-		} catch (ModelNotFoundException) {
-			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_SUPPLIER->value);
-		}
-	}
+            return ResponseUtils::success([
+                'supplier' => new SupplierResource($supplier),
+            ], ResponseMessage::UPDATED_SUPPLIER->value);
+        } catch (ModelNotFoundException) {
+            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_SUPPLIER->value);
+        }
+    }
 
-	/**
-	 * Delete a supplier
-	 *
-	 * @param $supplier_id
-	 *
-	 * @return JsonResponse
-	 * @group Supplier
-	 */
-	public function destroy($supplier_id)
-	{
-		if (!AuthUtils::userCan('delete_suppliers')) {
-			return ResponseUtils::forbidden();
-		}
+    /**
+     * Delete a supplier
+     *
+     * @param $supplier_id
+     *
+     * @return JsonResponse
+     * @group Supplier
+     */
+    public function destroy($supplier_id)
+    {
+        if (! AuthUtils::userCan('delete_suppliers')) {
+            return ResponseUtils::forbidden();
+        }
 
-		try {
-			Supplier::findOrFail($supplier_id)->delete();
+        try {
+            Supplier::findOrFail($supplier_id)->delete();
 
-			return ResponseUtils::noContent(ResponseMessage::DELETED_SUPPLIER->value);
-		} catch (ModelNotFoundException) {
-			return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
-		}
-	}
+            return ResponseUtils::noContent(ResponseMessage::DELETED_SUPPLIER->value);
+        } catch (ModelNotFoundException) {
+            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+        }
+    }
 }

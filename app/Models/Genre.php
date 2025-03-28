@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-
 
 /**
  * @method static findOrFail($genre_id)
@@ -14,20 +12,21 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 class Genre extends Model
 {
-	public $timestamps = false;
-	protected $fillable
-		= [
-			'name',
-			'description',
-		];
+    public $timestamps = false;
 
-	public function books(): BelongsToMany
-	{
-		return $this->belongsToMany(Book::class, 'book_genre');
-	}
+    protected $fillable
+        = [
+            'name',
+            'description',
+        ];
 
-	public function discounts(): MorphMany
-	{
-		return $this->morphMany(DiscountTarget::class, 'target');
-	}
+    public function books(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'book_genre');
+    }
+
+    public function discounts(): MorphMany
+    {
+        return $this->morphMany(DiscountTarget::class, 'target');
+    }
 }

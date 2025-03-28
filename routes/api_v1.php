@@ -10,67 +10,66 @@ use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\SupplierController;
 use App\Http\Controllers\Api\V1\UserController;
 
-
 /**
  * Unauthenticated area
  */
 Route::apiResources([
-	'books' => BookController::class,
-	'authors' => AuthorController::class,
-	'publishers' => PublisherController::class,
-	'genres' => GenreController::class,
+    'books' => BookController::class,
+    'authors' => AuthorController::class,
+    'publishers' => PublisherController::class,
+    'genres' => GenreController::class,
 ], ['only' => ['index', 'show']]);
 
 /**
  * Authenticated area
  */
-Route::middleware('auth.*')->group(function() {
-	/**
-	 * Both customer and employee can access
-	 */
-	Route::apiResource('users', UserController::class)
-		 ->except('store');
+Route::middleware('auth.*')->group(function () {
+    /**
+     * Both customer and employee can access
+     */
+    Route::apiResource('users', UserController::class)
+         ->except('store');
 
-	/**
-	 * Customer only area
-	 */
-	Route::middleware('auth.customer')->group(function() {
-		// Cart
-		Route::get('cart', [CartItemController::class, 'index'])
-			 ->name('cart.index');
-		Route::post('cart/add', [CartItemController::class, 'addToCart'])
-			 ->name('cart.add');
-		Route::post('cart/update-quantity', [CartItemController::class, 'updateCartItemQuantity'])
-			 ->name('cart.update-quantity');
-		Route::delete(
-			'cart/remove/{book_id}',
-			[CartItemController::class, 'removeFromCart']
-		)
-			 ->whereNumber('book_id')
-			 ->name('cart.remove');
+    /**
+     * Customer only area
+     */
+    Route::middleware('auth.customer')->group(function () {
+        // Cart
+        Route::get('cart', [CartItemController::class, 'index'])
+             ->name('cart.index');
+        Route::post('cart/add', [CartItemController::class, 'addToCart'])
+             ->name('cart.add');
+        Route::post('cart/update-quantity', [CartItemController::class, 'updateCartItemQuantity'])
+             ->name('cart.update-quantity');
+        Route::delete(
+            'cart/remove/{book_id}',
+            [CartItemController::class, 'removeFromCart']
+        )
+             ->whereNumber('book_id')
+             ->name('cart.remove');
 
-		// My account
-		Route::prefix('my-account')->group(function() {
-			// Addresses
-			Route::apiResource('addresses', AddressController::class)
-				 ->except('show');
-		});
-	});
+        // My account
+        Route::prefix('my-account')->group(function () {
+            // Addresses
+            Route::apiResource('addresses', AddressController::class)
+                 ->except('show');
+        });
+    });
 
-	/**
-	 * Employee only area
-	 */
-	Route::middleware('auth.employee')->group(function() {
-		Route::apiResources([
-			'books' => BookController::class,
-			'authors' => AuthorController::class,
-			'publishers' => PublisherController::class,
-			'genres' => GenreController::class,
-		], ['except' => ['index', 'show']]);
+    /**
+     * Employee only area
+     */
+    Route::middleware('auth.employee')->group(function () {
+        Route::apiResources([
+            'books' => BookController::class,
+            'authors' => AuthorController::class,
+            'publishers' => PublisherController::class,
+            'genres' => GenreController::class,
+        ], ['except' => ['index', 'show']]);
 
-		Route::apiResources([
-			'discounts' => DiscountController::class,
-			'suppliers' => SupplierController::class,
-		]);
-	});
+        Route::apiResources([
+            'discounts' => DiscountController::class,
+            'suppliers' => SupplierController::class,
+        ]);
+    });
 });

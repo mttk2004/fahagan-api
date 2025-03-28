@@ -2,10 +2,8 @@
 
 namespace App\Http\Resources\V1;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 
 /**
  * @property mixed $id
@@ -21,33 +19,33 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class SupplierResource extends JsonResource
 {
-	public function toArray(Request $request): array
-	{
-		return [
-			'type' => 'supplier',
-			'id' => $this->id,
-			'attributes' => [
-				'name' => $this->name,
-				'phone' => $this->phone,
-				'email' => $this->email,
-				'books_count' => $this->books->count(),
-				$this->mergeWhen($request->routeIs(['suppliers.show', 'suppliers.store']), [
-					'city' => $this->city,
-					'ward' => $this->ward,
-					'address_line' => $this->address_line,
-					'created_at' => $this->created_at,
-					'updated_at' => $this->updated_at,
-				]),
-			],
-			'relationships' => $this->when(
-				$request->routeIs(['suppliers.show', 'suppliers.store']),
-				[
-					'books' => new BookCollection($this->books),
-				]
-			),
-			'links' => [
-				'self' => route('suppliers.show', ['supplier' => $this->id]),
-			],
-		];
-	}
+    public function toArray(Request $request): array
+    {
+        return [
+            'type' => 'supplier',
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'email' => $this->email,
+                'books_count' => $this->books->count(),
+                $this->mergeWhen($request->routeIs(['suppliers.show', 'suppliers.store']), [
+                    'city' => $this->city,
+                    'ward' => $this->ward,
+                    'address_line' => $this->address_line,
+                    'created_at' => $this->created_at,
+                    'updated_at' => $this->updated_at,
+                ]),
+            ],
+            'relationships' => $this->when(
+                $request->routeIs(['suppliers.show', 'suppliers.store']),
+                [
+                    'books' => new BookCollection($this->books),
+                ]
+            ),
+            'links' => [
+                'self' => route('suppliers.show', ['supplier' => $this->id]),
+            ],
+        ];
+    }
 }

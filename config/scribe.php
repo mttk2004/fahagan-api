@@ -1,9 +1,10 @@
 <?php
 
-use Knuckles\Scribe\Extracting\Strategies;
-use Knuckles\Scribe\Config\Defaults;
 use Knuckles\Scribe\Config\AuthIn;
-use function Knuckles\Scribe\Config\{removeStrategies, configureStrategy};
+use function Knuckles\Scribe\Config\configureStrategy;
+use Knuckles\Scribe\Config\Defaults;
+use function Knuckles\Scribe\Config\removeStrategies;
+use Knuckles\Scribe\Extracting\Strategies;
 
 // Only the most common configs are shown. See the https://scribe.knuckles.wtf/laravel/reference/config for all.
 
@@ -74,7 +75,7 @@ return [
     ],
 
     'external' => [
-        'html_attributes' => []
+        'html_attributes' => [],
     ],
 
     'try_it_out' => [
@@ -237,7 +238,7 @@ return [
         ),
         'responseFields' => [
             ...Defaults::RESPONSE_FIELDS_STRATEGIES,
-        ]
+        ],
     ],
 
     // For response calls, API resource responses and transformer responses,
