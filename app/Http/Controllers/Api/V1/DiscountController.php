@@ -10,6 +10,7 @@ use App\Http\Resources\V1\DiscountCollection;
 use App\Http\Resources\V1\DiscountResource;
 use App\Http\Sorts\V1\DiscountSort;
 use App\Models\Discount;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -19,6 +20,8 @@ use Illuminate\Support\Collection;
 
 class DiscountController extends Controller
 {
+    use HandlePagination;
+
     /**
      * Validate and map targets
      *
@@ -45,7 +48,7 @@ class DiscountController extends Controller
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return JsonResponse|DiscountCollection
      * @group Discounts
      */
     public function index(Request $request)
@@ -54,12 +57,20 @@ class DiscountController extends Controller
             return ResponseUtils::forbidden();
         }
 
-        $discountSort = new DiscountSort($request);
-        $discounts = $discountSort->apply(Discount::query())->paginate();
+        $query = Discount::query();
 
-        return ResponseUtils::success([
-            'discounts' => new DiscountCollection($discounts),
-        ]);
+        // Apply filters
+        $discountFilter = new DiscountSort($request);
+        $query = $discountFilter->apply($query);
+
+        // Apply sorting
+        $discountSort = new DiscountSort($request);
+        $query = $discountSort->apply($query);
+
+        // Get paginated results
+        $discounts = $query->paginate($this->getPerPage($request));
+
+        return new DiscountCollection($discounts);
     }
 
     /**

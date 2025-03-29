@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\ResponseMessage;
+use App\Filters\BookFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\BookStoreRequest;
 use App\Http\Requests\V1\BookUpdateRequest;
 use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
-use App\Filters\BookFilter;
 use App\Models\Book;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Traits\HandlePagination;
 
 class BookController extends Controller
 {
@@ -27,7 +27,7 @@ class BookController extends Controller
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return BookCollection
      * @group Books
      * @unauthenticated
      */
