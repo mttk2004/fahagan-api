@@ -10,6 +10,7 @@ use App\Http\Resources\V1\GenreCollection;
 use App\Http\Resources\V1\GenreResource;
 use App\Http\Sorts\V1\GenreSort;
 use App\Models\Genre;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,21 +19,22 @@ use Illuminate\Http\Request;
 
 class GenreController extends Controller
 {
+    use HandlePagination;
+
     /**
      * Get all genres
      *
-     * @return JsonResponse
+     * @return GenreCollection
      * @group Genres
      * @unauthenticated
      */
     public function index(Request $request)
     {
         $genreSort = new GenreSort($request);
-        $genres = $genreSort->apply(Genre::query())->paginate();
+        $genres = $genreSort->apply(Genre::query())
+                            ->paginate($this->getPerPage($request));
 
-        return ResponseUtils::success([
-            'genres' => new GenreCollection($genres),
-        ]);
+        return new GenreCollection($genres);
     }
 
     /**
