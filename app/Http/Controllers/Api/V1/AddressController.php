@@ -7,23 +7,28 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddressStoreRequest;
 use App\Http\Requests\V1\AddressUpdateRequest;
 use App\Http\Resources\V1\AddressCollection;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AddressController extends Controller
 {
+    use HandlePagination;
+
     /*
      * Show all addresses of the authenticated user.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return AddressCollection
      * @group Address
      */
     public function index()
     {
-        return ResponseUtils::success([
-            'addresses' => new AddressCollection(AuthUtils::user()->addresses),
-        ]);
+        $addresses = AuthUtils::user()
+                              ->addresses()
+                              ->paginate($this->getPerPage(request()));
+
+        return new AddressCollection($addresses);
     }
 
     /*
