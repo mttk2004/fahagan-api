@@ -9,6 +9,7 @@ use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -17,22 +18,27 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    use HandlePagination;
+
     /**
      * Get all users
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return UserCollection|JsonResponse
      * @group Users
      */
     public function index(Request $request)
     {
-        $userSort = new UserSort($request);
-        $users = $userSort->apply(User::query())->paginate();
+        if (! AuthUtils::userCan('view_users')) {
+            return ResponseUtils::forbidden();
+        }
 
-        return ResponseUtils::success([
-            'users' => new UserCollection($users),
-        ]);
+        $userSort = new UserSort($request);
+        $users = $userSort->apply(User::query())
+                          ->paginate($this->getPerPage($request));
+
+        return new UserCollection($users);
     }
 
     /**
@@ -46,6 +52,11 @@ class UserController extends Controller
     public function show($user_id)
     {
         try {
+            if (! AuthUtils::userCan('view_users') ||
+                AuthUtils::user()->id != $user_id) {
+                return ResponseUtils::forbidden();
+            }
+
             return ResponseUtils::success([
                 'user' => new UserResource(User::findOrFail($user_id)),
             ]);
