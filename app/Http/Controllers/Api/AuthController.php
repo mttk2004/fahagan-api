@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
@@ -14,6 +15,8 @@ use App\Utils\ResponseUtils;
 use Auth;
 use Hash;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -114,5 +117,51 @@ class AuthController extends Controller
         ]);
 
         return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
+    }
+
+    /**
+     * Forgot password
+     *
+     * @param ForgotPasswordRequest $request
+     *
+     * @return JsonResponse
+     * @group Auth
+     */
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        $status = Password::sendResetLink($request->only('email'));
+
+        return $status === Password::RESET_LINK_SENT
+            ? ResponseUtils::success([], 'Email đặt lại mật khẩu đã được gửi.')
+            : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
+    }
+
+    /**
+     * Reset password
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @group Auth
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|string|email',
+            'password' => 'required|string|confirmed|min:8',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? ResponseUtils::success([], 'Mật khẩu đã được đặt lại thành công.')
+            : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
     }
 }
