@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\ResponseMessage;
+use App\Filters\SupplierFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\SupplierStoreRequest;
 use App\Http\Requests\V1\SupplierUpdateRequest;
@@ -10,6 +11,7 @@ use App\Http\Resources\V1\SupplierCollection;
 use App\Http\Resources\V1\SupplierResource;
 use App\Http\Sorts\V1\SupplierSort;
 use App\Models\Supplier;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,12 +20,14 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
+    use HandlePagination;
+
     /**
      * Get all suppliers
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return JsonResponse|SupplierCollection
      * @group Supplier
      */
     public function index(Request $request)
@@ -32,12 +36,20 @@ class SupplierController extends Controller
             return ResponseUtils::forbidden();
         }
 
-        $supplierSort = new SupplierSort($request);
-        $suppliers = $supplierSort->apply(Supplier::query())->paginate();
+        $query = Supplier::query();
 
-        return ResponseUtils::success([
-            'suppliers' => new SupplierCollection($suppliers),
-        ]);
+        // Apply filters
+        $supplierFilter = new SupplierFilter($request);
+        $query = $supplierFilter->apply($query);
+
+        // Apply sorting
+        $supplierSort = new SupplierSort($request);
+        $query = $supplierSort->apply($query);
+
+        // Get paginated results
+        $suppliers = $query->paginate($this->getPerPage($request));
+
+        return new SupplierCollection($suppliers);
     }
 
     /**
