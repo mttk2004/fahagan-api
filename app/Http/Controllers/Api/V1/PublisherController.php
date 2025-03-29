@@ -10,6 +10,7 @@ use App\Http\Resources\V1\PublisherCollection;
 use App\Http\Resources\V1\PublisherResource;
 use App\Http\Sorts\V1\PublisherSort;
 use App\Models\Publisher;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,23 +19,24 @@ use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
+    use HandlePagination;
+
     /**
      * Get all publishers
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return PublisherCollection
      * @group Publishers
      * @unauthenticated
      */
     public function index(Request $request)
     {
         $publisherSort = new PublisherSort($request);
-        $publishers = $publisherSort->apply(Publisher::query())->paginate();
+        $publishers = $publisherSort->apply(Publisher::query())
+                                    ->paginate($this->getPerPage($request));
 
-        return ResponseUtils::success([
-            'publishers' => new PublisherCollection($publishers),
-        ]);
+        return new PublisherCollection($publishers);
     }
 
     /**
