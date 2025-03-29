@@ -10,6 +10,7 @@ use App\Http\Resources\V1\AuthorCollection;
 use App\Http\Resources\V1\AuthorResource;
 use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
+use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,21 +19,22 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
+    use HandlePagination;
+
     /**
      * Get all authors
      *
-     * @return JsonResponse
+     * @return AuthorCollection
      * @group Authors
      * @unauthenticated
      */
     public function index(Request $request)
     {
         $authorSort = new AuthorSort($request);
-        $authors = $authorSort->apply(Author::query())->paginate();
+        $authors = $authorSort->apply(Author::query())
+                              ->paginate($this->getPerPage($request));
 
-        return ResponseUtils::success([
-            'authors' => new AuthorCollection($authors),
-        ]);
+        return new AuthorCollection($authors);
     }
 
     /**
