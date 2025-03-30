@@ -30,7 +30,7 @@ return new class extends Migration {
             $table->softDeletes();
 
             $table->unique(['title', 'edition']);
-            $table->index(['title', 'edition', 'available_count', 'sold_count', 'publication_date']);
+            $table->index(['title', 'edition', 'available_count', 'sold_count', 'publication_date'], 'books_index');
         });
     }
 

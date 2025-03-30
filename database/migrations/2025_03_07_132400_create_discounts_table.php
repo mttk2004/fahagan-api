@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['name', 'discount_type', 'discount_value', 'start_date', 'end_date']);
+            $table->index(['name', 'discount_type', 'discount_value', 'start_date', 'end_date'], 'discounts_index');
         });
     }
 

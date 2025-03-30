@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['first_name', 'last_name', 'phone', 'email']);
+            $table->index(['first_name', 'last_name', 'phone', 'email'], 'users_index');
         });
     }
 
