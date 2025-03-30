@@ -51,10 +51,9 @@ return new class extends Migration {
 
             $table->unsignedSmallInteger('quantity');
             $table->decimal('unit_price', 9, 1)->unsigned();
-            $table->timestamps();
 
-            // Unique constraint on stock_import_id and book_id
             $table->unique(['stock_import_id', 'book_id']);
+            $table->index(['stock_import_id', 'book_id']);
         });
     }
 
