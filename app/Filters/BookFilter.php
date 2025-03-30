@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 class BookFilter
 {
     protected Request $request;
+
     protected array $filters;
 
     public function __construct(Request $request)

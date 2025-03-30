@@ -5,7 +5,6 @@ namespace App\Http\Requests\Auth;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 
-
 class ForgotPasswordRequest extends BaseRequest implements HasValidationMessages
 {
     public function rules(): array

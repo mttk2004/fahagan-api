@@ -11,12 +11,13 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use MailerSend\Helpers\Builder\Personalization;
-use MailerSend\Helpers\Builder\Variable;
 use MailerSend\LaravelDriver\MailerSendTrait;
 
 class ExampleEmail extends Mailable
 {
-    use Queueable, SerializesModels, MailerSendTrait;
+    use Queueable;
+    use SerializesModels;
+    use MailerSendTrait;
 
     /**
      * Create a new message instance.
@@ -52,17 +53,17 @@ class ExampleEmail extends Mailable
                     'var' => 'variable',
                     'number' => 123,
                     'object' => [
-                        'key' => 'object-value'
+                        'key' => 'object-value',
                     ],
                     'objectCollection' => [
                         [
-                            'name' => 'John'
+                            'name' => 'John',
                         ],
                         [
-                            'name' => 'Patrick'
-                        ]
+                            'name' => 'Patrick',
+                        ],
                     ],
-                ])
+                ]),
             ],
             precedenceBulkHeader: true,
             sendAt: new Carbon('2022-01-28 11:53:20'),
@@ -82,7 +83,7 @@ class ExampleEmail extends Mailable
     public function attachments(): array
     {
         return [
-            Attachment::fromStorageDisk('public', 'example.png')
+            Attachment::fromStorageDisk('public', 'example.png'),
         ];
     }
 }
