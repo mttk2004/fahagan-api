@@ -17,14 +17,14 @@ return new class extends Migration {
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
 
-            $table->unsignedBigInteger('stock_import_item_id');
+            $table->unsignedSmallInteger('stock_import_item_id');
             $table->foreign('stock_import_item_id')
                   ->references('id')
                   ->on('stock_import_items')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
 
-            $table->unsignedBigInteger('order_item_id')->nullable();
+            $table->unsignedSmallInteger('order_item_id')->nullable();
             $table->foreign('order_item_id')
                   ->references('id')
                   ->on('order_items')
