@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->bigInteger('id')->unsigned()->primary(); // Snowflake ID (64 bit)
+            $table->unsignedBigInteger('id')->primary();
             $table->string('first_name', 30);
             $table->string('last_name', 30);
             $table->string('phone', 10)->unique();
@@ -21,6 +21,8 @@ return new class extends Migration {
             $table->timestamp('last_login')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['first_name', 'last_name', 'phone', 'email']);
         });
     }
 

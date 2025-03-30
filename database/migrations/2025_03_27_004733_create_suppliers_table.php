@@ -19,6 +19,8 @@ return new class extends Migration {
             $table->string('ward');
             $table->string('address_line');
             $table->timestamps();
+
+            $table->index(['name']);
         });
 
         Schema::create('book_supplier', function (Blueprint $table) {
@@ -42,6 +44,7 @@ return new class extends Migration {
 
     public function down(): void
     {
+        Schema::dropIfExists('book_supplier');
         Schema::dropIfExists('suppliers');
     }
 };

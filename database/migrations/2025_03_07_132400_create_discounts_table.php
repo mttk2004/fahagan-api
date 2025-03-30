@@ -8,14 +8,16 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('discounts', function (Blueprint $table) {
-            $table->bigInteger('id')->unsigned()->primary(); // Snowflake ID (64 bit)
-            $table->string('name'); // Tên chương trình giảm giá
-            $table->enum('discount_type', ['percent', 'fixed'])->default('percent'); // Giảm giá theo %
-            $table->decimal('discount_value', 10, 2); // Giá trị giảm giá (VD: 10% hoặc 50000 VND)
-            $table->dateTime('start_date'); // Ngày bắt đầu
-            $table->dateTime('end_date'); // Ngày kết thúc
+            $table->unsignedBigInteger('id')->primary();
+            $table->string('name');
+            $table->enum('discount_type', ['percent', 'fixed'])->default('percent');
+            $table->decimal('discount_value', 9, 1)->unsigned();
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['name', 'discount_type', 'discount_value', 'start_date', 'end_date']);
         });
     }
 

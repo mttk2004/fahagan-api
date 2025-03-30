@@ -8,7 +8,15 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('books', function (Blueprint $table) {
-            $table->bigInteger('id')->unsigned()->primary(); // Snowflake ID (64 bit)
+            $table->unsignedBigInteger('id')->primary();
+
+            $table->unsignedSmallInteger('publisher_id');
+            $table->foreign('publisher_id')
+                  ->references('id')
+                  ->on('publishers')
+                  ->onDelete('cascade')
+                  ->onUpdate('cascade');
+
             $table->string('title');
             $table->text('description');
             $table->decimal('price', 9, 1)->unsigned();
@@ -21,16 +29,8 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            // Foreign key: publisher_id, unsigned small integer
-            $table->unsignedSmallInteger('publisher_id');
-            $table->foreign('publisher_id')
-                  ->references('id')
-                  ->on('publishers')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
-
-            // Unique constraint on title and edition
             $table->unique(['title', 'edition']);
+            $table->index(['title', 'edition', 'available_count', 'sold_count', 'publication_date']);
         });
     }
 
