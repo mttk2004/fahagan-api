@@ -30,7 +30,7 @@ class OrderFactory extends Factory
             'delivered_at' => null,
             'returned_at' => null,
             'created_at' => $fakeCreatedAt,
-            'updated_at' => $fakeCreatedAt,
+            'updated_at' => null,
 
             'user_id' => User::factory(),
         ];

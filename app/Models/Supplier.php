@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
@@ -31,5 +32,10 @@ class Supplier extends Model
     public function suppliedBooks(): BelongsToMany
     {
         return $this->belongsToMany(Book::class);
+    }
+
+    public function stockImports(): HasMany
+    {
+        return $this->hasMany(StockImport::class);
     }
 }

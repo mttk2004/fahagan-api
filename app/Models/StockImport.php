@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\App;
 
 class StockImport extends Model
 {
+    use HasFactory;
+
     public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
     protected $keyType = 'string'; // Kiểu khóa chính là string
@@ -46,5 +50,10 @@ class StockImport extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public function stockImportItems(): HasMany
+    {
+        return $this->hasMany(StockImportItem::class);
     }
 }
