@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\App;
 
-class StockImport extends Model
+class BookInstance extends Model
 {
     public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
@@ -23,26 +23,36 @@ class StockImport extends Model
 
     protected $fillable
         = [
-            'user_id',
-            'supplier_id',
-            'total_cost',
+            'book_id',
+            'stock_import_item_id',
+            'order_item_id',
+            'status',
             'imported_at',
+            'sold_at',
+            'returned_at',
         ];
 
-    public function user(): BelongsTo
+    public function book(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Book::class);
     }
 
-    public function supplier(): BelongsTo
+    public function stockImportItem(): BelongsTo
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(StockImport::class, 'stock_import_item_id');
+    }
+
+    public function orderItem(): BelongsTo
+    {
+        return $this->belongsTo(OrderItem::class);
     }
 
     protected function casts(): array
     {
         return [
             'imported_at' => 'datetime',
+            'sold_at' => 'datetime',
+            'returned_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

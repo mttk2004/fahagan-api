@@ -46,13 +46,13 @@ class Order extends Model
     protected function casts(): array
     {
         return [
-            'ordered_at' => 'timestamp',
-            'approved_at' => 'timestamp',
-            'canceled_at' => 'timestamp',
-            'delivered_at' => 'timestamp',
-            'returned_at' => 'timestamp',
-            'created_at' => 'timestamp',
-            'updated_at' => 'timestamp',
+            'ordered_at' => 'datetime',
+            'approved_at' => 'datetime',
+            'canceled_at' => 'datetime',
+            'delivered_at' => 'datetime',
+            'returned_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 }
