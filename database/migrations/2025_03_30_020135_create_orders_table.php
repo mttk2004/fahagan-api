@@ -18,7 +18,7 @@ return new class extends Migration {
                   ->onUpdate('cascade');
 
             $table->string('status');
-            $table->decimal('total_amount');
+            $table->decimal('total_amount', 12, 1)->unsigned();
 
             $table->string('shopping_name');
             $table->string('shopping_phone');
