@@ -2,30 +2,29 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 class OrderItem extends Model
 {
-	public $timestamps = false;
-	protected $fillable
-		= [
-			'order_id',
-			'book_id',
-			'quantity',
-			'price_at_time',
-			'discount_value',
-		];
+    public $timestamps = false;
 
-	public function order(): BelongsTo
-	{
-		return $this->belongsTo(Order::class);
-	}
+    protected $fillable
+        = [
+            'order_id',
+            'book_id',
+            'quantity',
+            'price_at_time',
+            'discount_value',
+        ];
 
-	public function book(): BelongsTo
-	{
-		return $this->belongsTo(Book::class);
-	}
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function book(): BelongsTo
+    {
+        return $this->belongsTo(Book::class);
+    }
 }
