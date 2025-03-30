@@ -28,7 +28,7 @@ class Supplier extends Model
         ];
     }
 
-    public function books(): BelongsToMany
+    public function suppliedBooks(): BelongsToMany
     {
         return $this->belongsToMany(Book::class);
     }

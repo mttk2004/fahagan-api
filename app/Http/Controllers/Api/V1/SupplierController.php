@@ -66,7 +66,7 @@ class SupplierController extends Controller
         $supplier = Supplier::create($validatedData['attributes']);
 
         // Attach books to the supplier
-        $supplier->books()->attach(
+        $supplier->suppliedBooks()->attach(
             collect($validatedData['relationships']['books']['data'])
                 ->pluck('id')
                 ->toArray()
@@ -116,7 +116,7 @@ class SupplierController extends Controller
             // Sync books with the supplier
             $books = $validatedData['relationships']['books']['data'] ?? null;
             if ($books) {
-                $supplier->books()->sync(collect($books)->pluck('id')->toArray());
+                $supplier->suppliedBooks()->sync(collect($books)->pluck('id')->toArray());
             }
 
             // Update supplier attributes

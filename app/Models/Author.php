@@ -23,7 +23,7 @@ class Author extends Model
             'biography',
         ];
 
-    public function books(): BelongsToMany
+    public function writtenBooks(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'author_book');
     }
