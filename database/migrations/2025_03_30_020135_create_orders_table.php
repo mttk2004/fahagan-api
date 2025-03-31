@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->string('shopping_name');
             $table->string('shopping_phone');
             $table->string('shopping_city');
+            $table->string('shopping_district');
             $table->string('shopping_ward');
             $table->string('shopping_address_line');
 

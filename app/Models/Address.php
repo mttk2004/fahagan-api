@@ -19,6 +19,7 @@ class Address extends Model
             'name',
             'phone',
             'city',
+            'district',
             'ward',
             'address_line',
         ];

@@ -17,6 +17,7 @@ class Supplier extends Model
             'phone',
             'email',
             'city',
+            'district',
             'ward',
             'address_line',
         ];

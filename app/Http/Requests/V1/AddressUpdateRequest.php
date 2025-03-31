@@ -17,6 +17,7 @@ class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
                 'regex:/^0[35789][0-9]{8}$/',
             ],
             'city' => 'sometimes|string',
+            'district' => 'sometimes|string',
             'ward' => 'sometimes|string',
             'address_line' => 'sometimes|string',
         ];
@@ -29,7 +30,8 @@ class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
             'phone.string' => 'Số điện thoại nên là một chuỗi.',
             'phone.regex' => 'Số điện thoại không hợp lệ.',
             'city.string' => 'Thành phố nên là một chuỗi.',
-            'ward.string' => 'Quận/Huyện nên là một chuỗi.',
+            'district.string' => 'Quận/Huyện nên là một chuỗi.',
+            'ward.string' => 'Phường/Xã nên là một chuỗi.',
             'address_line.string' => 'Địa chỉ nên là một chuỗi.',
         ];
     }

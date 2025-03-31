@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('phone');
             $table->string('city');
+            $table->string('district');
             $table->string('ward');
             $table->string('address_line');
             $table->timestamps();

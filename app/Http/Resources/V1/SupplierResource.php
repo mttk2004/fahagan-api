@@ -31,6 +31,7 @@ class SupplierResource extends JsonResource
                 'books_count' => $this->books->count(),
                 $this->mergeWhen($request->routeIs(['suppliers.show', 'suppliers.store']), [
                     'city' => $this->city,
+                    'district' => $this->district,
                     'ward' => $this->ward,
                     'address_line' => $this->address_line,
                     'created_at' => $this->created_at,

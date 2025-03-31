@@ -26,6 +26,44 @@ class AddressNames
             'Rạch Giá',
             'Tuy Hòa',
         ];
+
+    public const DISTRICT_NAMES
+        = [
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12',
+            'Bình Tân',
+            'Bình Thạnh',
+            'Gò Vấp',
+            'Phú Nhuận',
+            'Tân Bình',
+            'Tân Phú',
+            'Nam Từ Liêm',
+            'Hà Đông',
+            'Bắc Từ Liêm',
+            'Tây Hồ',
+            'Cầu Giấy',
+            'Đống Đa',
+            'Hai Bà Trưng',
+            'Hoàn Kiếm',
+            'Hoàng Mai',
+            'Long Biên',
+            'Sơn Trà',
+            'Ngũ Hành Sơn',
+            'Liên Chiểu',
+            'Thanh Khê',
+            'Hải Châu',
+        ];
+
     public const WARD_NAMES
         = [
             'Phú Hòa',

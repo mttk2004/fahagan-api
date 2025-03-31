@@ -26,12 +26,12 @@ class AuthorResource extends JsonResource
                     $this->biography
                 ),
             ],
-            'relationships' => $this->when(
-                $request->routeIs('authors.*'),
-                [
-                    'books' => new BookCollection($this->books),
-                ]
-            ),
+           'relationships' => $this->when(
+               $request->routeIs('authors.*'),
+               [
+                   'books' => new BookCollection($this->writtenBooks),
+               ]
+           ),
             'links' => [
                 'self' => route('authors.show', ['author' => $this->id]),
             ],

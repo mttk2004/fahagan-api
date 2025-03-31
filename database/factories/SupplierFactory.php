@@ -19,6 +19,7 @@ class SupplierFactory extends Factory
             'phone' => fake('vi_VN')->phoneNumber(),
             'email' => fake('vi_VN')->companyEmail(),
             'city' => AddressNames::CITY_NAMES[array_rand(AddressNames::CITY_NAMES)],
+            'district' => AddressNames::DISTRICT_NAMES[array_rand(AddressNames::DISTRICT_NAMES)],
             'ward' => AddressNames::WARD_NAMES[array_rand(AddressNames::WARD_NAMES)],
             'address_line' => fake('vi_VN')->streetAddress(),
             'created_at' => $fakeCreatedAt,

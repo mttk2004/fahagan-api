@@ -29,7 +29,7 @@ class PublisherResource extends JsonResource
             'relationships' => $this->when(
                 $request->routeIs('publishers.*'),
                 [
-                    'books' => new BookCollection($this->books),
+                    'books' => new BookCollection($this->publishedBooks),
                 ]
             ),
             'links' => [

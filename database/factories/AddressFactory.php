@@ -18,6 +18,7 @@ class AddressFactory extends Factory
             'name' => fake('vi_VN')->name(),
             'phone' => fake()->regexify('0[35789][0-9]{8}'),
             'city' => AddressNames::CITY_NAMES[array_rand(AddressNames::CITY_NAMES)],
+            'district' => AddressNames::DISTRICT_NAMES[array_rand(AddressNames::DISTRICT_NAMES)],
             'ward' => AddressNames::WARD_NAMES[array_rand(AddressNames::WARD_NAMES)],
             'address_line' => fake('vi_VN')->streetAddress(),
             'created_at' => Carbon::now(),

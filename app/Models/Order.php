@@ -33,6 +33,7 @@ class Order extends Model
             'shopping_name',
             'shopping_phone',
             'shopping_city',
+            'shopping_district',
             'shopping_ward',
             'shopping_address_line',
             'ordered_at',

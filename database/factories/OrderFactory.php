@@ -6,7 +6,6 @@ use App\Constants\AddressNames;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 class OrderFactory extends Factory
 {
@@ -22,6 +21,7 @@ class OrderFactory extends Factory
             'shopping_name' => fake('vi_VN')->name(),
             'shopping_phone' => fake()->regexify('0[35789][0-9]{8}'),
             'shopping_city' => AddressNames::CITY_NAMES[array_rand(AddressNames::CITY_NAMES)],
+            'shopping_district' => AddressNames::DISTRICT_NAMES[array_rand(AddressNames::DISTRICT_NAMES)],
             'shopping_ward' => AddressNames::WARD_NAMES[array_rand(AddressNames::WARD_NAMES)],
             'shopping_address_line' => fake('vi_VN')->streetAddress(),
             'ordered_at' => $fakeCreatedAt,
