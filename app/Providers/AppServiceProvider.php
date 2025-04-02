@@ -19,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
                 ->setStartTimeStamp(strtotime('2019-10-10') * 1000)
                 ->setSequenceResolver(new LaravelSequenceResolver($app->get('cache.store')));
         });
+
+        $this->app->singleton(\App\Services\BookService::class);
     }
 
     /**

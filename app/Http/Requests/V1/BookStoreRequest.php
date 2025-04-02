@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Enums\Book\BookValidationMessages;
+use App\Enums\Book\BookValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Utils\AuthUtils;
@@ -10,79 +12,65 @@ class BookStoreRequest extends BaseRequest implements HasValidationMessages
 {
     public function rules(): array
     {
+        $edition = request('data.attributes.edition');
+
         return [
-            'data.attributes.title' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:books,title,NULL,id,edition,' . request('data.attributes.edition'),
-            ],
-            'data.attributes.description' => ['required', 'string'],
-            'data.attributes.price' => ['required', 'numeric', 'min:200000', 'max:10000000'],
-            'data.attributes.edition' => ['required', 'integer', 'min:1', 'max:30'],
-            'data.attributes.pages' => ['required', 'integer', 'min:50', 'max:5000'],
-            'data.attributes.image_url' => ['sometimes', 'string'],
-            'data.attributes.publication_date' => ['required', 'date', 'before:today'],
-            'data.relationships.authors.data.*.id' => ['required', 'integer', 'exists:authors,id'],
-            'data.relationships.genres.data.*.id' => ['required', 'integer', 'exists:genres,id'],
-            'data.relationships.publisher.id' => ['required', 'integer', 'exists:publishers,id'],
+            'data.attributes.title' => [BookValidationRules::getTitleRuleWithUnique($edition)],
+            'data.attributes.description' => [BookValidationRules::DESCRIPTION->value],
+            'data.attributes.price' => [BookValidationRules::PRICE->value],
+            'data.attributes.edition' => [BookValidationRules::EDITION->value],
+            'data.attributes.pages' => [BookValidationRules::PAGES->value],
+            'data.attributes.image_url' => [BookValidationRules::IMAGE_URL->value],
+            'data.attributes.publication_date' => [BookValidationRules::PUBLICATION_DATE->value],
+            'data.relationships.authors.data.*.id' => [BookValidationRules::AUTHOR_ID->value],
+            'data.relationships.genres.data.*.id' => [BookValidationRules::GENRE_ID->value],
+            'data.relationships.publisher.id' => [BookValidationRules::PUBLISHER_ID->value],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'data.attributes.title' => [
-                'required' => 'Tiêu đề sách là trường bắt buộc.',
-                'string' => 'Tiêu đề sách nên là một chuỗi.',
-                'max:255' => 'Tiêu đề sách nên có độ dài tối đa 255.',
-                'unique' => 'Tiêu đề sách và Số phiên bản nên là duy nhất, hãy thử thay đổi tile hoặc edition rồi thực hiện lại.',
-            ],
-            'data.attributes.description' => [
-                'required' => 'Mô tả sách là trường bắt buộc.',
-                'string' => 'Mô tả sách nên là một chuỗi.',
-            ],
-            'data.attributes.price' => [
-                'required' => 'Giá sách là trường bắt buộc.',
-                'string' => 'Giá sách nên là một số thực.',
-                'min:200000' => 'Giá sách nên có giá trị tối thiểu 200.000,0đ',
-                'max:10000000' => 'Giá sách nên có giá trị tối đa 10.000.000,0đ',
-            ],
-            'data.attributes.edition' => [
-                'required' => 'Số phiên bản là trường bắt buộc',
-                'integer' => 'Số phiên bản nên là một số nguyên',
-                'min:1' => 'Số phiên bản nên có giá thi tối thiểu 1',
-                'max:30' => 'Số phiên bản nên có giá trị tối đa 30',
-            ],
-            'data.attributes.pages' => [
-                'required' => 'Số trang là trường bắt buộc',
-                'integer' => 'Số trang nên là một số nguyên',
-                'min:50' => 'Số trang nên có giá thi tối thiểu 50',
-                'max:5000' => 'Số trang nên có giá trị tối đa 5000',
-            ],
-            'data.attributes.image_url' => [
-                'string' => 'URL hình ảnh nên là một chuỗi',
-            ],
-            'data.attributes.publication_date' => [
-                'required' => 'Ngày xuất bản là trường bắt buộc',
-                'date' => 'Ngày xuất bản nên là một ngày',
-                'before:today' => 'Ngày xuất bản nên trước ngày hôm nay',
-            ],
-            'data.relationships.authors.data.*.id' => [
-                'required' => 'id của Tác giả là trường bắt buộc',
-                'integer' => 'id của Tác giả nên là một số nguyên',
-                'exists' => 'id của Tác giả không tồn tại',
-            ],
-            'data.relationships.genres.data.*.id' => [
-                'required' => 'id của Thể loại là trường bắt buộc',
-                'integer' => 'id của Thể loại nên là một số nguyên',
-                'exists' => 'id của Thể loại không tồn tại',
-            ],
-            'data.relationships.publisher.id' => [
-                'required' => 'id của Nhà xuất bản là trường bắt buộc',
-                'integer' => 'id của Nhà xuất bản nên là một số nguyên',
-                'exists' => 'id của Nhà xuất bản không tồn tại',
-            ],
+            'data.attributes.title.required' => BookValidationMessages::TITLE_REQUIRED->value,
+            'data.attributes.title.string' => BookValidationMessages::TITLE_STRING->value,
+            'data.attributes.title.max' => BookValidationMessages::TITLE_MAX->value,
+            'data.attributes.title.unique' => BookValidationMessages::TITLE_UNIQUE->value,
+
+            'data.attributes.description.required' => BookValidationMessages::DESCRIPTION_REQUIRED->value,
+            'data.attributes.description.string' => BookValidationMessages::DESCRIPTION_STRING->value,
+
+            'data.attributes.price.required' => BookValidationMessages::PRICE_REQUIRED->value,
+            'data.attributes.price.numeric' => BookValidationMessages::PRICE_NUMERIC->value,
+            'data.attributes.price.min' => BookValidationMessages::PRICE_MIN->value,
+            'data.attributes.price.max' => BookValidationMessages::PRICE_MAX->value,
+
+            'data.attributes.edition.required' => BookValidationMessages::EDITION_REQUIRED->value,
+            'data.attributes.edition.integer' => BookValidationMessages::EDITION_INTEGER->value,
+            'data.attributes.edition.min' => BookValidationMessages::EDITION_MIN->value,
+            'data.attributes.edition.max' => BookValidationMessages::EDITION_MAX->value,
+
+            'data.attributes.pages.required' => BookValidationMessages::PAGES_REQUIRED->value,
+            'data.attributes.pages.integer' => BookValidationMessages::PAGES_INTEGER->value,
+            'data.attributes.pages.min' => BookValidationMessages::PAGES_MIN->value,
+            'data.attributes.pages.max' => BookValidationMessages::PAGES_MAX->value,
+
+            'data.attributes.image_url.string' => BookValidationMessages::IMAGE_URL_STRING->value,
+
+            'data.attributes.publication_date.required' => BookValidationMessages::PUBLICATION_DATE_REQUIRED->value,
+            'data.attributes.publication_date.date' => BookValidationMessages::PUBLICATION_DATE_DATE->value,
+            'data.attributes.publication_date.before' => BookValidationMessages::PUBLICATION_DATE_BEFORE->value,
+
+            'data.relationships.authors.data.*.id.required' => BookValidationMessages::AUTHOR_ID_REQUIRED->value,
+            'data.relationships.authors.data.*.id.integer' => BookValidationMessages::AUTHOR_ID_INTEGER->value,
+            'data.relationships.authors.data.*.id.exists' => BookValidationMessages::AUTHOR_ID_EXISTS->value,
+
+            'data.relationships.genres.data.*.id.required' => BookValidationMessages::GENRE_ID_REQUIRED->value,
+            'data.relationships.genres.data.*.id.integer' => BookValidationMessages::GENRE_ID_INTEGER->value,
+            'data.relationships.genres.data.*.id.exists' => BookValidationMessages::GENRE_ID_EXISTS->value,
+
+            'data.relationships.publisher.id.required' => BookValidationMessages::PUBLISHER_ID_REQUIRED->value,
+            'data.relationships.publisher.id.integer' => BookValidationMessages::PUBLISHER_ID_INTEGER->value,
+            'data.relationships.publisher.id.exists' => BookValidationMessages::PUBLISHER_ID_EXISTS->value,
         ];
     }
 

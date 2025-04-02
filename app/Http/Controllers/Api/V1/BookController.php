@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\Book\BookDTO;
 use App\Enums\ResponseMessage;
 use App\Filters\BookFilter;
 use App\Http\Controllers\Controller;
@@ -11,6 +12,7 @@ use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Http\Sorts\V1\BookSort;
 use App\Models\Book;
+use App\Services\BookService;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
@@ -21,6 +23,11 @@ use Illuminate\Http\Request;
 class BookController extends Controller
 {
     use HandlePagination;
+
+    public function __construct(
+        private readonly BookService $bookService
+    ) {
+    }
 
     /**
      * Get all books
@@ -33,19 +40,7 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Book::query();
-
-        // Apply filters
-        $bookFilter = new BookFilter($request);
-        $query = $bookFilter->apply($query);
-
-        // Apply sorting
-        $bookSort = new BookSort($request);
-        $query = $bookSort->apply($query);
-
-        // Get paginated results
-        $books = $query->paginate($this->getPerPage($request));
-
+        $books = $this->bookService->getAllBooks($request, $this->getPerPage($request));
         return new BookCollection($books);
     }
 
@@ -59,31 +54,8 @@ class BookController extends Controller
      */
     public function store(BookStoreRequest $request)
     {
-        $validatedData = $request->validated();
-        $bookData = $validatedData['data']['attributes'];
-
-        // Ensure sold_count is set to 0 by default
-        $bookData['sold_count'] = 0;
-
-        // Set publisher_id
-        $bookData['publisher_id'] = $validatedData['data']['relationships']['publisher']['id'];
-
-        // Create book
-        $book = Book::create($bookData);
-
-        // Attach authors
-        $book->authors()->attach(
-            collect($validatedData['data']['relationships']['authors']['data'])
-                ->pluck('id')
-                ->toArray()
-        );
-
-        // Attach genres
-        $book->genres()->attach(
-            collect($validatedData['data']['relationships']['genres']['data'])
-                ->pluck('id')
-                ->toArray()
-        );
+        $bookDTO = BookDTO::fromRequest($request->validated());
+        $book = $this->bookService->createBook($bookDTO);
 
         return ResponseUtils::created([
             'book' => new BookResource($book),
@@ -102,8 +74,9 @@ class BookController extends Controller
     public function show($book_id)
     {
         try {
+            $book = $this->bookService->getBookById($book_id);
             return ResponseUtils::success([
-                'book' => new BookResource(Book::findOrFail($book_id)),
+                'book' => new BookResource($book),
             ]);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
@@ -122,30 +95,8 @@ class BookController extends Controller
     public function update(BookUpdateRequest $request, $book_id)
     {
         try {
-            $book = Book::findOrFail($book_id);
-            $validatedData = $request->validated();
-            $bookData = $validatedData['data']['attributes'];
-
-            if (isset($validatedData['data']['relationships']['publisher']['id'])) {
-                $bookData['publisher_id']
-                    = $validatedData['data']['relationships']['publisher']['id'];
-            }
-
-            $book->update($bookData);
-
-            if (isset($validatedData['data']['relationships']['authors']['data'])) {
-                $authorIds = collect($validatedData['data']['relationships']['authors']['data'])
-                    ->pluck('id')
-                    ->toArray();
-                $book->authors()->sync($authorIds);
-            }
-
-            if (isset($validatedData['data']['relationships']['genres']['data'])) {
-                $genreIds = collect($validatedData['data']['relationships']['genres']['data'])
-                    ->pluck('id')
-                    ->toArray();
-                $book->genres()->sync($genreIds);
-            }
+            $bookDTO = BookDTO::fromRequest($request->validated());
+            $book = $this->bookService->updateBook($book_id, $bookDTO);
 
             return ResponseUtils::success([
                 'book' => new BookResource($book),
@@ -170,14 +121,7 @@ class BookController extends Controller
         }
 
         try {
-            $book = Book::findOrFail($bookId);
-
-            // Delete all discount targets (discount_targets pivot table) that target this book
-            $book->getAllActiveDiscounts()->each(function ($discount) use ($book) {
-                $discount->targets()->where('target_id', $book->id)->delete();
-            });
-
-            $book->delete();
+            $book = $this->bookService->deleteBook($bookId);
 
             return ResponseUtils::success([
                 'book' => new BookResource($book),
