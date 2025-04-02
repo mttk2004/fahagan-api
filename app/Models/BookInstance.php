@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\App;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\StockImportItem;
 
 class BookInstance extends Model
 {
+    use HasFactory;
+
     public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
     protected $keyType = 'string'; // Kiểu khóa chính là string
@@ -39,7 +43,7 @@ class BookInstance extends Model
 
     public function stockImportItem(): BelongsTo
     {
-        return $this->belongsTo(StockImport::class, 'stock_import_item_id');
+        return $this->belongsTo(StockImportItem::class, 'stock_import_item_id');
     }
 
     public function orderItem(): BelongsTo
@@ -56,5 +60,20 @@ class BookInstance extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    protected function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
+    }
+
+    protected function scopeSold($query)
+    {
+        return $query->where('status', 'sold');
+    }
+
+    protected function scopeReturned($query)
+    {
+        return $query->where('status', 'returned');
     }
 }
