@@ -14,7 +14,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $publication_date
  * @property mixed $pages
  * @property mixed $image_url
- * @property mixed $available_count
  * @property mixed $sold_count
  * @property mixed $description
  * @property mixed $created_at
@@ -41,7 +40,6 @@ class BookResource extends JsonResource
                 $this->mergeWhen($request->routeIs('books.show', 'books.store'), [
                     'description' => $this->description,
                     'pages' => $this->pages,
-                    'available_count' => $this->available_count,
                     'created_at' => $this->created_at,
                     'updated_at' => $this->updated_at,
                     'deleted_at' => $this->deleted_at,

@@ -50,7 +50,8 @@ export type BookAttributes = {
   sold_count: number;
   description?: string;
   pages?: number;
-  available_count?: number;
+  // TODO: update this field when available_count is implemented
+  // available_count?: number;
   created_at?: string;
   updated_at?: string;
   deleted_at?: string;
@@ -63,6 +64,7 @@ export type BookCollection = BaseCollectionResponse<BookResource>;
 export type AuthorAttributes = {
   name: string;
   biography?: string;
+  image_url: string;
 };
 
 export type AuthorResource = BaseResource<AuthorAttributes>;

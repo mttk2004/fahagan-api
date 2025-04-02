@@ -24,13 +24,12 @@ return new class extends Migration {
             $table->unsignedSmallInteger('pages');
             $table->date('publication_date');
             $table->string('image_url')->default('');
-            $table->unsignedSmallInteger('available_count')->default(0);
             $table->unsignedInteger('sold_count')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
             $table->unique(['title', 'edition']);
-            $table->index(['title', 'edition', 'available_count', 'sold_count', 'publication_date'], 'books_index');
+            $table->index(['title', 'edition', 'sold_count', 'publication_date'], 'books_index');
         });
     }
 

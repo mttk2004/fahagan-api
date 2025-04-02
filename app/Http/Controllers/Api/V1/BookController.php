@@ -62,9 +62,8 @@ class BookController extends Controller
         $validatedData = $request->validated();
         $bookData = $validatedData['data']['attributes'];
 
-        // Ensure sold_count and available_count are set to 0 by default
+        // Ensure sold_count is set to 0 by default
         $bookData['sold_count'] = 0;
-        $bookData['available_count'] = 0;
 
         // Set publisher_id
         $bookData['publisher_id'] = $validatedData['data']['relationships']['publisher']['id'];

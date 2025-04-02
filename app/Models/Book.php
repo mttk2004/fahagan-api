@@ -45,7 +45,6 @@ class Book extends Model implements HasBookRelations, Discountable
             'pages',
             'publication_date',
             'image_url',
-            'available_count',
             'sold_count',
             'publisher_id',
         ];
