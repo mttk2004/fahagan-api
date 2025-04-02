@@ -17,6 +17,7 @@ class AuthorUpdateRequest extends BaseRequest implements HasValidationMessages
                 'max:255',
             ],
             'data.attributes.biography' => ['sometimes', 'string'],
+            'data.attributes.image_url' => ['sometimes', 'string', 'url'],
         ];
     }
 
@@ -29,6 +30,10 @@ class AuthorUpdateRequest extends BaseRequest implements HasValidationMessages
             ],
             'data.attributes.biography' => [
                 'string' => 'Tiểu sử tác giả nên là một chuỗi.',
+            ],
+            'data.attributes.image_url' => [
+                'string' => 'Ảnh tác giả nên là một chuỗi.',
+                'url' => 'Ảnh tác giả nên là một URL hợp lệ.',
             ],
         ];
     }

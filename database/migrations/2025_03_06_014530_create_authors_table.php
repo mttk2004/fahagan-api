@@ -14,6 +14,7 @@ return new class extends Migration {
                   ->primary();
             $table->string('name')->index();
             $table->text('biography');
+            $table->string('image_url')->default('');
         });
 
         Schema::create('author_book', function (Blueprint $table) {

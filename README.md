@@ -41,4 +41,20 @@ Chạy lệnh sau để chạy server:
 
 Sau khi chạy lệnh trên, tài liệu sẽ được tạo trong thư mục `public/docs`, có thể mở bằng cách truy cập vào đường dẫn `http://localhost:8000/docs` (hoặc đường dẫn tương ứng với server của bạn).
 
-_Last updated: 31 March, 2025_
+```typescript
+// Ví dụ khi gọi API lấy danh sách sách
+const getBooks = async (): Promise<ApiCollectionResponse<BookResource>> => {
+    const response = await fetch("/api/v1/books");
+    return response.json();
+};
+
+// Ví dụ khi gọi API lấy chi tiết một cuốn sách
+const getBook = async (
+    id: number
+): Promise<ApiResourceResponse<BookResource>> => {
+    const response = await fetch(`/api/v1/books/${id}`);
+    return response.json();
+};
+```
+
+_Last updated: 2 April, 2025_

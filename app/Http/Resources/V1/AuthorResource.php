@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $name
  * @property mixed $biography
  * @property mixed $books
+ * @property mixed $image_url
  */
 class AuthorResource extends JsonResource
 {
@@ -19,6 +20,7 @@ class AuthorResource extends JsonResource
         return [
             'type' => 'author',
             'id' => $this->id,
+            'image_url' => $this->image_url,
             'attributes' => [
                 'name' => $this->name,
                 'biography' => $this->when(

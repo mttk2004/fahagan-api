@@ -17,6 +17,7 @@ class AuthorStoreRequest extends BaseRequest implements HasValidationMessages
                 'max:255',
             ],
             'data.attributes.biography' => ['required', 'string'],
+            'data.attributes.image_url' => ['required', 'string', 'url'],
         ];
     }
 
@@ -31,6 +32,11 @@ class AuthorStoreRequest extends BaseRequest implements HasValidationMessages
             'data.attributes.biography' => [
                 'required' => 'Tiểu sử tác giả là trường bắt buộc.',
                 'string' => 'Tiểu sử tác giả nên là một chuỗi.',
+            ],
+            'data.attributes.image_url' => [
+                'required' => 'Ảnh tác giả là trường bắt buộc.',
+                'string' => 'Ảnh tác giả nên là một chuỗi.',
+                'url' => 'Ảnh tác giả nên là một URL hợp lệ.',
             ],
         ];
     }
