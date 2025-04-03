@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @method static findOrFail($genre_id)
@@ -12,11 +14,14 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 class Genre extends Model
 {
-    public $timestamps = false;
+    use HasFactory, SoftDeletes;
+
+    public $timestamps = true;
 
     protected $fillable
         = [
             'name',
+            'slug',
             'description',
         ];
 

@@ -73,4 +73,6 @@ enum ResponseMessage: string
     case UPDATED_CART_ITEM = 'Số lượng sách trong giỏ hàng đã được cập nhật.';
     case NOT_FOUND_CART_ITEM = 'Sách không tồn tại trong giỏ hàng.';
     case ALREADY_IN_CART = 'Sách đã tồn tại trong giỏ hàng.';
+
+    case RESTORED_GENRE = 'Khôi phục thể loại thành công.';
 }

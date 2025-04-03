@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\SupplierController;
 use App\Http\Controllers\Api\V1\UserController;
+use Illuminate\Support\Facades\Route;
 
 /**
  * Unauthenticated area
@@ -73,3 +74,15 @@ Route::middleware('auth.*')->group(function () {
         ]);
     });
 });
+
+// Genres routes
+Route::middleware(['auth:sanctum', 'verified'])
+    ->prefix('genres')
+    ->group(function () {
+        Route::post('/restore/{genre}', [GenreController::class, 'restore'])
+            ->name('genres.restore');
+    });
+
+Route::apiResource('genres', GenreController::class);
+Route::get('genres/slug/{slug}', [GenreController::class, 'showBySlug'])
+    ->name('genres.showBySlug');
