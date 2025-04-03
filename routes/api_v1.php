@@ -86,3 +86,11 @@ Route::middleware(['auth:sanctum', 'verified'])
 Route::apiResource('genres', GenreController::class);
 Route::get('genres/slug/{slug}', [GenreController::class, 'showBySlug'])
     ->name('genres.showBySlug');
+
+// Suppliers routes
+Route::middleware(['auth:sanctum', 'verified'])
+    ->prefix('suppliers')
+    ->group(function () {
+        Route::post('/restore/{supplier}', [SupplierController::class, 'restore'])
+            ->name('suppliers.restore');
+    });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\Supplier\SupplierDTO;
 use App\Enums\ResponseMessage;
 use App\Filters\SupplierFilter;
 use App\Http\Controllers\Controller;
@@ -11,9 +12,12 @@ use App\Http\Resources\V1\SupplierCollection;
 use App\Http\Resources\V1\SupplierResource;
 use App\Http\Sorts\V1\SupplierSort;
 use App\Models\Supplier;
+use App\Services\SupplierService;
 use App\Traits\HandlePagination;
+use App\Traits\HandleSupplierExceptions;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +25,12 @@ use Illuminate\Http\Request;
 class SupplierController extends Controller
 {
     use HandlePagination;
+    use HandleSupplierExceptions;
+
+    public function __construct(
+        private readonly SupplierService $supplierService
+    ) {
+    }
 
     /**
      * Get all suppliers
@@ -62,19 +72,22 @@ class SupplierController extends Controller
      */
     public function store(SupplierStoreRequest $request)
     {
-        $validatedData = $request->validated()['data'];
-        $supplier = Supplier::create($validatedData['attributes']);
+        try {
+            $validatedData = $request->validated();
+            $supplierDTO = SupplierDTO::fromRequestData($validatedData);
 
-        // Attach books to the supplier
-        $supplier->suppliedBooks()->attach(
-            collect($validatedData['relationships']['books']['data'])
-                ->pluck('id')
-                ->toArray()
-        );
+            // Lấy book IDs nếu có
+            $bookIds = $validatedData['data']['relationships']['books']['data'] ?? [];
+            $bookIds = collect($bookIds)->pluck('id')->toArray();
 
-        return ResponseUtils::created([
-            'supplier' => new SupplierResource($supplier),
-        ], ResponseMessage::CREATED_SUPPLIER->value);
+            $supplier = $this->supplierService->createSupplier($supplierDTO, $bookIds);
+
+            return ResponseUtils::created([
+                'supplier' => new SupplierResource($supplier),
+            ], ResponseMessage::CREATED_SUPPLIER->value);
+        } catch (Exception $e) {
+            return $this->handleSupplierException($e, $request->validated(), null, 'tạo');
+        }
     }
 
     /**
@@ -88,7 +101,7 @@ class SupplierController extends Controller
     public function show($supplier_id)
     {
         try {
-            $supplier = Supplier::findOrFail($supplier_id);
+            $supplier = $this->supplierService->getSupplierById($supplier_id);
 
             return ResponseUtils::success([
                 'supplier' => new SupplierResource($supplier),
@@ -110,26 +123,22 @@ class SupplierController extends Controller
     public function update(SupplierUpdateRequest $request, $supplier_id)
     {
         try {
-            $supplier = Supplier::findOrFail($supplier_id);
-            $validatedData = $request->validated()['data'];
+            $validatedData = $request->validated();
+            $supplierDTO = SupplierDTO::fromRequestData($validatedData);
 
-            // Sync books with the supplier
-            $books = $validatedData['relationships']['books']['data'] ?? null;
-            if ($books) {
-                $supplier->suppliedBooks()->sync(collect($books)->pluck('id')->toArray());
+            // Lấy book IDs nếu có
+            $bookIds = null;
+            if (isset($validatedData['books'])) {
+                $bookIds = $validatedData['books'];
             }
 
-            // Update supplier attributes
-            $attributes = $validatedData['attributes'] ?? null;
-            if ($attributes) {
-                $supplier->update($attributes);
-            }
+            $supplier = $this->supplierService->updateSupplier($supplier_id, $supplierDTO, $bookIds);
 
             return ResponseUtils::success([
                 'supplier' => new SupplierResource($supplier),
             ], ResponseMessage::UPDATED_SUPPLIER->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_SUPPLIER->value);
+        } catch (Exception $e) {
+            return $this->handleSupplierException($e, $request->validated(), $supplier_id, 'cập nhật');
         }
     }
 
@@ -148,11 +157,36 @@ class SupplierController extends Controller
         }
 
         try {
-            Supplier::findOrFail($supplier_id)->delete();
+            $this->supplierService->deleteSupplier($supplier_id);
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_SUPPLIER->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+        } catch (Exception $e) {
+            return $this->handleSupplierException($e, [], $supplier_id, 'xóa');
+        }
+    }
+
+    /**
+     * Restore a soft deleted supplier
+     *
+     * @param $supplier_id
+     *
+     * @return JsonResponse
+     * @group Supplier
+     */
+    public function restore($supplier_id)
+    {
+        if (! AuthUtils::userCan('restore_suppliers')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $supplier = $this->supplierService->restoreSupplier($supplier_id);
+
+            return ResponseUtils::success([
+                'supplier' => new SupplierResource($supplier),
+            ], ResponseMessage::RESTORED_SUPPLIER->value);
+        } catch (Exception $e) {
+            return $this->handleSupplierException($e, [], $supplier_id, 'khôi phục');
         }
     }
 }

@@ -141,4 +141,20 @@ class ResponseUtils
             'message' => $message,
         ], 503);
     }
+
+    /**
+     * Trả về phản hồi lỗi chung
+     * Mặc định sẽ trả về lỗi 500 (Internal Server Error)
+     */
+    public static function error(
+        string $message = 'Đã xảy ra lỗi.',
+        int $statusCode = 500,
+        array $errors = [],
+    ): JsonResponse {
+        return response()->json([
+            'status' => $statusCode,
+            'message' => $message,
+            'errors' => $errors,
+        ], $statusCode);
+    }
 }

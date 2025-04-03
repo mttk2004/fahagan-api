@@ -75,4 +75,7 @@ enum ResponseMessage: string
     case ALREADY_IN_CART = 'Sách đã tồn tại trong giỏ hàng.';
 
     case RESTORED_GENRE = 'Khôi phục thể loại thành công.';
+
+    // Supplier
+    case RESTORED_SUPPLIER = 'Nhà cung cấp đã được khôi phục thành công.';
 }
