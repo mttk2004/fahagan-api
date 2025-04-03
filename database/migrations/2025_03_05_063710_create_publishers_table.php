@@ -14,6 +14,8 @@ return new class extends Migration {
                   ->primary();
             $table->string('name')->unique()->index();
             $table->text('biography');
+            $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['name']);
         });

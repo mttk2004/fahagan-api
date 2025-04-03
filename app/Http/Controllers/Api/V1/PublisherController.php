@@ -2,24 +2,32 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\Publisher\PublisherDTO;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\PublisherStoreRequest;
 use App\Http\Requests\V1\PublisherUpdateRequest;
 use App\Http\Resources\V1\PublisherCollection;
 use App\Http\Resources\V1\PublisherResource;
-use App\Http\Sorts\V1\PublisherSort;
-use App\Models\Publisher;
+use App\Services\PublisherService;
 use App\Traits\HandlePagination;
-use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PublisherController extends Controller
 {
     use HandlePagination;
+
+    protected PublisherService $publisherService;
+
+    public function __construct(PublisherService $publisherService)
+    {
+        $this->publisherService = $publisherService;
+    }
 
     /**
      * Get all publishers
@@ -32,9 +40,10 @@ class PublisherController extends Controller
      */
     public function index(Request $request)
     {
-        $publisherSort = new PublisherSort($request);
-        $publishers = $publisherSort->apply(Publisher::query())
-                                    ->paginate($this->getPerPage($request));
+        $publishers = $this->publisherService->getAllPublishers(
+            $request,
+            $this->getPerPage($request)
+        );
 
         return new PublisherCollection($publishers);
     }
@@ -49,31 +58,41 @@ class PublisherController extends Controller
      */
     public function store(PublisherStoreRequest $request)
     {
-        $publisherData = $request->validated()['data']['attributes'];
-        $publisher = Publisher::create($publisherData);
+        try {
+            $publisherDTO = PublisherDTO::fromRequest($request->validated());
+            $publisher = $this->publisherService->createPublisher($publisherDTO);
 
-        return ResponseUtils::created([
-            'publisher' => new PublisherResource($publisher),
-        ], ResponseMessage::CREATED_PUBLISHER->value);
+            return ResponseUtils::created([
+                'publisher' => new PublisherResource($publisher),
+            ], ResponseMessage::CREATED_PUBLISHER->value);
+        } catch (ValidationException $e) {
+            return ResponseUtils::validationError('Dữ liệu không hợp lệ.', $e->errors());
+        } catch (Exception $e) {
+            return ResponseUtils::serverError($e->getMessage());
+        }
     }
 
     /**
      * Get a publisher
      *
-     * @param $publisher_id
+     * @param int $publisherId
      *
      * @return JsonResponse
      * @group Publishers
      * @unauthenticated
      */
-    public function show($publisher_id)
+    public function show(int $publisherId)
     {
         try {
+            $publisher = $this->publisherService->getPublisherById($publisherId);
+
             return ResponseUtils::success([
-                'publisher' => new PublisherResource(Publisher::findOrFail($publisher_id)),
+                'publisher' => new PublisherResource($publisher),
             ]);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+        } catch (Exception $e) {
+            return ResponseUtils::serverError($e->getMessage());
         }
     }
 
@@ -81,47 +100,47 @@ class PublisherController extends Controller
      * Update a publisher
      *
      * @param PublisherUpdateRequest $request
-     * @param                        $publisher_id
+     * @param int $publisherId
      *
      * @return JsonResponse
      * @group Publishers
      */
-    public function update(PublisherUpdateRequest $request, $publisher_id)
+    public function update(PublisherUpdateRequest $request, int $publisherId)
     {
         try {
-            $publisherData = $request->validated()['data']['attributes'];
-            $publisher = Publisher::findOrFail($publisher_id)->update($publisherData);
+            $publisherDTO = PublisherDTO::fromRequest($request->validated());
+            $publisher = $this->publisherService->updatePublisher($publisherId, $publisherDTO);
 
             return ResponseUtils::success([
                 'publisher' => new PublisherResource($publisher),
             ], ResponseMessage::UPDATED_PUBLISHER->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+        } catch (ValidationException $e) {
+            return ResponseUtils::validationError('Dữ liệu không hợp lệ.', $e->errors());
+        } catch (Exception $e) {
+            return ResponseUtils::serverError($e->getMessage());
         }
     }
 
     /**
      * Delete a publisher
      *
-     * @param         $publisherId
+     * @param int $publisherId
      *
      * @return JsonResponse
      * @group Publishers
      */
-    public function destroy($publisherId)
+    public function destroy(int $publisherId)
     {
-        if (! AuthUtils::userCan('delete_books')) {
-            return ResponseUtils::forbidden();
-        }
-
         try {
-            // TODO: handle books that targets to the publisher before deleting it
-            $publisher = Publisher::findOrFail($publisherId);
-            $publisher->delete();
+            $this->publisherService->deletePublisher($publisherId);
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_PUBLISHER->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PUBLISHER->value);
+        } catch (Exception $e) {
+            return ResponseUtils::serverError($e->getMessage());
         }
     }
 }
