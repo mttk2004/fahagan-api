@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Enums\Discount\DiscountValidationMessages;
+use App\Enums\Discount\DiscountValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Utils\AuthUtils;
@@ -11,11 +13,11 @@ class DiscountStoreRequest extends BaseRequest implements HasValidationMessages
     public function rules(): array
     {
         return [
-            'data.attributes.name' => ['required', 'string', 'max:255', 'unique:discounts,name'],
-            'data.attributes.discount_type' => ['sometimes', 'string', 'in:percent,fixed'],
-            'data.attributes.discount_value' => ['required', 'decimal:', 'min:5'],
-            'data.attributes.start_date' => ['required', 'date', 'after:today'],
-            'data.attributes.end_date' => ['required', 'date', 'after:data.attributes.start_date'],
+            'data.attributes.name' => DiscountValidationRules::getNameRuleWithUnique(),
+            'data.attributes.discount_type' => DiscountValidationRules::DISCOUNT_TYPE->rules(),
+            'data.attributes.discount_value' => DiscountValidationRules::DISCOUNT_VALUE->rules(),
+            'data.attributes.start_date' => DiscountValidationRules::START_DATE->rules(),
+            'data.attributes.end_date' => DiscountValidationRules::END_DATE->rules(),
 
             'data.relationships.targets' => ['required', 'array'],
             'data.relationships.targets.*.type' => [
@@ -30,21 +32,27 @@ class DiscountStoreRequest extends BaseRequest implements HasValidationMessages
     public function messages(): array
     {
         return [
-            'data.attributes.name.required' => 'Tên mã giảm giá là trường bắt buộc.',
-            'data.attributes.name.string' => 'Tên mã giảm giá nên là một chuỗi.',
-            'data.attributes.name.max' => 'Tên mã giảm giá nên có độ dài tối đa 255.',
-            'data.attributes.name.unique' => 'Tên mã giảm giá đã tồn tại.',
-            'data.attributes.discount_type.string' => 'Loại giảm giá nên là một chuỗi.',
-            'data.attributes.discount_type.in' => 'Loại giảm giá không hợp lệ.',
-            'data.attributes.discount_value.required' => 'Giá trị giảm giá là trường bắt buộc.',
-            'data.attributes.discount_value.decimal' => 'Giá trị giảm giá nên là một số.',
-            'data.attributes.discount_value.min' => 'Giá trị giảm giá không hợp lệ.',
-            'data.attributes.start_date.required' => 'Ngày bắt đầu là trường bắt buộc.',
-            'data.attributes.start_date.date' => 'Ngày bắt đầu không hợp lệ.',
-            'data.attributes.start_date.after' => 'Ngày bắt đầu phải sau ngày hiện tại.',
-            'data.attributes.end_date.required' => 'Ngày kết thúc là trường bắt buộc.',
-            'data.attributes.end_date.date' => 'Ngày kết thúc không hợp lệ.',
-            'data.attributes.end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+            'data.attributes.name.required' => DiscountValidationMessages::NAME_REQUIRED->message(),
+            'data.attributes.name.string' => DiscountValidationMessages::NAME_STRING->message(),
+            'data.attributes.name.max' => DiscountValidationMessages::NAME_MAX->message(),
+            'data.attributes.name.unique' => DiscountValidationMessages::NAME_UNIQUE->message(),
+
+            'data.attributes.discount_type.required' => DiscountValidationMessages::DISCOUNT_TYPE_REQUIRED->message(),
+            'data.attributes.discount_type.string' => DiscountValidationMessages::DISCOUNT_TYPE_STRING->message(),
+            'data.attributes.discount_type.in' => DiscountValidationMessages::DISCOUNT_TYPE_IN->message(),
+
+            'data.attributes.discount_value.required' => DiscountValidationMessages::DISCOUNT_VALUE_REQUIRED->message(),
+            'data.attributes.discount_value.numeric' => DiscountValidationMessages::DISCOUNT_VALUE_NUMERIC->message(),
+            'data.attributes.discount_value.min' => DiscountValidationMessages::DISCOUNT_VALUE_MIN->message(),
+
+            'data.attributes.start_date.required' => DiscountValidationMessages::START_DATE_REQUIRED->message(),
+            'data.attributes.start_date.date' => DiscountValidationMessages::START_DATE_DATE->message(),
+            'data.attributes.start_date.before_or_equal' => DiscountValidationMessages::START_DATE_BEFORE_OR_EQUAL->message(),
+
+            'data.attributes.end_date.required' => DiscountValidationMessages::END_DATE_REQUIRED->message(),
+            'data.attributes.end_date.date' => DiscountValidationMessages::END_DATE_DATE->message(),
+            'data.attributes.end_date.after_or_equal' => DiscountValidationMessages::END_DATE_AFTER_OR_EQUAL->message(),
+
             'data.relationships.targets.required' => 'Đối tượng áp dụng là trường bắt buộc.',
             'data.relationships.targets.array' => 'Đối tượng áp dụng nên là một mảng.',
             'data.relationships.targets.*.type.required' => 'Loại đối tượng áp dụng là trường bắt buộc.',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\App;
  */
 class Discount extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 

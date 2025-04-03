@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\Discount\DiscountDTO;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\DiscountStoreRequest;
@@ -10,6 +11,7 @@ use App\Http\Resources\V1\DiscountCollection;
 use App\Http\Resources\V1\DiscountResource;
 use App\Http\Sorts\V1\DiscountSort;
 use App\Models\Discount;
+use App\Services\DiscountService;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
@@ -17,30 +19,17 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class DiscountController extends Controller
 {
     use HandlePagination;
 
-    /**
-     * Validate and map targets
-     *
-     * @param array $targetsData
-     *
-     * @return Collection|JsonResponse
-     */
-    private function validateAndMapTargets(array $targetsData)
-    {
-        try {
-            return collect($targetsData)->map(function ($target) {
-                $targetType = 'App\Models\\' . ucfirst($target['type']);
-                $targetType::findOrFail($target['id']);
+    private DiscountService $discountService;
 
-                return ['target_type' => $targetType, 'target_id' => $target['id']];
-            });
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_TARGET_OBJECT->value);
-        }
+    public function __construct(DiscountService $discountService)
+    {
+        $this->discountService = $discountService;
     }
 
     /**
@@ -57,18 +46,7 @@ class DiscountController extends Controller
             return ResponseUtils::forbidden();
         }
 
-        $query = Discount::query();
-
-        // Apply filters
-        $discountFilter = new DiscountSort($request);
-        $query = $discountFilter->apply($query);
-
-        // Apply sorting
-        $discountSort = new DiscountSort($request);
-        $query = $discountSort->apply($query);
-
-        // Get paginated results
-        $discounts = $query->paginate($this->getPerPage($request));
+        $discounts = $this->discountService->getAllDiscounts($request, $this->getPerPage($request));
 
         return new DiscountCollection($discounts);
     }
@@ -83,20 +61,20 @@ class DiscountController extends Controller
      */
     public function store(DiscountStoreRequest $request)
     {
-        $validatedData = $request->validated()['data'];
+        try {
+            $validatedData = $request->validated();
+            $discountDTO = DiscountDTO::fromRequest($validatedData);
 
-        $targetsData = $validatedData['relationships']['targets'];
-        $targets = $this->validateAndMapTargets($targetsData);
-        if ($targets instanceof JsonResponse) {
-            return $targets;
+            $discount = $this->discountService->createDiscount($discountDTO);
+
+            return ResponseUtils::created([
+                'discount' => new DiscountResource($discount),
+            ], ResponseMessage::CREATED_DISCOUNT->value);
+        } catch (ValidationException $e) {
+            return ResponseUtils::validationError($e->validator->errors());
+        } catch (\Exception $e) {
+            return ResponseUtils::serverError($e->getMessage());
         }
-
-        $discount = Discount::create($validatedData['attributes']);
-        $discount->targets()->createMany($targets);
-
-        return ResponseUtils::created([
-            'discount' => new DiscountResource($discount),
-        ], ResponseMessage::CREATED_DISCOUNT->value);
     }
 
     /**
@@ -114,8 +92,10 @@ class DiscountController extends Controller
         }
 
         try {
+            $discount = $this->discountService->getDiscountById($discount_id);
+
             return ResponseUtils::success([
-                'discount' => new DiscountResource(Discount::findOrFail($discount_id)),
+                'discount' => new DiscountResource($discount),
             ]);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
@@ -134,32 +114,20 @@ class DiscountController extends Controller
     public function update(DiscountUpdateRequest $request, $discount_id)
     {
         try {
-            $discount = Discount::findOrFail($discount_id);
-            $validatedData = $request->validated()['data'];
+            $validatedData = $request->validated();
+            $discountDTO = DiscountDTO::fromRequest($validatedData);
 
-            // Update targets
-            $targetsData = $validatedData['relationships']['targets'] ?? null;
-            if ($targetsData) {
-                $targets = $this->validateAndMapTargets($targetsData);
-                if ($targets instanceof JsonResponse) {
-                    return $targets;
-                }
-
-                $discount->targets()->delete();
-                $discount->targets()->createMany($targets);
-            }
-
-            // Update discount data
-            $discountData = $validatedData['attributes'] ?? null;
-            if ($discountData) {
-                $discount->update($discountData);
-            }
+            $discount = $this->discountService->updateDiscount($discount_id, $discountDTO, $validatedData);
 
             return ResponseUtils::success([
                 'discount' => new DiscountResource($discount),
             ], ResponseMessage::UPDATED_DISCOUNT->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
+        } catch (ValidationException $e) {
+            return ResponseUtils::validationError($e->validator->errors());
+        } catch (\Exception $e) {
+            return ResponseUtils::serverError($e->getMessage());
         }
     }
 
@@ -178,7 +146,7 @@ class DiscountController extends Controller
         }
 
         try {
-            Discount::findOrFail($discount_id)->delete();
+            $this->discountService->deleteDiscount($discount_id);
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_DISCOUNT->value);
         } catch (ModelNotFoundException) {
