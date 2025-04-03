@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 
-
 /**
  * @method static findOrFail($book_id)
  * @method static create(mixed $bookData)

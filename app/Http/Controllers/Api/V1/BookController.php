@@ -4,18 +4,17 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\DTOs\Book\BookDTO;
 use App\Enums\ResponseMessage;
-use App\Filters\BookFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\BookStoreRequest;
 use App\Http\Requests\V1\BookUpdateRequest;
 use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
-use App\Http\Sorts\V1\BookSort;
-use App\Models\Book;
 use App\Services\BookService;
+use App\Traits\HandleBookExceptions;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +22,7 @@ use Illuminate\Http\Request;
 class BookController extends Controller
 {
     use HandlePagination;
+    use HandleBookExceptions;
 
     public function __construct(
         private readonly BookService $bookService
@@ -41,6 +41,7 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $books = $this->bookService->getAllBooks($request, $this->getPerPage($request));
+
         return new BookCollection($books);
     }
 
@@ -54,12 +55,16 @@ class BookController extends Controller
      */
     public function store(BookStoreRequest $request)
     {
-        $bookDTO = BookDTO::fromRequest($request->validated());
-        $book = $this->bookService->createBook($bookDTO);
+        try {
+            $bookDTO = $this->createBookDTOFromRequest($request);
+            $book = $this->bookService->createBook($bookDTO);
 
-        return ResponseUtils::created([
-            'book' => new BookResource($book),
-        ], ResponseMessage::CREATED_BOOK->value);
+            return ResponseUtils::created([
+                'book' => new BookResource($book),
+            ], ResponseMessage::CREATED_BOOK->value);
+        } catch (Exception $e) {
+            return $this->handleBookException($e, $request->validated(), null, 'tạo');
+        }
     }
 
     /**
@@ -75,6 +80,7 @@ class BookController extends Controller
     {
         try {
             $book = $this->bookService->getBookById($book_id);
+
             return ResponseUtils::success([
                 'book' => new BookResource($book),
             ]);
@@ -95,14 +101,23 @@ class BookController extends Controller
     public function update(BookUpdateRequest $request, $book_id)
     {
         try {
-            $bookDTO = BookDTO::fromRequest($request->validated());
-            $book = $this->bookService->updateBook($book_id, $bookDTO);
+            $validatedData = $request->validated();
+
+            // Kiểm tra dữ liệu cập nhật
+            if ($this->isEmptyUpdateData($validatedData)) {
+                return ResponseUtils::badRequest('Không có thông tin cập nhật. Vui lòng cung cấp ít nhất một trường cần cập nhật.');
+            }
+
+            $bookDTO = $this->createBookDTOFromRequest($request);
+            $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
 
             return ResponseUtils::success([
                 'book' => new BookResource($book),
             ], ResponseMessage::UPDATED_BOOK->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
+        } catch (Exception $e) {
+            return $this->handleBookException($e, $request->validated(), $book_id, 'cập nhật');
         }
     }
 
@@ -121,13 +136,36 @@ class BookController extends Controller
         }
 
         try {
-            $book = $this->bookService->deleteBook($bookId);
+            $this->bookService->deleteBook($bookId);
 
-            return ResponseUtils::success([
-                'book' => new BookResource($book),
-            ], ResponseMessage::DELETED_BOOK->value);
+            return ResponseUtils::noContent(ResponseMessage::DELETED_BOOK->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
         }
+    }
+
+    /**
+     * Tạo BookDTO từ request đã validate
+     *
+     * @param BookStoreRequest|BookUpdateRequest $request
+     * @return BookDTO
+     */
+    private function createBookDTOFromRequest(BookStoreRequest|BookUpdateRequest $request): BookDTO
+    {
+        $validatedData = $request->validated();
+
+        return BookDTO::fromRequest($validatedData);
+    }
+
+    /**
+     * Kiểm tra xem dữ liệu cập nhật có rỗng không
+     *
+     * @param array $validatedData
+     * @return bool
+     */
+    private function isEmptyUpdateData(array $validatedData): bool
+    {
+        return empty($validatedData['data']['attributes'] ?? [])
+            && empty($validatedData['data']['relationships'] ?? []);
     }
 }

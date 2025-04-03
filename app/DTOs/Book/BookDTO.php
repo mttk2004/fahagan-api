@@ -5,23 +5,23 @@ namespace App\DTOs\Book;
 class BookDTO
 {
     public function __construct(
-        public readonly string $title,
-        public readonly string $description,
-        public readonly float $price,
-        public readonly int $edition,
-        public readonly int $pages,
+        public readonly ?string $title,
+        public readonly ?string $description,
+        public readonly ?float $price,
+        public readonly ?int $edition,
+        public readonly ?int $pages,
         public readonly ?string $image_url,
-        public readonly string $publication_date,
-        public readonly int $publisher_id,
+        public readonly ?string $publication_date,
+        public readonly ?int $publisher_id,
         public readonly array $author_ids = [],
         public readonly array $genre_ids = [],
-        public readonly int $sold_count = 0,
+        public readonly ?int $sold_count = 0,
     ) {
     }
 
     public static function fromRequest(array $validatedData): self
     {
-        $attributes = $validatedData['data']['attributes'];
+        $attributes = $validatedData['data']['attributes'] ?? [];
         $relationships = $validatedData['data']['relationships'] ?? [];
 
         // Lấy author_ids từ relationships nếu có
@@ -36,36 +36,67 @@ class BookDTO
             $genre_ids = collect($relationships['genres']['data'])->pluck('id')->toArray();
         }
 
-        // Lấy publisher_id từ relationships
-        $publisher_id = $relationships['publisher']['id'] ?? null;
+        // Lấy publisher_id từ relationships nếu có
+        $publisher_id = null;
+        if (isset($relationships['publisher']['id'])) {
+            $publisher_id = $relationships['publisher']['id'];
+        }
 
         return new self(
-            title: $attributes['title'],
-            description: $attributes['description'],
-            price: $attributes['price'],
-            edition: $attributes['edition'],
-            pages: $attributes['pages'],
+            title: $attributes['title'] ?? null,
+            description: $attributes['description'] ?? null,
+            price: isset($attributes['price']) ? (float)$attributes['price'] : null,
+            edition: isset($attributes['edition']) ? (int)$attributes['edition'] : null,
+            pages: isset($attributes['pages']) ? (int)$attributes['pages'] : null,
             image_url: $attributes['image_url'] ?? null,
-            publication_date: $attributes['publication_date'],
+            publication_date: $attributes['publication_date'] ?? null,
             publisher_id: $publisher_id,
             author_ids: $author_ids,
             genre_ids: $genre_ids,
-            sold_count: $attributes['sold_count'] ?? 0,
+            sold_count: isset($attributes['sold_count']) ? (int)$attributes['sold_count'] : 0,
         );
     }
 
     public function toArray(): array
     {
-        return [
-            'title' => $this->title,
-            'description' => $this->description,
-            'price' => $this->price,
-            'edition' => $this->edition,
-            'pages' => $this->pages,
-            'image_url' => $this->image_url,
-            'publication_date' => $this->publication_date,
-            'publisher_id' => $this->publisher_id,
-            'sold_count' => $this->sold_count,
-        ];
+        $data = [];
+
+        if ($this->title !== null) {
+            $data['title'] = $this->title;
+        }
+
+        if ($this->description !== null) {
+            $data['description'] = $this->description;
+        }
+
+        if ($this->price !== null) {
+            $data['price'] = $this->price;
+        }
+
+        if ($this->edition !== null) {
+            $data['edition'] = $this->edition;
+        }
+
+        if ($this->pages !== null) {
+            $data['pages'] = $this->pages;
+        }
+
+        if ($this->image_url !== null) {
+            $data['image_url'] = $this->image_url;
+        }
+
+        if ($this->publication_date !== null) {
+            $data['publication_date'] = $this->publication_date;
+        }
+
+        if ($this->publisher_id !== null) {
+            $data['publisher_id'] = $this->publisher_id;
+        }
+
+        if ($this->sold_count !== null) {
+            $data['sold_count'] = $this->sold_count;
+        }
+
+        return $data;
     }
 }

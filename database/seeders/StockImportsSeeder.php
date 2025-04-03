@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\StockImport;
-use App\Models\StockImportItem;
-use App\Models\Supplier;
 use App\Models\BookInstance;
+use App\Models\StockImport;
+use App\Models\Supplier;
 use Illuminate\Database\Seeder;
 
 class StockImportsSeeder extends Seeder

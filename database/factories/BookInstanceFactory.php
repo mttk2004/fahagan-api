@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\BookInstance;
 use App\Models\Book;
+use App\Models\BookInstance;
 use App\Models\StockImportItem;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BookInstanceFactory extends Factory
 {

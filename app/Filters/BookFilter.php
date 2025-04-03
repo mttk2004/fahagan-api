@@ -29,6 +29,7 @@ class BookFilter
         $this->filterByPublisher($query);
         $this->filterByGenres($query);
         $this->filterByPublicationDate($query);
+        $this->filterByTitle($query);
 
         return $query;
     }
@@ -88,6 +89,13 @@ class BookFilter
 
         if (isset($this->filters['pub_date_to'])) {
             $query->where('publication_date', '<=', $this->filters['pub_date_to']);
+        }
+    }
+
+    protected function filterByTitle(Builder $query): void
+    {
+        if (isset($this->filters['title'])) {
+            $query->where('title', 'like', '%' . $this->filters['title'] . '%');
         }
     }
 }

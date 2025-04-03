@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Book;
-use App\Models\BookInstance;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,6 +25,7 @@ class OrdersSeeder extends Seeder
 
                 if ($books->isEmpty()) {
                     $order->delete();
+
                     return;
                 }
 
@@ -56,7 +56,7 @@ class OrdersSeeder extends Seeder
                         $instance->update([
                             'status' => 'sold',
                             'order_item_id' => $orderItem->id,
-                            'sold_at' => now()
+                            'sold_at' => now(),
                         ]);
                     }
 
