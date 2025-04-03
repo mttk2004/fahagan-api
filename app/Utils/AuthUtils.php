@@ -12,6 +12,14 @@ class AuthUtils
         return Auth::guard('sanctum')->user();
     }
 
+    /**
+     * Kiểm tra xem người dùng đã đăng nhập hay chưa
+     */
+    public static function check()
+    {
+        return Auth::guard('sanctum')->check();
+    }
+
     public static function userCan($permission)
     {
         $user = self::user();

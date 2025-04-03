@@ -49,12 +49,15 @@ Route::middleware('auth.*')->group(function () {
              ->whereNumber('book_id')
              ->name('cart.remove');
 
-        // My account
-        Route::prefix('my-account')->group(function () {
-            // Addresses
-            Route::apiResource('addresses', AddressController::class)
-                 ->except('show');
-        });
+        // Addresses
+        Route::get('addresses', [AddressController::class, 'index'])
+             ->name('addresses.index');
+        Route::post('addresses', [AddressController::class, 'store'])
+             ->name('addresses.store');
+        Route::patch('addresses/{address_id}', [AddressController::class, 'update'])
+             ->name('addresses.update');
+        Route::delete('addresses/{address_id}', [AddressController::class, 'destroy'])
+             ->name('addresses.destroy');
     });
 
     /**
@@ -76,7 +79,7 @@ Route::middleware('auth.*')->group(function () {
 });
 
 // Genres routes
-Route::middleware(['auth:sanctum', 'verified'])
+Route::middleware('auth.*')
     ->prefix('genres')
     ->group(function () {
         Route::post('/restore/{genre}', [GenreController::class, 'restore'])
@@ -88,7 +91,7 @@ Route::get('genres/slug/{slug}', [GenreController::class, 'showBySlug'])
     ->name('genres.showBySlug');
 
 // Suppliers routes
-Route::middleware(['auth:sanctum', 'verified'])
+Route::middleware('auth.*')
     ->prefix('suppliers')
     ->group(function () {
         Route::post('/restore/{supplier}', [SupplierController::class, 'restore'])

@@ -3,37 +3,20 @@
 namespace App\Http\Requests\V1;
 
 use App\Http\Requests\BaseRequest;
+use App\Http\Validation\V1\Address\AddressValidationMessages;
+use App\Http\Validation\V1\Address\AddressValidationRules;
 use App\Interfaces\HasValidationMessages;
 
 class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
 {
     public function rules(): array
     {
-        return [
-            'name' => 'sometimes|string',
-            'phone' => [
-                'sometimes',
-                'string',
-                'regex:/^0[35789][0-9]{8}$/',
-            ],
-            'city' => 'sometimes|string',
-            'district' => 'sometimes|string',
-            'ward' => 'sometimes|string',
-            'address_line' => 'sometimes|string',
-        ];
+        return AddressValidationRules::getUpdateRules();
     }
 
     public function messages(): array
     {
-        return [
-            'name.string' => 'Tên nên là một chuỗi.',
-            'phone.string' => 'Số điện thoại nên là một chuỗi.',
-            'phone.regex' => 'Số điện thoại không hợp lệ.',
-            'city.string' => 'Thành phố nên là một chuỗi.',
-            'district.string' => 'Quận/Huyện nên là một chuỗi.',
-            'ward.string' => 'Phường/Xã nên là một chuỗi.',
-            'address_line.string' => 'Địa chỉ nên là một chuỗi.',
-        ];
+        return AddressValidationMessages::getMessages();
     }
 
     public function authorize(): bool

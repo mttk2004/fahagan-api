@@ -46,18 +46,7 @@ class SupplierController extends Controller
             return ResponseUtils::forbidden();
         }
 
-        $query = Supplier::query();
-
-        // Apply filters
-        $supplierFilter = new SupplierFilter($request);
-        $query = $supplierFilter->apply($query);
-
-        // Apply sorting
-        $supplierSort = new SupplierSort($request);
-        $query = $supplierSort->apply($query);
-
-        // Get paginated results
-        $suppliers = $query->paginate($this->getPerPage($request));
+        $suppliers = $this->supplierService->getAllSuppliers($request, $this->getPerPage($request));
 
         return new SupplierCollection($suppliers);
     }

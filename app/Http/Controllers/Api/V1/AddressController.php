@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\Address\AddressDTO;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddressStoreRequest;
 use App\Http\Requests\V1\AddressUpdateRequest;
 use App\Http\Resources\V1\AddressCollection;
+use App\Http\Resources\V1\AddressResource;
+use App\Services\AddressService;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
@@ -16,6 +19,11 @@ class AddressController extends Controller
 {
     use HandlePagination;
 
+    public function __construct(
+        private readonly AddressService $addressService
+    ) {
+    }
+
     /*
      * Show all addresses of the authenticated user.
      *
@@ -24,9 +32,15 @@ class AddressController extends Controller
      */
     public function index()
     {
-        $addresses = AuthUtils::user()
-                              ->addresses()
-                              ->paginate($this->getPerPage(request()));
+        if (!AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
+
+        $addresses = $this->addressService->getAllAddresses(
+            AuthUtils::user(),
+            request(),
+            $this->getPerPage(request())
+        );
 
         return new AddressCollection($addresses);
     }
@@ -40,10 +54,15 @@ class AddressController extends Controller
      */
     public function store(AddressStoreRequest $request)
     {
-        $address = AuthUtils::user()->addresses()->create($request->validated());
+        if (!AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
+
+        $addressDTO = AddressDTO::fromRequestData($request->validated());
+        $address = $this->addressService->createAddress(AuthUtils::user(), $addressDTO);
 
         return ResponseUtils::created([
-            'address' => $address,
+            'address' => new AddressResource($address),
         ], ResponseMessage::CREATED_ADDRESS->value);
     }
 
@@ -57,12 +76,16 @@ class AddressController extends Controller
      */
     public function update(AddressUpdateRequest $request, $address_id)
     {
+        if (!AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
+
         try {
-            $address = AuthUtils::user()->addresses()->findOrFail($address_id);
-            $address->update($request->validated());
+            $addressDTO = AddressDTO::fromRequestData($request->validated());
+            $address = $this->addressService->updateAddress(AuthUtils::user(), $address_id, $addressDTO);
 
             return ResponseUtils::success([
-                'address' => $address,
+                'address' => new AddressResource($address),
             ], ResponseMessage::UPDATED_ADDRESS->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_ADDRESS->value);
@@ -78,9 +101,12 @@ class AddressController extends Controller
      */
     public function destroy($address_id)
     {
+        if (!AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
+
         try {
-            $address = AuthUtils::user()->addresses()->findOrFail($address_id);
-            $address->delete();
+            $this->addressService->deleteAddress(AuthUtils::user(), $address_id);
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_ADDRESS->value);
         } catch (ModelNotFoundException) {

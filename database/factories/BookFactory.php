@@ -15,6 +15,9 @@ class BookFactory extends Factory
         $fakePublicationDate = fake()->dateTimeBetween('-10 years');
         $fakeCreatedAt = fake()->dateTimeBetween($fakePublicationDate);
 
+        // Tìm một publisher hoặc tạo mới nếu không có
+        $publisher = Publisher::inRandomOrder()->first() ?? Publisher::factory()->create();
+
         return [
             'title' => ucfirst(
                 fake()->words(
@@ -34,7 +37,7 @@ class BookFactory extends Factory
             'created_at' => $fakeCreatedAt,
             'updated_at' => null,
 
-            'publisher_id' => Publisher::inRandomOrder()->first()->id,
+            'publisher_id' => $publisher->id,
         ];
     }
 }

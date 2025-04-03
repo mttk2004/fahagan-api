@@ -32,6 +32,11 @@ class TestPermissionSeeder extends Seeder
             'create_users',
             'edit_users',
             'delete_users',
+            'view_suppliers',
+            'create_suppliers',
+            'edit_suppliers',
+            'delete_suppliers',
+            'restore_suppliers',
         ];
 
         foreach ($permissions as $permission) {
