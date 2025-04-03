@@ -12,6 +12,7 @@ use App\Http\Resources\V1\PublisherResource;
 use App\Services\PublisherService;
 use App\Traits\HandlePagination;
 use App\Utils\ResponseUtils;
+use App\Utils\AuthUtils;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -133,6 +134,11 @@ class PublisherController extends Controller
      */
     public function destroy(int $publisherId)
     {
+        // Kiểm tra quyền xóa
+        if (!AuthUtils::userCan('delete_publishers')) {
+            return ResponseUtils::forbidden();
+        }
+
         try {
             $this->publisherService->deletePublisher($publisherId);
 
