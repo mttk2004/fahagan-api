@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DTOs\User\UserDTO;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangePasswordRequest;
@@ -10,16 +11,26 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
+use App\Services\UserService;
+use App\Traits\HandleUserExceptions;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
-use Auth;
-use Hash;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
+    use HandleUserExceptions;
+
+    public function __construct(
+        private readonly UserService $userService
+    ) {
+    }
+
     /**
      * Register a new user
      *
@@ -31,18 +42,24 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $userDTO = new UserDTO(
+                first_name: $request->validated()['first_name'],
+                last_name: $request->validated()['last_name'],
+                email: $request->validated()['email'],
+                phone: $request->validated()['phone'],
+                password: $request->validated()['password'],
+                is_customer: $request->validated()['is_customer'] ?? true,
+            );
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'is_customer' => $data['is_customer'] ?? true,
-        ]);
+            $user = $this->userService->createUser($userDTO);
 
-        return ResponseUtils::created([
-            'user' => new UserResource($user),
-        ], ResponseMessage::REGISTER_SUCCESS->value);
+            return ResponseUtils::created([
+                'user' => new UserResource($user),
+            ], ResponseMessage::REGISTER_SUCCESS->value);
+        } catch (Exception $e) {
+            return $this->handleUserException($e, $request->validated(), null, 'đăng ký');
+        }
     }
 
     /**
@@ -62,11 +79,11 @@ class AuthController extends Controller
             return ResponseUtils::unauthorized(ResponseMessage::LOGIN_FAILED->value);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->input('email'))->first();
         $user->update(['last_login' => now()]);
 
         $token = $user->createToken(
-            'API token for ' . $request->email,
+            'API token for ' . $request->input('email'),
             ['*'],
             now()->addWeek()
         )->plainTextToken;
@@ -112,11 +129,22 @@ class AuthController extends Controller
             return ResponseUtils::validationError(ResponseMessage::WRONG_OLD_PASSWORD->value);
         }
 
-        $user->update([
-            'password' => bcrypt($validatedData['new_password']),
-        ]);
+        try {
+            $userDTO = new UserDTO(
+                first_name: null,
+                last_name: null,
+                email: null,
+                phone: null,
+                password: $validatedData['new_password'],
+                is_customer: null,
+            );
 
-        return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
+            $this->userService->updateUser($user->id, $userDTO);
+
+            return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
+        } catch (Exception $e) {
+            return $this->handleUserException($e, $request->validated(), $user->id, 'đổi mật khẩu');
+        }
     }
 
     /**

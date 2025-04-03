@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\User\UserValidationMessages;
+use App\Enums\User\UserValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Models\User;
@@ -13,62 +15,43 @@ class RegisterRequest extends BaseRequest implements HasValidationMessages
     public function rules(): array
     {
         return [
-            'first_name' => ['required', 'string', 'max:30'],
-            'last_name' => ['required', 'string', 'max:30'],
-            'phone' => [
-                'required',
-                'string',
-                'regex:/^0[35789][0-9]{8}$/',
-                'unique:' . User::class,
-            ],
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:50',
-                'unique:' . User::class,
-            ],
-            'password' => [
-                'required',
-                'string',
-                'confirmed',
-                Password::default(),
-            ],
+            'first_name' => UserValidationRules::FIRST_NAME->rules(),
+            'last_name' => UserValidationRules::LAST_NAME->rules(),
+            'phone' => UserValidationRules::PHONE->rules(),
+            'email' => UserValidationRules::EMAIL->rules(),
+            'password' => UserValidationRules::PASSWORD->rules(),
+            'is_customer' => UserValidationRules::IS_CUSTOMER->rules(),
         ];
     }
 
     public function messages(): array
     {
         return [
-            'first_name' => [
-                'required' => 'Tên là trường bắt buộc.',
-                'string' => 'Tên nên là một chuỗi.',
-                'max:30' => 'Tên nên có độ dài tối đa 30.',
-            ],
-            'last_name' => [
-                'required' => 'Họ là trường bắt buộc.',
-                'string' => 'Họ nên là một chuỗi.',
-                'max:30' => 'Họ nên có độ dài tối đa 30.',
-            ],
-            'phone' => [
-                'required' => 'Số điện thoại là trường bắt buộc.',
-                'string' => 'Số điện thoại nên là một chuỗi.',
-                'regex' => 'Số điện thoại không hợp lệ.',
-                'unique' => 'Số điện thoại đã được sử dụng.',
-            ],
-            'email' => [
-                'required' => 'Email là trường bắt buộc.',
-                'string' => 'Email nên là một chuỗi.',
-                'email' => 'Email không hợp lệ.',
-                'max:50' => 'Email nên có độ dài tối đa 50.',
-                'unique' => 'Email đã được sử dụng.',
-            ],
-            'password' => [
-                'required' => 'Mật khẩu là trường bắt buộc.',
-                'string' => 'Mật khẩu nên là một chuỗi.',
-                'confirmed' => 'Mật khẩu không khớp.',
-                'password' => 'Mật khẩu nên chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
-            ],
+            'first_name.required' => UserValidationMessages::FIRST_NAME_REQUIRED->message(),
+            'first_name.string' => UserValidationMessages::FIRST_NAME_STRING->message(),
+            'first_name.max' => UserValidationMessages::FIRST_NAME_MAX->message(),
+
+            'last_name.required' => UserValidationMessages::LAST_NAME_REQUIRED->message(),
+            'last_name.string' => UserValidationMessages::LAST_NAME_STRING->message(),
+            'last_name.max' => UserValidationMessages::LAST_NAME_MAX->message(),
+
+            'email.required' => UserValidationMessages::EMAIL_REQUIRED->message(),
+            'email.string' => UserValidationMessages::EMAIL_STRING->message(),
+            'email.email' => UserValidationMessages::EMAIL_EMAIL->message(),
+            'email.max' => UserValidationMessages::EMAIL_MAX->message(),
+            'email.unique' => UserValidationMessages::EMAIL_UNIQUE->message(),
+
+            'phone.required' => UserValidationMessages::PHONE_REQUIRED->message(),
+            'phone.string' => UserValidationMessages::PHONE_STRING->message(),
+            'phone.regex' => UserValidationMessages::PHONE_REGEX->message(),
+            'phone.unique' => UserValidationMessages::PHONE_UNIQUE->message(),
+
+            'password.required' => UserValidationMessages::PASSWORD_REQUIRED->message(),
+            'password.string' => UserValidationMessages::PASSWORD_STRING->message(),
+            'password.confirmed' => UserValidationMessages::PASSWORD_CONFIRMED->message(),
+            'password.min' => UserValidationMessages::PASSWORD_MIN->message(),
+
+            'is_customer.boolean' => UserValidationMessages::IS_CUSTOMER_BOOLEAN->message(),
         ];
     }
 
