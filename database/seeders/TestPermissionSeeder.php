@@ -26,6 +26,8 @@ class TestPermissionSeeder extends Seeder
             'create_genres',
             'edit_genres',
             'delete_genres',
+            'view_genres',
+            'restore_genres',
             'view_users',
             'create_users',
             'edit_users',

@@ -13,12 +13,10 @@ class GenreDTO
 
     public static function fromRequest(array $validatedData): self
     {
-        $attributes = $validatedData['data']['attributes'] ?? [];
-
         return new self(
-            name: $attributes['name'] ?? null,
-            slug: $attributes['slug'] ?? null,
-            description: $attributes['description'] ?? null,
+            name: $validatedData['name'] ?? null,
+            slug: $validatedData['slug'] ?? null,
+            description: $validatedData['description'] ?? null,
         );
     }
 

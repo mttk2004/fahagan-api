@@ -14,8 +14,8 @@ enum GenreValidationRules
     public function rules(): array
     {
         return match($this) {
-            self::NAME => ['required', 'string', 'max:50', 'unique:' . Genre::class],
-            self::SLUG => ['required', 'string', 'max:100', 'unique:' . Genre::class],
+            self::NAME => $this->getNameRuleWithUnique(),
+            self::SLUG => $this->getSlugRuleWithUnique(),
             self::DESCRIPTION => ['sometimes', 'nullable', 'string', 'max:500'],
         };
     }

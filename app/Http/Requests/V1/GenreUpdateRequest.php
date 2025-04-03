@@ -16,24 +16,22 @@ class GenreUpdateRequest extends BaseRequest implements HasValidationMessages
         // Lấy ID thể loại từ route parameter
         $genreId = request()->route('genre');
 
-        $genreRules = new GenreValidationRules();
-
         return [
-            'data.attributes.name' => array_merge(
+            'name' => array_merge(
                 ['sometimes'],
                 array_filter(
-                    $genreRules->getNameRuleWithUnique($genreId),
+                    GenreValidationRules::NAME->getNameRuleWithUnique($genreId),
                     fn ($rule) => $rule !== 'required'
                 )
             ),
-            'data.attributes.slug' => array_merge(
+            'slug' => array_merge(
                 ['sometimes'],
                 array_filter(
-                    $genreRules->getSlugRuleWithUnique($genreId),
+                    GenreValidationRules::SLUG->getSlugRuleWithUnique($genreId),
                     fn ($rule) => $rule !== 'required'
                 )
             ),
-            'data.attributes.description' => array_merge(
+            'description' => array_merge(
                 ['sometimes'],
                 array_filter(GenreValidationRules::DESCRIPTION->rules(), fn ($rule) => $rule !== 'required')
             ),
@@ -43,16 +41,16 @@ class GenreUpdateRequest extends BaseRequest implements HasValidationMessages
     public function messages(): array
     {
         return [
-            'data.attributes.name.string' => GenreValidationMessages::NAME_STRING->message(),
-            'data.attributes.name.max' => GenreValidationMessages::NAME_MAX->message(),
-            'data.attributes.name.unique' => GenreValidationMessages::NAME_UNIQUE->message(),
+            'name.string' => GenreValidationMessages::NAME_STRING->message(),
+            'name.max' => GenreValidationMessages::NAME_MAX->message(),
+            'name.unique' => GenreValidationMessages::NAME_UNIQUE->message(),
 
-            'data.attributes.slug.string' => GenreValidationMessages::SLUG_STRING->message(),
-            'data.attributes.slug.max' => GenreValidationMessages::SLUG_MAX->message(),
-            'data.attributes.slug.unique' => GenreValidationMessages::SLUG_UNIQUE->message(),
+            'slug.string' => GenreValidationMessages::SLUG_STRING->message(),
+            'slug.max' => GenreValidationMessages::SLUG_MAX->message(),
+            'slug.unique' => GenreValidationMessages::SLUG_UNIQUE->message(),
 
-            'data.attributes.description.string' => GenreValidationMessages::DESCRIPTION_STRING->message(),
-            'data.attributes.description.max' => GenreValidationMessages::DESCRIPTION_MAX->message(),
+            'description.string' => GenreValidationMessages::DESCRIPTION_STRING->message(),
+            'description.max' => GenreValidationMessages::DESCRIPTION_MAX->message(),
         ];
     }
 

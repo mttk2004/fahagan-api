@@ -223,7 +223,11 @@ class GenreController extends Controller
     {
         $validatedData = $request->validated();
 
-        return GenreDTO::fromRequest($validatedData);
+        return new GenreDTO(
+            name: $validatedData['name'] ?? null,
+            slug: $validatedData['slug'] ?? null,
+            description: $validatedData['description'] ?? null
+        );
     }
 
     /**
@@ -234,6 +238,6 @@ class GenreController extends Controller
      */
     private function isEmptyUpdateData(array $validatedData): bool
     {
-        return empty($validatedData['data']['attributes'] ?? []);
+        return empty($validatedData);
     }
 }
