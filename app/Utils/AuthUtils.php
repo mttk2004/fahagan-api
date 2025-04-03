@@ -2,7 +2,8 @@
 
 namespace App\Utils;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthUtils
 {
@@ -15,6 +16,20 @@ class AuthUtils
     {
         $user = self::user();
 
-        return $user ? $user->hasPermissionTo($permission) : false;
+        if (!$user) {
+            return false;
+        }
+
+        $hasPermission = $user->hasPermissionTo($permission);
+
+        // Debug information
+        Log::debug("Permission check for [{$permission}]", [
+            'user_id' => $user->id,
+            'user_roles' => $user->getRoleNames(),
+            'has_permission' => $hasPermission,
+            'all_permissions' => $user->getAllPermissions()->pluck('name')
+        ]);
+
+        return $hasPermission;
     }
 }
