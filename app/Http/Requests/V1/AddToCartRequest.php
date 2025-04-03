@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests\V1;
 
+use App\DTOs\CartItem\CartItemDTO;
+use App\Enums\CartItem\CartItemValidationMessages;
+use App\Enums\CartItem\CartItemValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 
@@ -10,25 +13,30 @@ class AddToCartRequest extends BaseRequest implements HasValidationMessages
     public function rules(): array
     {
         return [
-            'book_id' => 'required|integer|exists:books,id',
-            'quantity' => 'required|integer|min:1',
+            'book_id' => CartItemValidationRules::BOOK_ID->rules(),
+            'quantity' => CartItemValidationRules::QUANTITY->rules(),
         ];
     }
 
     public function messages(): array
     {
         return [
-            'book_id.required' => 'ID sách là trường bắt buộc.',
-            'book_id.integer' => 'ID sách nên là một số nguyên.',
-            'book_id.exists' => 'ID sách không tồn tại.',
-            'quantity.required' => 'Số lượng là trường bắt buộc.',
-            'quantity.integer' => 'Số lượng nên là một số nguyên.',
-            'quantity.min' => 'Số lượng nên lớn hơn hoặc bằng 1.',
+            'book_id.required' => CartItemValidationMessages::BOOK_ID_REQUIRED->message(),
+            'book_id.integer' => CartItemValidationMessages::BOOK_ID_INTEGER->message(),
+            'book_id.exists' => CartItemValidationMessages::BOOK_ID_EXISTS->message(),
+            'quantity.required' => CartItemValidationMessages::QUANTITY_REQUIRED->message(),
+            'quantity.integer' => CartItemValidationMessages::QUANTITY_INTEGER->message(),
+            'quantity.min' => CartItemValidationMessages::QUANTITY_MIN->message(),
         ];
     }
 
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function toDTO(): CartItemDTO
+    {
+        return CartItemDTO::fromRequest($this->validated());
     }
 }

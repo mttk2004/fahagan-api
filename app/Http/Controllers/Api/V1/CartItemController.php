@@ -7,25 +7,29 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddToCartRequest;
 use App\Http\Resources\V1\CartItemCollection;
 use App\Http\Resources\V1\CartItemResource;
+use App\Services\CartItemService;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class CartItemController extends Controller
 {
+    public function __construct(
+        private readonly CartItemService $cartItemService
+    ) {
+    }
+
     /**
      * Get all cart items of the customer.
      *
      * @return JsonResponse
      * @group Cart
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $user = AuthUtils::user();
-
-        $cartItems = $user->cartItems()
-                          ->with('book')
-                          ->get();
+        $cartItems = $this->cartItemService->getCartItems($user);
 
         return ResponseUtils::success([
             'cart_items' => new CartItemCollection($cartItems),
@@ -40,24 +44,19 @@ class CartItemController extends Controller
      * @return JsonResponse
      * @group Cart
      */
-    public function updateCartItemQuantity(AddToCartRequest $request)
+    public function updateCartItemQuantity(AddToCartRequest $request): JsonResponse
     {
         $user = AuthUtils::user();
-        $validatedData = $request->validated();
+        $cartItemDTO = $request->toDTO();
 
-        if ($user->isBookInCart($validatedData['book_id'])) {
-            // Update the quantity of the existing cart item
-            $user->booksInCart()->updateExistingPivot($validatedData['book_id'], [
-                'quantity' => $validatedData['quantity'],
-            ]);
+        try {
+            $cartItem = $this->cartItemService->updateCartItemQuantity($user, $cartItemDTO);
 
             return ResponseUtils::success([
-                'cart_item' => new CartItemResource(
-                    $user->getCartItemByBook($validatedData['book_id'])
-                ),
+                'cart_item' => new CartItemResource($cartItem),
             ], ResponseMessage::UPDATED_CART_ITEM->value);
-        } else {
-            return $this->addToCart($request);
+        } catch (Exception $e) {
+            return ResponseUtils::serverError($e->getMessage());
         }
     }
 
@@ -69,24 +68,22 @@ class CartItemController extends Controller
      * @return JsonResponse
      * @group Cart
      */
-    public function addToCart(AddToCartRequest $request)
+    public function addToCart(AddToCartRequest $request): JsonResponse
     {
         $user = AuthUtils::user();
-        $validatedData = $request->validated();
+        $cartItemDTO = $request->toDTO();
 
-        if ($user->isBookInCart($validatedData['book_id'])) {
-            return ResponseUtils::badRequest(ResponseMessage::ALREADY_IN_CART->value);
-        } else {
-            // Create a new cart item for the user
-            $user->booksInCart()->attach($validatedData['book_id'], [
-                'quantity' => $validatedData['quantity'],
-            ]);
+        try {
+            $cartItem = $this->cartItemService->addToCart($user, $cartItemDTO);
 
             return ResponseUtils::created([
-                'cart_item' => new CartItemResource(
-                    $user->getCartItemByBook($validatedData['book_id'])
-                ),
+                'cart_item' => new CartItemResource($cartItem),
             ], ResponseMessage::ADDED_TO_CART->value);
+        } catch (Exception $e) {
+            if ($e->getMessage() === 'Sách đã tồn tại trong giỏ hàng.') {
+                return ResponseUtils::badRequest(ResponseMessage::ALREADY_IN_CART->value);
+            }
+            return ResponseUtils::serverError($e->getMessage());
         }
     }
 
@@ -98,16 +95,18 @@ class CartItemController extends Controller
      * @return JsonResponse
      * @group Cart
      */
-    public function removeFromCart(int $book_id)
+    public function removeFromCart(int $book_id): JsonResponse
     {
         $user = AuthUtils::user();
 
-        if (! $user->isBookInCart($book_id)) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);
+        try {
+            $this->cartItemService->removeFromCart($user, $book_id);
+            return ResponseUtils::noContent(ResponseMessage::REMOVED_FROM_CART->value);
+        } catch (Exception $e) {
+            if ($e->getMessage() === 'Sách không tồn tại trong giỏ hàng.') {
+                return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);
+            }
+            return ResponseUtils::serverError($e->getMessage());
         }
-
-        $user->booksInCart()->detach($book_id);
-
-        return ResponseUtils::noContent(ResponseMessage::REMOVED_FROM_CART->value);
     }
 }
