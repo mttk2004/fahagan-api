@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\Author\AuthorDTO;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AuthorStoreRequest;
 use App\Http\Requests\V1\AuthorUpdateRequest;
 use App\Http\Resources\V1\AuthorCollection;
 use App\Http\Resources\V1\AuthorResource;
-use App\Http\Sorts\V1\AuthorSort;
-use App\Models\Author;
+use App\Services\AuthorService;
+use App\Traits\HandleAuthorExceptions;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,6 +22,12 @@ use Illuminate\Http\Request;
 class AuthorController extends Controller
 {
     use HandlePagination;
+    use HandleAuthorExceptions;
+
+    public function __construct(
+        private readonly AuthorService $authorService
+    ) {
+    }
 
     /**
      * Get all authors
@@ -30,9 +38,7 @@ class AuthorController extends Controller
      */
     public function index(Request $request)
     {
-        $authorSort = new AuthorSort($request);
-        $authors = $authorSort->apply(Author::query())
-                              ->paginate($this->getPerPage($request));
+        $authors = $this->authorService->getAllAuthors($request, $this->getPerPage($request));
 
         return new AuthorCollection($authors);
     }
@@ -47,14 +53,16 @@ class AuthorController extends Controller
      */
     public function store(AuthorStoreRequest $request)
     {
-        $validatedData = $request->validated();
-        $authorData = $validatedData['data']['attributes'];
+        try {
+            $authorDTO = $this->createAuthorDTOFromRequest($request);
+            $author = $this->authorService->createAuthor($authorDTO);
 
-        $author = Author::create($authorData);
-
-        return ResponseUtils::created([
-            'author' => new AuthorResource($author),
-        ], ResponseMessage::CREATED_AUTHOR->value);
+            return ResponseUtils::created([
+                'author' => new AuthorResource($author),
+            ], ResponseMessage::CREATED_AUTHOR->value);
+        } catch (Exception $e) {
+            return $this->handleAuthorException($e, $request->validated(), null, 'tạo');
+        }
     }
 
     /**
@@ -69,8 +77,10 @@ class AuthorController extends Controller
     public function show($author_id)
     {
         try {
+            $author = $this->authorService->getAuthorById($author_id);
+
             return ResponseUtils::success([
-                'author' => new AuthorResource(Author::findOrFail($author_id)),
+                'author' => new AuthorResource($author),
             ]);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
@@ -89,17 +99,21 @@ class AuthorController extends Controller
     public function update(AuthorUpdateRequest $request, $author_id)
     {
         try {
-            $author = Author::findOrFail($author_id);
-            $validatedData = $request->validated();
-            $authorData = $validatedData['data']['attributes'];
+            $authorDTO = $this->createAuthorDTOFromRequest($request);
 
-            $author->update($authorData);
+            if ($this->isEmptyUpdateData($request->validated())) {
+                return ResponseUtils::badRequest('Không có dữ liệu nào để cập nhật.');
+            }
+
+            $author = $this->authorService->updateAuthor($author_id, $authorDTO);
 
             return ResponseUtils::success([
                 'author' => new AuthorResource($author),
             ], ResponseMessage::UPDATED_AUTHOR->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+        } catch (Exception $e) {
+            return $this->handleAuthorException($e, $request->validated(), $author_id, 'cập nhật');
         }
     }
 
@@ -118,11 +132,38 @@ class AuthorController extends Controller
         }
 
         try {
-            Author::findOrFail($author_id)->delete();
+            $this->authorService->deleteAuthor($author_id);
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+        } catch (Exception $e) {
+            return $this->handleAuthorException($e, [], $author_id, 'xóa');
         }
+    }
+
+    /**
+     * Tạo AuthorDTO từ request đã validate
+     *
+     * @param AuthorStoreRequest|AuthorUpdateRequest $request
+     * @return AuthorDTO
+     */
+    private function createAuthorDTOFromRequest(AuthorStoreRequest|AuthorUpdateRequest $request): AuthorDTO
+    {
+        $validatedData = $request->validated();
+
+        return AuthorDTO::fromRequest($validatedData);
+    }
+
+    /**
+     * Kiểm tra xem dữ liệu cập nhật có rỗng không
+     *
+     * @param array $validatedData
+     * @return bool
+     */
+    private function isEmptyUpdateData(array $validatedData): bool
+    {
+        return empty($validatedData['data']['attributes'] ?? [])
+            && empty($validatedData['data']['relationships'] ?? []);
     }
 }
