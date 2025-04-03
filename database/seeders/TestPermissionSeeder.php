@@ -26,6 +26,10 @@ class TestPermissionSeeder extends Seeder
             'create_genres',
             'edit_genres',
             'delete_genres',
+            'view_users',
+            'create_users',
+            'edit_users',
+            'delete_users',
         ];
 
         foreach ($permissions as $permission) {

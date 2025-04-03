@@ -11,7 +11,11 @@ class UserCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection,
+            'status' => 200,
+            'message' => 'Danh sách người dùng đã được tải thành công.',
+            'data' => [
+                'users' => $this->collection,
+            ],
             'included' => [],
         ];
     }
