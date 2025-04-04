@@ -8,7 +8,6 @@ use App\Enums\CartItem\CartItemValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Traits\HasApiJsonValidation;
-use Illuminate\Support\Arr;
 
 class AddToCartRequest extends BaseRequest implements HasValidationMessages
 {
@@ -20,14 +19,14 @@ class AddToCartRequest extends BaseRequest implements HasValidationMessages
     protected function prepareForValidation()
     {
         // Nếu người dùng gửi dữ liệu không theo format JSON:API, chuyển đổi sang format JSON:API
-        if (!$this->has('data') && $this->has('book_id') && $this->has('quantity')) {
+        if (! $this->has('data') && $this->has('book_id') && $this->has('quantity')) {
             $this->merge([
                 'data' => [
                     'attributes' => [
                         'book_id' => $this->input('book_id'),
                         'quantity' => $this->input('quantity'),
-                    ]
-                ]
+                    ],
+                ],
             ]);
         }
     }

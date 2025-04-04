@@ -10,8 +10,8 @@ test('new users can register', function () {
                 'phone' => '0987654321',
                 'password' => 'password',
                 'password_confirmation' => 'password',
-            ]
-        ]
+            ],
+        ],
     ]);
 
     $response->assertStatus(201)

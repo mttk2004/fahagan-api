@@ -121,7 +121,7 @@ class SupplierControllerTest extends TestCase
                         })->toArray(),
                     ],
                 ],
-            ]
+            ],
         ];
 
         // Gọi API tạo nhà cung cấp
@@ -218,7 +218,7 @@ class SupplierControllerTest extends TestCase
                         })->toArray(),
                     ],
                 ],
-            ]
+            ],
         ];
 
         // Gọi API cập nhật nhà cung cấp
@@ -296,7 +296,7 @@ class SupplierControllerTest extends TestCase
                     'ward' => 'Dịch Vọng',
                     'address_line' => 'Số 1 Đường ABC',
                 ],
-            ]
+            ],
         ];
 
         // Gọi API tạo nhà cung cấp không có xác thực
@@ -322,7 +322,7 @@ class SupplierControllerTest extends TestCase
                     'phone' => '9876543210',
                     'email' => 'updated@example.com',
                 ],
-            ]
+            ],
         ];
 
         // Gọi API cập nhật nhà cung cấp với tài khoản không có quyền
@@ -357,8 +357,8 @@ class SupplierControllerTest extends TestCase
                 'attributes' => [
                     'phone' => '0123456789',
                     'email' => 'invalid-email', // Email không đúng định dạng
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API tạo nhà cung cấp với dữ liệu không hợp lệ

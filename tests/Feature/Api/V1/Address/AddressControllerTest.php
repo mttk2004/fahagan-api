@@ -52,8 +52,8 @@ class AddressControllerTest extends TestCase
                     'district' => 'Cầu Giấy',
                     'ward' => 'Dịch Vọng',
                     'address_line' => 'Số 1 Đường ABC',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API tạo địa chỉ
@@ -94,8 +94,8 @@ class AddressControllerTest extends TestCase
                     'name' => 'Tên Mới',
                     'phone' => '0386123456',
                     'city' => 'Hồ Chí Minh',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API cập nhật địa chỉ
@@ -129,8 +129,8 @@ class AddressControllerTest extends TestCase
             'data' => [
                 'attributes' => [
                     'name' => 'Tên Mới',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API cập nhật địa chỉ không tồn tại
@@ -199,8 +199,8 @@ class AddressControllerTest extends TestCase
             'data' => [
                 'attributes' => [
                     'name' => 'Tên Mới',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API xem địa chỉ của người dùng khác
@@ -219,8 +219,8 @@ class AddressControllerTest extends TestCase
                 'attributes' => [
                     'name' => 'Nguyễn Văn A',
                     'phone' => 'invalid-phone', // Số điện thoại không đúng định dạng
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API tạo địa chỉ với dữ liệu không hợp lệ
@@ -234,7 +234,7 @@ class AddressControllerTest extends TestCase
                 'data.attributes.city',
                 'data.attributes.district',
                 'data.attributes.ward',
-                'data.attributes.address_line'
+                'data.attributes.address_line',
             ]);
     }
 }

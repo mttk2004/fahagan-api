@@ -30,7 +30,7 @@ class CartItemService
      */
     public function findCartItem(User $user, int $bookId): ?CartItem
     {
-        if (!$user->isBookInCart($bookId)) {
+        if (! $user->isBookInCart($bookId)) {
             return null;
         }
 

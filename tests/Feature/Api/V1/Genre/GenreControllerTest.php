@@ -127,8 +127,8 @@ class GenreControllerTest extends TestCase
                     'name' => 'Tiểu thuyết lịch sử',
                     'slug' => 'tieu-thuyet-lich-su',
                     'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API tạo thể loại
@@ -162,8 +162,8 @@ class GenreControllerTest extends TestCase
                     'name' => 'Tiểu thuyết lịch sử',
                     'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
                     'slug' => 'tieu-thuyet-lich-su',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API tạo thể loại
@@ -203,8 +203,8 @@ class GenreControllerTest extends TestCase
                 'attributes' => [
                     'name' => 'Tên Mới',
                     'description' => 'Mô tả mới',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API cập nhật thể loại
@@ -242,8 +242,8 @@ class GenreControllerTest extends TestCase
             'data' => [
                 'attributes' => [
                     'name' => 'Thể loại mới',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API cập nhật thể loại
@@ -321,8 +321,8 @@ class GenreControllerTest extends TestCase
                     'name' => 'Tiểu thuyết lịch sử',
                     'slug' => 'tieu-thuyet-lich-su',
                     'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API tạo thể loại không có xác thực
@@ -346,8 +346,8 @@ class GenreControllerTest extends TestCase
                 'attributes' => [
                     'name' => 'Tên Mới',
                     'description' => 'Mô tả mới',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Gọi API cập nhật thể loại với user không có quyền
@@ -379,8 +379,8 @@ class GenreControllerTest extends TestCase
         // Tạo dữ liệu không hợp lệ (thiếu các trường bắt buộc) với định dạng JSON:API
         $invalidData = [
             'data' => [
-                'attributes' => []
-            ]
+                'attributes' => [],
+            ],
         ];
 
         // Gọi API tạo thể loại với dữ liệu không hợp lệ
@@ -391,7 +391,7 @@ class GenreControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors([
                 'data.attributes.name',
-                'data.attributes.slug'
+                'data.attributes.slug',
             ]);
     }
 }
