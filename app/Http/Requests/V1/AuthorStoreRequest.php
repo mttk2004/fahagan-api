@@ -2,58 +2,45 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Author\AuthorValidationMessages;
-use App\Enums\Author\AuthorValidationRules;
-use App\Http\Requests\BaseRelationshipRequest;
+use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
+use App\Traits\HasRequestFormat;
 use App\Utils\AuthUtils;
 
-class AuthorStoreRequest extends BaseRelationshipRequest
+class AuthorStoreRequest extends BaseRequest implements HasValidationMessages
 {
-    /**
-     * Lấy danh sách các attribute cần chuyển đổi
-     */
-    protected function getAttributeNames(): array
+    use HasRequestFormat;
+
+    protected function prepareForValidation(): void
+    {
+        $this->convertToJsonApiFormat(['name', 'biography', 'image_url']);
+    }
+
+    public function rules(): array
     {
         return [
-            'name',
-            'biography',
-            'image_url'
+            'data.attributes.name' => ['required', 'string', 'max:255'],
+            'data.attributes.biography' => ['required', 'string'],
+            'data.attributes.image_url' => ['required', 'string', 'max:255'],
         ];
     }
 
-    /**
-     * Lấy quy tắc cho attributes
-     */
-    protected function getAttributeRules(): array
+    public function messages(): array
     {
         return [
-            'name' => AuthorValidationRules::NAME->rules(),
-            'biography' => AuthorValidationRules::BIOGRAPHY->rules(),
-            'image_url' => AuthorValidationRules::IMAGE_URL->rules(),
+            'data.attributes.name.required' => 'Tên tác giả là trường bắt buộc.',
+            'data.attributes.name.string' => 'Tên tác giả nên là một chuỗi.',
+            'data.attributes.name.max' => 'Tên tác giả nên có độ dài tối đa 255.',
+
+            'data.attributes.biography.required' => 'Tiểu sử tác giả là trường bắt buộc.',
+            'data.attributes.biography.string' => 'Tiểu sử tác giả nên là một chuỗi.',
+
+            'data.attributes.image_url.required' => 'Ảnh tác giả là trường bắt buộc.',
+            'data.attributes.image_url.string' => 'Ảnh tác giả nên là một chuỗi.',
+            'data.attributes.image_url.max' => 'Ảnh tác giả nên có độ dài tối đa 255.',
         ];
     }
 
-    /**
-     * Lấy quy tắc cho relationships
-     */
-    protected function getRelationshipRules(): array
-    {
-        return [
-            'data.relationships.books.data.*.id' => AuthorValidationRules::BOOK_ID->rules(),
-        ];
-    }
-
-    /**
-     * Lấy lớp ValidationMessages
-     */
-    protected function getValidationMessagesClass(): string
-    {
-        return AuthorValidationMessages::class;
-    }
-
-    /**
-     * Kiểm tra authorization
-     */
     public function authorize(): bool
     {
         return AuthUtils::userCan('create_authors');

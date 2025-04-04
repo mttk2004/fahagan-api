@@ -2,66 +2,43 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Author\AuthorValidationMessages;
-use App\Enums\Author\AuthorValidationRules;
-use App\Http\Requests\BaseRelationshipRequest;
-use App\Models\Author;
-use App\Traits\HasUpdateRules;
+use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
+use App\Traits\HasRequestFormat;
 use App\Utils\AuthUtils;
 
-class AuthorUpdateRequest extends BaseRelationshipRequest
+class AuthorUpdateRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasUpdateRules;
+    use HasRequestFormat;
 
-    /**
-     * Lấy danh sách các attribute cần chuyển đổi
-     */
-    protected function getAttributeNames(): array
+    protected function prepareForValidation(): void
+    {
+        $this->convertToJsonApiFormat(['name', 'biography', 'image_url']);
+    }
+
+    public function rules(): array
     {
         return [
-            'name',
-            'biography',
-            'image_url'
+            'data.attributes.name' => ['sometimes', 'string', 'max:255'],
+            'data.attributes.biography' => ['sometimes', 'string', 'max:255'],
+            'data.attributes.image_url' => ['sometimes', 'string', 'max:255'],
         ];
     }
 
-    /**
-     * Lấy quy tắc cho attributes
-     */
-    protected function getAttributeRules(): array
+    public function messages(): array
     {
-        $id = request()->route('author');
-
         return [
-            'name' => HasUpdateRules::transformToUpdateRules(AuthorValidationRules::NAME->rules()),
-            'biography' => HasUpdateRules::transformToUpdateRules(AuthorValidationRules::BIOGRAPHY->rules()),
-            'image_url' => HasUpdateRules::transformToUpdateRules(AuthorValidationRules::IMAGE_URL->rules()),
+            'data.attributes.name.string' => 'Tên tác giả phải là chuỗi',
+            'data.attributes.name.max' => 'Tên tác giả không được vượt quá 255 ký tự',
+
+            'data.attributes.biography.string' => 'Biography phải là chuỗi',
+            'data.attributes.biography.max' => 'Biography không được vượt quá 255 ký tự',
+
+            'data.attributes.image_url.string' => 'Image URL phải là chuỗi',
+            'data.attributes.image_url.max' => 'Image URL không được vượt quá 255 ký tự',
         ];
     }
 
-    /**
-     * Lấy quy tắc cho relationships
-     */
-    protected function getRelationshipRules(): array
-    {
-        return [
-            'data.relationships.books.data.*.id' => HasUpdateRules::transformToUpdateRules(
-                AuthorValidationRules::BOOK_ID->rules()
-            ),
-        ];
-    }
-
-    /**
-     * Lấy lớp ValidationMessages
-     */
-    protected function getValidationMessagesClass(): string
-    {
-        return AuthorValidationMessages::class;
-    }
-
-    /**
-     * Kiểm tra authorization
-     */
     public function authorize(): bool
     {
         return AuthUtils::userCan('edit_authors');

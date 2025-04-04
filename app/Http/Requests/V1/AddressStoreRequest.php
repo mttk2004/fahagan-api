@@ -2,25 +2,16 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Address\AddressValidationMessages;
-use App\Enums\Address\AddressValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
 use App\Traits\HasRequestFormat;
 
 class AddressStoreRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasApiJsonValidation;
     use HasRequestFormat;
 
-    /**
-     * Chuẩn bị dữ liệu trước khi validation
-     */
     protected function prepareForValidation(): void
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Address không có relationships, được phép sử dụng direct format
         $this->convertToJsonApiFormat([
             'name',
             'phone',
@@ -33,19 +24,43 @@ class AddressStoreRequest extends BaseRequest implements HasValidationMessages
 
     public function rules(): array
     {
-        return $this->mapAttributesRules([
-            'name' => AddressValidationRules::NAME->rules(),
-            'phone' => AddressValidationRules::PHONE->rules(),
-            'city' => AddressValidationRules::CITY->rules(),
-            'district' => AddressValidationRules::DISTRICT->rules(),
-            'ward' => AddressValidationRules::WARD->rules(),
-            'address_line' => AddressValidationRules::ADDRESS_LINE->rules(),
-        ]);
+        return [
+            'data.attributes.name' => ['required', 'string', 'max:255'],
+            'data.attributes.phone' => ['required', 'string', 'regex:/^0[35789][0-9]{8}$/'],
+            'data.attributes.city' => ['required', 'string', 'max:255'],
+            'data.attributes.district' => ['required', 'string', 'max:255'],
+            'data.attributes.ward' => ['required', 'string', 'max:255'],
+            'data.attributes.address_line' => ['required', 'string', 'max:255'],
+        ];
     }
 
     public function messages(): array
     {
-        return AddressValidationMessages::getJsonApiMessages();
+        return [
+            'data.attributes.name.required' => 'Tên là trường bắt buộc.',
+            'data.attributes.name.string' => 'Tên nên là một chuỗi.',
+            'data.attributes.name.max' => 'Tên không được vượt quá 255 ký tự.',
+
+            'data.attributes.phone.required' => 'Số điện thoại là trường bắt buộc.',
+            'data.attributes.phone.string' => 'Số điện thoại nên là một chuỗi.',
+            'data.attributes.phone.regex' => 'Số điện thoại không hợp lệ.',
+
+            'data.attributes.city.required' => 'Thành phố là trường bắt buộc.',
+            'data.attributes.city.string' => 'Thành phố nên là một chuỗi.',
+            'data.attributes.city.max' => 'Thành phố không được vượt quá 255 ký tự.',
+
+            'data.attributes.district.required' => 'Quận/Huyện là trường bắt buộc.',
+            'data.attributes.district.string' => 'Quận/Huyện nên là một chuỗi.',
+            'data.attributes.district.max' => 'Quận/Huyện không được vượt quá 255 ký tự.',
+
+            'data.attributes.ward.required' => 'Phường/Xã là trường bắt buộc.',
+            'data.attributes.ward.string' => 'Phường/Xã nên là một chuỗi.',
+            'data.attributes.ward.max' => 'Phường/Xã không được vượt quá 255 ký tự.',
+
+            'data.attributes.address_line.required' => 'Địa chỉ là trường bắt buộc.',
+            'data.attributes.address_line.string' => 'Địa chỉ nên là một chuỗi.',
+            'data.attributes.address_line.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
+        ];
     }
 
     public function authorize(): bool

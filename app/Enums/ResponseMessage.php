@@ -20,38 +20,38 @@ enum ResponseMessage: string
     /**
      * @group Create
      */
-    case CREATED_BOOK = 'Sách đã được tạo thành công.';
-    case CREATED_GENRE = 'Thể loại đã được tạo thành công.';
-    case CREATED_PUBLISHER = 'Nhà xuất bản đã được tạo thành công.';
-    case CREATED_USER = 'Người dùng đã được tạo thành công.';
-    case CREATED_AUTHOR = 'Tác giả đã được tạo thành công.';
-    case CREATED_DISCOUNT = 'Giảm giá đã được tạo thành công.';
-    case CREATED_ADDRESS = 'Địa chỉ đã được tạo thành công.';
-    case CREATED_SUPPLIER = 'Nhà cung cấp đã được tạo thành công.';
+    case CREATED_BOOK = 'Thêm sách thành công.';
+    case CREATED_GENRE = 'Thêm thể loại thành công.';
+    case CREATED_PUBLISHER = 'Thêm nhà xuất bản thành công.';
+    case CREATED_USER = 'Thêm người dùng thành công.';
+    case CREATED_AUTHOR = 'Thêm tác giả thành công.';
+    case CREATED_DISCOUNT = 'Thêm mã giảm giá thành công.';
+    case CREATED_ADDRESS = 'Thêm địa chỉ thành công.';
+    case CREATED_SUPPLIER = 'Thêm nhà cung cấp thành công.';
 
     /**
      * @group Update
      */
-    case UPDATED_BOOK = 'Sách đã được cập nhật thành công.';
-    case UPDATED_GENRE = 'Thể loại đã được cập nhật thành công.';
-    case UPDATED_PUBLISHER = 'Nhà xuất bản đã được cập nhật thành công.';
-    case UPDATED_USER = 'Người dùng đã được cập nhật thành công.';
-    case UPDATED_AUTHOR = 'Tác giả đã được cập nhật thành công.';
-    case UPDATED_DISCOUNT = 'Giảm giá đã được cập nhật thành công.';
-    case UPDATED_ADDRESS = 'Địa chỉ đã được cập nhật thành công.';
-    case UPDATED_SUPPLIER = 'Nhà cung cấp đã được cập nhật thành công.';
+    case UPDATED_BOOK = 'Cập nhật sách thành công.';
+    case UPDATED_GENRE = 'Cập nhật thể loại thành công.';
+    case UPDATED_PUBLISHER = 'Cập nhật nhà xuất bản thành công.';
+    case UPDATED_USER = 'Cập nhật người dùng thành công.';
+    case UPDATED_AUTHOR = 'Cập nhật tác giả thành công.';
+    case UPDATED_DISCOUNT = 'Cập nhật mã giảm giá thành công.';
+    case UPDATED_ADDRESS = 'Cập nhật địa chỉ thành công.';
+    case UPDATED_SUPPLIER = 'Cập nhật nhà cung cấp thành công.';
 
     /**
      * @group Delete
      */
-    case DELETED_BOOK = 'Sách đã được xóa thành công.';
-    case DELETED_GENRE = 'Thể loại đã được xóa thành công.';
-    case DELETED_PUBLISHER = 'Nhà xuất bản đã được xóa thành công.';
-    case DELETED_USER = 'Người dùng đã được xóa thành công.';
-    case DELETED_AUTHOR = 'Tác giả đã được xóa thành công.';
-    case DELETED_DISCOUNT = 'Giảm giá đã được xóa thành công.';
-    case DELETED_ADDRESS = 'Địa chỉ đã được xóa thành công.';
-    case DELETED_SUPPLIER = 'Nhà cung cấp đã được xóa thành công.';
+    case DELETED_BOOK = 'Xóa sách thành công.';
+    case DELETED_GENRE = 'Xóa thể loại thành công.';
+    case DELETED_PUBLISHER = 'Xóa nhà xuất bản thành công.';
+    case DELETED_USER = 'Xóa người dùng thành công.';
+    case DELETED_AUTHOR = 'Xóa tác giả thành công.';
+    case DELETED_DISCOUNT = 'Xóa mã giảm giá thành công.';
+    case DELETED_ADDRESS = 'Xóa địa chỉ thành công.';
+    case DELETED_SUPPLIER = 'Xóa nhà cung cấp thành công.';
 
     /**
      * @group Auth
@@ -68,14 +68,32 @@ enum ResponseMessage: string
     /**
      * @group Cart
      */
-    case ADDED_TO_CART = 'Sách đã được thêm vào giỏ hàng.';
-    case REMOVED_FROM_CART = 'Sách đã được xóa khỏi giỏ hàng.';
+    case ADDED_TO_CART = 'Thêm vào giỏ hàng thành công.';
+    case REMOVED_FROM_CART = 'Xóa khỏi giỏ hàng thành công.';
     case UPDATED_CART_ITEM = 'Số lượng sách trong giỏ hàng đã được cập nhật.';
-    case NOT_FOUND_CART_ITEM = 'Sách không tồn tại trong giỏ hàng.';
+    case NOT_FOUND_CART_ITEM = 'Không tìm thấy sản phẩm trong giỏ hàng.';
     case ALREADY_IN_CART = 'Sách đã tồn tại trong giỏ hàng.';
 
     case RESTORED_GENRE = 'Khôi phục thể loại thành công.';
 
     // Supplier
-    case RESTORED_SUPPLIER = 'Nhà cung cấp đã được khôi phục thành công.';
+    case RESTORED_SUPPLIER = 'Khôi phục nhà cung cấp thành công.';
+
+    case VALIDATION_ERROR = 'Dữ liệu không hợp lệ.';
+    case UNAUTHORIZED = 'Bạn không có quyền truy cập.';
+    case FORBIDDEN = 'Bạn không được phép thực hiện hành động này.';
+    case WRONG_CREDENTIALS = 'Thông tin đăng nhập không chính xác.';
+    case ACCOUNT_NOT_ACTIVE = 'Tài khoản chưa được kích hoạt.';
+    case ACCOUNT_BANNED = 'Tài khoản đã bị khóa.';
+    case EMAIL_NOT_FOUND = 'Email không tồn tại trong hệ thống.';
+    case EMAIL_ALREADY_EXISTS = 'Email đã tồn tại trong hệ thống.';
+    case EMAIL_SENT = 'Email đã được gửi.';
+    case PASSWORD_RESET_LINK_SENT = 'Link đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra email của bạn.';
+    case PASSWORD_RESET_SUCCESS = 'Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.';
+    case PASSWORD_CHANGE_SUCCESS = 'Đổi mật khẩu thành công.';
+    case TOKEN_INVALID = 'Token không hợp lệ.';
+    case TOKEN_EXPIRED = 'Token đã hết hạn.';
+    case LOGGED_OUT = 'Đăng xuất thành công.';
+    case REGISTERED = 'Đăng ký thành công. Vui lòng đăng nhập.';
+    case LOGGED_IN = 'Đăng nhập thành công.';
 }

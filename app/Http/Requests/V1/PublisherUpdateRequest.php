@@ -2,57 +2,41 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Publisher\PublisherValidationMessages;
-use App\Enums\Publisher\PublisherValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
 use App\Traits\HasRequestFormat;
-use App\Traits\HasUpdateRules;
 use App\Utils\AuthUtils;
 
 class PublisherUpdateRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasApiJsonValidation;
-    use HasUpdateRules;
-    use HasRequestFormat;
+  use HasRequestFormat;
 
-    /**
-     * Chuẩn bị dữ liệu trước khi validation
-     */
-    protected function prepareForValidation(): void
-    {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Publisher không có relationships, được phép sử dụng direct format
-        $this->convertToJsonApiFormat([
-            'name',
-            'biography'
-        ]);
-    }
+  protected function prepareForValidation(): void
+  {
+      $this->convertToJsonApiFormat(['name', 'biography']);
+  }
 
-    public function rules(): array
-    {
-        $publisherId = request()->route('publisher');
+  public function rules(): array
+  {
+      return [
+          'data.attributes.name' => ['sometimes', 'string', 'max:255', 'unique:publishers,name'],
+          'data.attributes.biography' => ['sometimes', 'string'],
+      ];
+  }
 
-        $attributesRules = $this->mapAttributesRules([
-            'name' => HasUpdateRules::transformToUpdateRules(
-                PublisherValidationRules::getNameRuleWithUnique($publisherId)
-            ),
-            'biography' => HasUpdateRules::transformToUpdateRules(
-                PublisherValidationRules::BIOGRAPHY->rules()
-            ),
-        ]);
+  public function messages(): array
+  {
+      return [
+          'data.attributes.name.string' => 'Tên nhà xuất bản nên là một chuỗi.',
+          'data.attributes.name.max' => 'Tên nhà xuất bản nên có độ dài tối đa 255.',
+          'data.attributes.name.unique' => 'Tên nhà xuất bản đã tồn tại.',
 
-        return $attributesRules;
-    }
+          'data.attributes.biography.string' => 'Tiểu sử nhà xuất bản nên là một chuỗi.',
+      ];
+  }
 
-    public function messages(): array
-    {
-        return PublisherValidationMessages::getJsonApiMessages();
-    }
-
-    public function authorize(): bool
-    {
-        return AuthUtils::userCan('edit_publishers');
-    }
+  public function authorize(): bool
+  {
+      return AuthUtils::userCan('edit_publishers');
+  }
 }

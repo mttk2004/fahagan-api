@@ -2,48 +2,43 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Publisher\PublisherValidationMessages;
-use App\Enums\Publisher\PublisherValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
 use App\Traits\HasRequestFormat;
 use App\Utils\AuthUtils;
 
 class PublisherStoreRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasApiJsonValidation;
-    use HasRequestFormat;
+  use HasRequestFormat;
 
-    /**
-     * Chuẩn bị dữ liệu trước khi validation
-     */
-    protected function prepareForValidation(): void
-    {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Publisher không có relationships, được phép sử dụng direct format
-        $this->convertToJsonApiFormat([
-            'name'
-        ]);
-    }
+  protected function prepareForValidation(): void
+  {
+      $this->convertToJsonApiFormat(['name', 'biography']);
+  }
 
-    public function rules(): array
-    {
-        $attributesRules = $this->mapAttributesRules([
-            'name' => PublisherValidationRules::getNameRuleWithUnique(),
-            'biography' => PublisherValidationRules::BIOGRAPHY->rules(),
-        ]);
+  public function rules(): array
+  {
+      return [
+          'data.attributes.name' => ['required', 'string', 'max:255', 'unique:publishers,name'],
+          'data.attributes.biography' => ['required', 'string'],
+      ];
+  }
 
-        return $attributesRules;
-    }
+  public function messages(): array
+  {
+      return [
+          'data.attributes.name.required' => 'Tên nhà xuất bản là trường bắt buộc.',
+          'data.attributes.name.string' => 'Tên nhà xuất bản nên là một chuỗi.',
+          'data.attributes.name.max' => 'Tên nhà xuất bản nên có độ dài tối đa 255.',
+          'data.attributes.name.unique' => 'Tên nhà xuất bản đã tồn tại.',
 
-    public function messages(): array
-    {
-        return PublisherValidationMessages::getJsonApiMessages();
-    }
+          'data.attributes.biography.required' => 'Tiểu sử nhà xuất bản là trường bắt buộc.',
+          'data.attributes.biography.string' => 'Tiểu sử nhà xuất bản nên là một chuỗi.',
+      ];
+  }
 
-    public function authorize(): bool
-    {
-        return AuthUtils::userCan('create_publishers');
-    }
+  public function authorize(): bool
+  {
+      return AuthUtils::userCan('create_publishers');
+  }
 }

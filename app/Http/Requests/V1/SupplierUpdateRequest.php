@@ -2,91 +2,61 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Supplier\SupplierValidationMessages;
-use App\Enums\Supplier\SupplierValidationRules;
-use App\Http\Requests\BaseRelationshipRequest;
-use App\Models\Supplier;
-use App\Traits\HasUpdateRules;
+use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use App\Utils\AuthUtils;
 
-class SupplierUpdateRequest extends BaseRelationshipRequest
+class SupplierUpdateRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasUpdateRules;
+  public function rules(): array
+  {
+      return [
+          'data.attributes.name' => ['sometimes', 'string', 'unique:suppliers,name'],
+          'data.attributes.phone' => [
+              'sometimes',
+              'string',
+              'regex:/^0[35789][0-9]{8}$/',
+              'unique:suppliers,phone',
+          ],
+          'data.attributes.email' => ['sometimes', 'string', 'email', 'unique:suppliers,email'],
+          'data.attributes.city' => ['sometimes', 'string'],
+          'data.attributes.district' => ['sometimes', 'string'],
+          'data.attributes.ward' => ['sometimes', 'string'],
+          'data.attributes.address_line' => ['sometimes', 'string'],
 
-    /**
-     * Lấy danh sách các attribute cần chuyển đổi
-     */
-    protected function getAttributeNames(): array
-    {
-        return [
-            'name',
-            'phone',
-            'email',
-            'city',
-            'district',
-            'ward',
-            'address_line'
-        ];
-    }
+          'data.relationships.books.data.*.id' => ['sometimes', 'integer', 'exists:books,id'],
+      ];
+  }
 
-    /**
-     * Lấy quy tắc cho attributes
-     */
-    protected function getAttributeRules(): array
-    {
-        $id = request()->route('supplier');
-        $supplier = Supplier::findOrFail($id);
+  public function messages(): array
+  {
+      return [
+          'data.attributes.name.string' => 'Tên nhà cung cấp nên là một chuỗi.',
+          'data.attributes.name.unique' => 'Tên nhà cung cấp đã tồn tại.',
 
-        return [
-            'name' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::getNameRuleWithUniqueExcept($supplier->id)
-            ),
-            'phone' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::PHONE->rules()
-            ),
-            'email' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::EMAIL->rules()
-            ),
-            'city' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::CITY->rules()
-            ),
-            'district' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::DISTRICT->rules()
-            ),
-            'ward' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::WARD->rules()
-            ),
-            'address_line' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::ADDRESS_LINE->rules()
-            ),
-        ];
-    }
+          'data.attributes.phone.string' => 'Số điện thoại nên là một chuỗi.',
+          'data.attributes.phone.regex' => 'Số điện thoại không hợp lệ.',
+          'data.attributes.phone.unique' => 'Số điện thoại đã tồn tại.',
 
-    /**
-     * Lấy quy tắc cho relationships
-     */
-    protected function getRelationshipRules(): array
-    {
-        return [
-            'data.relationships.books.data.*.id' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::BOOK_ID->rules()
-            ),
-        ];
-    }
+          'data.attributes.email.string' => 'Email nên là một chuỗi.',
+          'data.attributes.email.email' => 'Email không hợp lệ.',
+          'data.attributes.email.unique' => 'Email đã tồn tại.',
 
-    /**
-     * Lấy lớp ValidationMessages
-     */
-    protected function getValidationMessagesClass(): string
-    {
-        return SupplierValidationMessages::class;
-    }
+          'data.attributes.city.string' => 'Thành phố nên là một chuỗi.',
 
-    /**
-     * Kiểm tra authorization
-     */
-    public function authorize(): bool
-    {
-        return AuthUtils::userCan('edit_suppliers');
-    }
+          'data.attributes.district.string' => 'Quận/Huyện nên là một chuỗi.',
+
+          'data.attributes.ward.string' => 'Phường/Xã nên là một chuỗi.',
+
+          'data.attributes.address_line.string' => 'Địa chỉ nên là một chuỗi.',
+
+          'data.relationships.books.data.*.id.integer' => 'ID sách nên là một số nguyên.',
+          'data.relationships.books.data.*.id.exists' => 'ID sách không tồn tại.',
+      ];
+  }
+
+  public function authorize(): bool
+  {
+      return AuthUtils::userCan('edit_suppliers');
+  }
 }

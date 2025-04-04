@@ -13,17 +13,6 @@ abstract class BaseRequest extends FormRequest
     }
 
     /**
-     * Kiểm tra xem request có chứa khóa và giá trị không
-     *
-     * @param string $key
-     * @return bool
-     */
-    protected function hasValue(string $key): bool
-    {
-        return array_key_exists($key, $this->all()) && !empty($this->all()[$key]);
-    }
-
-    /**
      * Chuẩn bị dữ liệu trước khi validation
      * Chuyển đổi từ direct format sang JSON:API format
      */

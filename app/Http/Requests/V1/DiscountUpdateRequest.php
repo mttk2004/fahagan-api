@@ -2,90 +2,61 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Discount\DiscountValidationMessages;
-use App\Enums\Discount\DiscountValidationRules;
-use App\Http\Requests\BaseRelationshipRequest;
-use App\Models\Discount;
-use App\Traits\HasUpdateRules;
+use App\Http\Requests\BaseRequest;
+use App\Interfaces\HasValidationMessages;
 use App\Utils\AuthUtils;
-use Illuminate\Support\Arr;
 
-class DiscountUpdateRequest extends BaseRelationshipRequest
+class DiscountUpdateRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasUpdateRules;
+  public function rules(): array
+  {
+      return [
+          'data.attributes.name' => ['sometimes', 'string', 'max:255', 'unique:discounts,name'],
+          'data.attributes.discount_type' => ['sometimes', 'string', 'in:percent,fixed'],
+          'data.attributes.discount_value' => ['sometimes', 'decimal:', 'min:5'],
+          'data.attributes.start_date' => ['sometimes', 'date', 'after:today'],
+          'data.attributes.end_date' => ['sometimes', 'date', 'after:data.attributes.start_date'],
 
-    /**
-     * Lấy danh sách các attribute cần chuyển đổi
-     */
-    protected function getAttributeNames(): array
-    {
-        return [
-            'name',
-            'discount_type',
-            'discount_value',
-            'start_date',
-            'end_date',
-        ];
-    }
+          'data.relationships.targets' => ['sometimes', 'array'],
+          'data.relationships.targets.*.type' => [
+              'required',
+              'string',
+              'in:book,author,publisher,genre',
+          ],
+          'data.relationships.targets.*.id' => ['required', 'integer'],
+      ];
+  }
 
-    /**
-     * Lấy quy tắc cho attributes
-     */
-    protected function getAttributeRules(): array
-    {
-        $id = request()->route('discount');
-        $discount = Discount::findOrFail($id);
+  public function messages(): array
+  {
+      return [
+          'data.attributes.name.string' => 'Tên mã giảm giá nên là một chuỗi.',
+          'data.attributes.name.max' => 'Tên mã giảm giá nên có độ dài tối đa 255.',
+          'data.attributes.name.unique' => 'Tên mã giảm giá đã tồn tại.',
 
-        return [
-            'name' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::getNameRuleWithUniqueExcept($discount->id)
-            ),
-            'discount_type' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::DISCOUNT_TYPE->rules()
-            ),
-            'discount_value' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::DISCOUNT_VALUE->rules()
-            ),
-            'start_date' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::START_DATE->rules()
-            ),
-            'end_date' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::END_DATE->rules()
-            ),
-        ];
-    }
+          'data.attributes.discount_type.string' => 'Loại giảm giá nên là một chuỗi.',
+          'data.attributes.discount_type.in' => 'Loại giảm giá không hợp lệ.',
 
-    /**
-     * Lấy quy tắc cho relationships
-     */
-    protected function getRelationshipRules(): array
-    {
-        return [
-            'data.relationships.targets' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::TARGET_ARRAY->rules()
-            ),
-            'data.relationships.targets.*.type' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::TARGET_TYPE->rules()
-            ),
-            'data.relationships.targets.*.id' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::TARGET_ID->rules()
-            ),
-        ];
-    }
+          'data.attributes.discount_value.decimal' => 'Giá trị giảm giá nên là một số.',
+          'data.attributes.discount_value.min' => 'Giá trị giảm giá không hợp lệ.',
 
-    /**
-     * Lấy lớp ValidationMessages
-     */
-    protected function getValidationMessagesClass(): string
-    {
-        return DiscountValidationMessages::class;
-    }
+          'data.attributes.start_date.date' => 'Ngày bắt đầu không hợp lệ.',
+          'data.attributes.start_date.after' => 'Ngày bắt đầu phải sau ngày hiện tại.',
 
-    /**
-     * Kiểm tra authorization
-     */
-    public function authorize(): bool
-    {
-        return AuthUtils::userCan('edit_discounts');
-    }
+          'data.attributes.end_date.date' => 'Ngày kết thúc không hợp lệ.',
+          'data.attributes.end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+
+          'data.relationships.targets.array' => 'Đối tượng áp dụng nên là một mảng.',
+          'data.relationships.targets.*.type.required' => 'Loại đối tượng áp dụng là trường bắt buộc.',
+          'data.relationships.targets.*.type.string' => 'Loại đối tượng áp dụng nên là một chuỗi.',
+          'data.relationships.targets.*.type.in' => 'Loại đối tượng áp dụng không hợp lệ.',
+          'data.relationships.targets.*.id.required' => 'ID đối tượng áp dụng là trường bắt buộc.',
+          'data.relationships.targets.*.id.integer' => 'ID đối tượng áp dụng nên là một số.',
+      ];
+  }
+
+  public function authorize(): bool
+  {
+      return AuthUtils::userCan('edit_discounts');
+  }
 }

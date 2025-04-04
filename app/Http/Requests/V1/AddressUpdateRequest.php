@@ -2,27 +2,17 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Enums\Address\AddressValidationMessages;
-use App\Enums\Address\AddressValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
-use App\Traits\HasUpdateRules;
 use App\Traits\HasRequestFormat;
 
 class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasApiJsonValidation;
-    use HasUpdateRules;
     use HasRequestFormat;
 
-    /**
-     * Chuẩn bị dữ liệu trước khi validation
-     */
+
     protected function prepareForValidation(): void
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Address không có relationships, được phép sử dụng direct format
         $this->convertToJsonApiFormat([
             'name',
             'phone',
@@ -35,21 +25,37 @@ class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
 
     public function rules(): array
     {
-        $attributesRules = $this->mapAttributesRules([
-            'name' => HasUpdateRules::transformToUpdateRules(AddressValidationRules::NAME->rules()),
-            'phone' => HasUpdateRules::transformToUpdateRules(AddressValidationRules::PHONE->rules()),
-            'city' => HasUpdateRules::transformToUpdateRules(AddressValidationRules::CITY->rules()),
-            'district' => HasUpdateRules::transformToUpdateRules(AddressValidationRules::DISTRICT->rules()),
-            'ward' => HasUpdateRules::transformToUpdateRules(AddressValidationRules::WARD->rules()),
-            'address_line' => HasUpdateRules::transformToUpdateRules(AddressValidationRules::ADDRESS_LINE->rules()),
-        ]);
-
-        return $attributesRules;
+        return [
+            'data.attributes.name' => ['sometimes', 'string', 'max:255'],
+            'data.attributes.phone' => ['sometimes', 'string', 'regex:/^0[35789][0-9]{8}$/'],
+            'data.attributes.city' => ['sometimes', 'string', 'max:255'],
+            'data.attributes.district' => ['sometimes', 'string', 'max:255'],
+            'data.attributes.ward' => ['sometimes', 'string', 'max:255'],
+            'data.attributes.address_line' => ['sometimes', 'string', 'max:255'],
+        ];
     }
 
     public function messages(): array
     {
-        return AddressValidationMessages::getJsonApiMessages();
+        return [
+            'data.attributes.name.string' => 'Tên nên là một chuỗi.',
+            'data.attributes.name.max' => 'Tên không được vượt quá 255 ký tự.',
+
+            'data.attributes.phone.string' => 'Số điện thoại nên là một chuỗi.',
+            'data.attributes.phone.regex' => 'Số điện thoại không hợp lệ.',
+
+            'data.attributes.city.string' => 'Thành phố nên là một chuỗi.',
+            'data.attributes.city.max' => 'Thành phố không được vượt quá 255 ký tự.',
+
+            'data.attributes.district.string' => 'Quận/Huyện nên là một chuỗi.',
+            'data.attributes.district.max' => 'Quận/Huyện không được vượt quá 255 ký tự.',
+
+            'data.attributes.ward.string' => 'Phường/Xã nên là một chuỗi.',
+            'data.attributes.ward.max' => 'Phường/Xã không được vượt quá 255 ký tự.',
+
+            'data.attributes.address_line.string' => 'Địa chỉ nên là một chuỗi.',
+            'data.attributes.address_line.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
+        ];
     }
 
     public function authorize(): bool

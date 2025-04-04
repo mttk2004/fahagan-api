@@ -2,6 +2,9 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationRuleParser;
+
 trait HasStandardValidationMessages
 {
     /**
@@ -31,29 +34,82 @@ trait HasStandardValidationMessages
     }
 
     /**
-     * Phương thức tiêu chuẩn để tạo thông báo cho JSON API validate
+     * Lấy thông báo lỗi chuẩn cho JSON API format
+     *
+     * @return array
      */
-    public static function getJsonApiMessages(string $prefix = 'data.attributes'): array
+    public static function getJsonApiMessages(): array
     {
         $messages = [];
-        foreach (self::cases() as $case) {
-            // Phân tách tên case, phần đầu là field, phần sau là rule
-            $parts = explode('_', $case->name);
-            if (count($parts) < 2) {
-                continue;
+
+        // Lấy tất cả các trường hợp từ enum ValidationCase
+        if (method_exists(static::class, 'getValidationCases')) {
+            $cases = static::getValidationCases();
+
+            foreach ($cases as $case) {
+                $fieldName = self::getCaseField($case);
+                $ruleName = self::getCaseRule($case);
+
+                // Không thêm tiền tố data.attributes.
+                $qualifiedFieldName = $fieldName;
+
+                // Thêm thông báo lỗi cho trường hợp này
+                if (method_exists(static::class, 'getValidationMessage')) {
+                    $messages[$qualifiedFieldName . '.' . $ruleName] = static::getValidationMessage($case);
+                }
             }
-
-            // Lấy tên field (có thể có nhiều phần)
-            $field = strtolower(implode('_', array_slice($parts, 0, -1)));
-
-            // Lấy rule name (phần cuối)
-            $rule = strtolower(end($parts));
-
-            // Map đến thông báo lỗi với prefix cho JSON API
-            $messages["$prefix.$field.$rule"] = $case->message();
         }
 
         return $messages;
+    }
+
+    /**
+     * Lấy các thông báo lỗi tiêu chuẩn từ cases
+     *
+     * @return array
+     */
+    public static function getStandardMessages(): array
+    {
+        if (!method_exists(static::class, 'getValidationCases') || !method_exists(static::class, 'getValidationMessage')) {
+            return [];
+        }
+
+        $messages = [];
+        $cases = static::getValidationCases();
+
+        foreach ($cases as $case) {
+            $fieldName = self::getCaseField($case);
+            $ruleName = self::getCaseRule($case);
+            $messages[$fieldName . '.' . $ruleName] = static::getValidationMessage($case);
+        }
+
+        return $messages;
+    }
+
+    /**
+     * Xử lý phân tích tên field từ case
+     *
+     * @param mixed $case
+     * @return string
+     */
+    protected static function getCaseField($case): string
+    {
+        $caseParts = explode('_', $case->name);
+        array_pop($caseParts); // Loại bỏ phần cuối (tên rule)
+        return Str::snake(implode('_', $caseParts));
+    }
+
+    /**
+     * Xử lý phân tích tên rule từ case
+     *
+     * @param mixed $case
+     * @return string
+     */
+    protected static function getCaseRule($case): string
+    {
+        $caseParts = explode('_', $case->name);
+        $ruleName = end($caseParts);
+        return ValidationRuleParser::parse(Str::snake($ruleName))[0];
     }
 
     /**
