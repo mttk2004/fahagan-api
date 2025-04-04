@@ -4,34 +4,33 @@ namespace App\Http\Requests\V1;
 
 use App\Enums\Supplier\SupplierValidationMessages;
 use App\Enums\Supplier\SupplierValidationRules;
-use App\Http\Requests\BaseRequest;
-use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
-use App\Traits\HasRequestFormat;
+use App\Http\Requests\BaseRelationshipRequest;
 use App\Utils\AuthUtils;
 
-class SupplierStoreRequest extends BaseRequest implements HasValidationMessages
+class SupplierStoreRequest extends BaseRelationshipRequest
 {
-    use HasApiJsonValidation;
-    use HasRequestFormat;
-
     /**
-     * Chuẩn bị dữ liệu trước khi validation
+     * Lấy danh sách các attribute cần chuyển đổi
      */
-    protected function prepareForValidation(): void
+    protected function getAttributeNames(): array
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Supplier có relationships books
-        $this->convertToJsonApiFormat([
+        return [
             'name',
             'phone',
-            'email'
-        ], true);
+            'email',
+            'city',
+            'district',
+            'ward',
+            'address_line'
+        ];
     }
 
-    public function rules(): array
+    /**
+     * Lấy quy tắc cho attributes
+     */
+    protected function getAttributeRules(): array
     {
-        $attributesRules = $this->mapAttributesRules([
+        return [
             'name' => SupplierValidationRules::getNameRuleWithUnique(),
             'phone' => SupplierValidationRules::PHONE->rules(),
             'email' => SupplierValidationRules::EMAIL->rules(),
@@ -39,20 +38,30 @@ class SupplierStoreRequest extends BaseRequest implements HasValidationMessages
             'district' => SupplierValidationRules::DISTRICT->rules(),
             'ward' => SupplierValidationRules::WARD->rules(),
             'address_line' => SupplierValidationRules::ADDRESS_LINE->rules(),
-        ]);
+        ];
+    }
 
-        $relationshipsRules = [
+    /**
+     * Lấy quy tắc cho relationships
+     */
+    protected function getRelationshipRules(): array
+    {
+        return [
             'data.relationships.books.data.*.id' => SupplierValidationRules::BOOK_ID->rules(),
         ];
-
-        return array_merge($attributesRules, $relationshipsRules);
     }
 
-    public function messages(): array
+    /**
+     * Lấy lớp ValidationMessages
+     */
+    protected function getValidationMessagesClass(): string
     {
-        return SupplierValidationMessages::getJsonApiMessages();
+        return SupplierValidationMessages::class;
     }
 
+    /**
+     * Kiểm tra authorization
+     */
     public function authorize(): bool
     {
         return AuthUtils::userCan('create_suppliers');

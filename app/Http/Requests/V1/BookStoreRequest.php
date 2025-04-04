@@ -4,36 +4,36 @@ namespace App\Http\Requests\V1;
 
 use App\Enums\Book\BookValidationMessages;
 use App\Enums\Book\BookValidationRules;
-use App\Http\Requests\BaseRequest;
-use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
-use App\Traits\HasRequestFormat;
+use App\Http\Requests\BaseRelationshipRequest;
 use App\Utils\AuthUtils;
 
-class BookStoreRequest extends BaseRequest implements HasValidationMessages
+class BookStoreRequest extends BaseRelationshipRequest
 {
-    use HasApiJsonValidation;
-    use HasRequestFormat;
-
     /**
-     * Chuẩn bị dữ liệu trước khi validation
+     * Lấy danh sách các attribute cần chuyển đổi
      */
-    protected function prepareForValidation(): void
+    protected function getAttributeNames(): array
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Book có relationships authors, genres, publisher
-        $this->convertToJsonApiFormat([
+        return [
             'title',
-            'price'
-        ], true);
+            'price',
+            'description',
+            'edition',
+            'pages',
+            'image_url',
+            'publication_date'
+        ];
     }
 
-    public function rules(): array
+    /**
+     * Lấy quy tắc cho attributes
+     */
+    protected function getAttributeRules(): array
     {
         $title = request('data.attributes.title');
         $edition = request('data.attributes.edition');
 
-        $attributesRules = $this->mapAttributesRules([
+        return [
             'title' => BookValidationRules::getTitleRuleWithUnique($edition),
             'description' => BookValidationRules::DESCRIPTION->rules(),
             'price' => BookValidationRules::PRICE->rules(),
@@ -41,22 +41,32 @@ class BookStoreRequest extends BaseRequest implements HasValidationMessages
             'pages' => BookValidationRules::PAGES->rules(),
             'image_url' => BookValidationRules::IMAGE_URL->rules(),
             'publication_date' => BookValidationRules::PUBLICATION_DATE->rules(),
-        ]);
+        ];
+    }
 
-        $relationshipsRules = [
+    /**
+     * Lấy quy tắc cho relationships
+     */
+    protected function getRelationshipRules(): array
+    {
+        return [
             'data.relationships.authors.data.*.id' => BookValidationRules::AUTHOR_ID->rules(),
             'data.relationships.genres.data.*.id' => BookValidationRules::GENRE_ID->rules(),
             'data.relationships.publisher.id' => BookValidationRules::PUBLISHER_ID->rules(),
         ];
-
-        return array_merge($attributesRules, $relationshipsRules);
     }
 
-    public function messages(): array
+    /**
+     * Lấy lớp ValidationMessages
+     */
+    protected function getValidationMessagesClass(): string
     {
-        return BookValidationMessages::getJsonApiMessages();
+        return BookValidationMessages::class;
     }
 
+    /**
+     * Kiểm tra authorization
+     */
     public function authorize(): bool
     {
         // Bỏ qua kiểm tra quyền trong môi trường test

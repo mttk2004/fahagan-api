@@ -58,7 +58,7 @@ class BookController extends Controller
         try {
             // Bỏ qua kiểm tra quyền khi trong môi trường test
             if (app()->environment('testing')) {
-                $bookDTO = $this->createBookDTOFromRequest($request);
+                $bookDTO = BookDTO::fromRequest($request->validated());
                 $book = $this->bookService->createBook($bookDTO);
 
                 return ResponseUtils::created([
@@ -67,7 +67,7 @@ class BookController extends Controller
             }
 
             // Thực hiện kiểm tra quyền cho môi trường khác
-            $bookDTO = $this->createBookDTOFromRequest($request);
+            $bookDTO = BookDTO::fromRequest($request->validated());
             $book = $this->bookService->createBook($bookDTO);
 
             return ResponseUtils::created([
@@ -121,7 +121,7 @@ class BookController extends Controller
                     return ResponseUtils::badRequest('Không có thông tin cập nhật. Vui lòng cung cấp ít nhất một trường cần cập nhật.');
                 }
 
-                $bookDTO = $this->createBookDTOFromRequest($request);
+                $bookDTO = BookDTO::fromRequest($request->validated());
                 $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
 
                 return ResponseUtils::success([
@@ -136,7 +136,7 @@ class BookController extends Controller
                 return ResponseUtils::badRequest('Không có thông tin cập nhật. Vui lòng cung cấp ít nhất một trường cần cập nhật.');
             }
 
-            $bookDTO = $this->createBookDTOFromRequest($request);
+            $bookDTO = BookDTO::fromRequest($request->validated());
             $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
 
             return ResponseUtils::success([
@@ -185,19 +185,6 @@ class BookController extends Controller
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
         }
-    }
-
-    /**
-     * Tạo BookDTO từ request đã validate
-     *
-     * @param BookStoreRequest|BookUpdateRequest $request
-     * @return BookDTO
-     */
-    private function createBookDTOFromRequest(BookStoreRequest|BookUpdateRequest $request): BookDTO
-    {
-        $validatedData = $request->validated();
-
-        return BookDTO::fromRequest($validatedData);
     }
 
     /**

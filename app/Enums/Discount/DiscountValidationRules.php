@@ -4,6 +4,7 @@ namespace App\Enums\Discount;
 
 use App\Traits\HasUniqueRules;
 use App\Traits\HasUpdateRules;
+use Illuminate\Validation\Rule;
 
 enum DiscountValidationRules
 {
@@ -45,5 +46,19 @@ enum DiscountValidationRules
             'name',
             $id
         );
+    }
+
+    /**
+     * Tạo rule unique với điều kiện except ID
+     *
+     * @param int|null $exceptId ID cần loại trừ
+     * @return array Mảng rules
+     */
+    public static function getNameRuleWithUniqueExcept(?int $exceptId = null): array
+    {
+        $rules = self::NAME->rules();
+        $rules[] = Rule::unique('discounts', 'name')->ignore($exceptId);
+
+        return $rules;
     }
 }

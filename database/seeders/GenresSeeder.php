@@ -34,6 +34,26 @@ class GenresSeeder extends Seeder
                 'name' => 'Tâm lý học',
                 'description' => fake()->paragraph(),
             ],
+            [
+                'name' => 'Lịch sử',
+                'description' => fake()->paragraph(),
+            ],
+            [
+                'name' => 'Kinh tế',
+                'description' => fake()->paragraph(),
+            ],
+            [
+                'name' => 'Triết học',
+                'description' => fake()->paragraph(),
+            ],
+            [
+                'name' => 'Thiếu nhi',
+                'description' => fake()->paragraph(),
+            ],
+            [
+                'name' => 'Truyện tranh',
+                'description' => fake()->paragraph(),
+            ],
         ];
 
         foreach ($genres as $genre) {

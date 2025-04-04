@@ -4,41 +4,42 @@ namespace App\Http\Requests\V1;
 
 use App\Enums\Supplier\SupplierValidationMessages;
 use App\Enums\Supplier\SupplierValidationRules;
-use App\Http\Requests\BaseRequest;
-use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
-use App\Traits\HasRequestFormat;
+use App\Http\Requests\BaseRelationshipRequest;
+use App\Models\Supplier;
 use App\Traits\HasUpdateRules;
 use App\Utils\AuthUtils;
 
-class SupplierUpdateRequest extends BaseRequest implements HasValidationMessages
+class SupplierUpdateRequest extends BaseRelationshipRequest
 {
-    use HasApiJsonValidation;
     use HasUpdateRules;
-    use HasRequestFormat;
 
     /**
-     * Chuẩn bị dữ liệu trước khi validation
+     * Lấy danh sách các attribute cần chuyển đổi
      */
-    protected function prepareForValidation(): void
+    protected function getAttributeNames(): array
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Supplier có relationships books
-        $this->convertToJsonApiFormat([
+        return [
             'name',
             'phone',
-            'email'
-        ], true);
+            'email',
+            'city',
+            'district',
+            'ward',
+            'address_line'
+        ];
     }
 
-    public function rules(): array
+    /**
+     * Lấy quy tắc cho attributes
+     */
+    protected function getAttributeRules(): array
     {
-        // Lấy ID supplier từ route parameter
-        $supplierId = request()->route('supplier');
+        $id = request()->route('supplier');
+        $supplier = Supplier::findOrFail($id);
 
-        $attributesRules = $this->mapAttributesRules([
+        return [
             'name' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::getNameRuleWithUnique($supplierId)
+                SupplierValidationRules::getNameRuleWithUniqueExcept($supplier->id)
             ),
             'phone' => HasUpdateRules::transformToUpdateRules(
                 SupplierValidationRules::PHONE->rules()
@@ -58,25 +59,32 @@ class SupplierUpdateRequest extends BaseRequest implements HasValidationMessages
             'address_line' => HasUpdateRules::transformToUpdateRules(
                 SupplierValidationRules::ADDRESS_LINE->rules()
             ),
-            'books.*' => HasUpdateRules::transformToUpdateRules(
-                SupplierValidationRules::BOOK_ID->rules()
-            ),
-        ]);
+        ];
+    }
 
-        $relationshipsRules = [
+    /**
+     * Lấy quy tắc cho relationships
+     */
+    protected function getRelationshipRules(): array
+    {
+        return [
             'data.relationships.books.data.*.id' => HasUpdateRules::transformToUpdateRules(
                 SupplierValidationRules::BOOK_ID->rules()
             ),
         ];
-
-        return array_merge($attributesRules, $relationshipsRules);
     }
 
-    public function messages(): array
+    /**
+     * Lấy lớp ValidationMessages
+     */
+    protected function getValidationMessagesClass(): string
     {
-        return SupplierValidationMessages::getJsonApiMessages();
+        return SupplierValidationMessages::class;
     }
 
+    /**
+     * Kiểm tra authorization
+     */
     public function authorize(): bool
     {
         return AuthUtils::userCan('edit_suppliers');

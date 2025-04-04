@@ -4,6 +4,7 @@ namespace App\Enums\Supplier;
 
 use App\Abstracts\BaseValidationRules;
 use App\Traits\HasUniqueRules;
+use Illuminate\Validation\Rule;
 
 enum SupplierValidationRules
 {
@@ -41,5 +42,19 @@ enum SupplierValidationRules
             self::NAME->rules(),
             [HasUniqueRules::createUniqueRule('suppliers', 'name', $supplierId)]
         );
+    }
+
+    /**
+     * Tạo rule unique với điều kiện except ID
+     *
+     * @param int|null $exceptId ID cần loại trừ
+     * @return array Mảng rules
+     */
+    public static function getNameRuleWithUniqueExcept(?int $exceptId = null): array
+    {
+        $rules = self::NAME->rules();
+        $rules[] = Rule::unique('suppliers', 'name')->ignore($exceptId);
+
+        return $rules;
     }
 }

@@ -20,24 +20,18 @@ class ChangePasswordRequest extends BaseRequest implements HasValidationMessages
     {
         // Chuyển đổi từ direct format sang JSON:API format
         $this->convertToJsonApiFormat([
-            'old_password',
-            'new_password',
-            'new_password_confirmation'
+            'current_password',
+            'password',
+            'password_confirmation',
         ]);
     }
 
     public function rules(): array
     {
         return $this->mapAttributesRules([
-            'old_password' => ['required', 'string', 'min:8'],
-            'new_password' => [
-                'required',
-                'string',
-                Password::default(),
-                'different:data.attributes.old_password',
-                'confirmed:data.attributes.new_password_confirmation',
-            ],
-            'new_password_confirmation' => ['required'],
+            'current_password' => ['required', 'string', 'current_password'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password_confirmation' => ['required', 'string', 'min:8'],
         ]);
     }
 

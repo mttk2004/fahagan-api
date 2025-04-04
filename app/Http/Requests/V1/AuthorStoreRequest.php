@@ -4,49 +4,56 @@ namespace App\Http\Requests\V1;
 
 use App\Enums\Author\AuthorValidationMessages;
 use App\Enums\Author\AuthorValidationRules;
-use App\Http\Requests\BaseRequest;
-use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
-use App\Traits\HasRequestFormat;
+use App\Http\Requests\BaseRelationshipRequest;
 use App\Utils\AuthUtils;
 
-class AuthorStoreRequest extends BaseRequest implements HasValidationMessages
+class AuthorStoreRequest extends BaseRelationshipRequest
 {
-    use HasApiJsonValidation;
-    use HasRequestFormat;
-
     /**
-     * Chuẩn bị dữ liệu trước khi validation
+     * Lấy danh sách các attribute cần chuyển đổi
      */
-    protected function prepareForValidation(): void
+    protected function getAttributeNames(): array
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Author có relationships books
-        $this->convertToJsonApiFormat([
-            'name'
-        ], true);
+        return [
+            'name',
+            'biography',
+            'image_url'
+        ];
     }
 
-    public function rules(): array
+    /**
+     * Lấy quy tắc cho attributes
+     */
+    protected function getAttributeRules(): array
     {
-        $attributesRules = $this->mapAttributesRules([
+        return [
             'name' => AuthorValidationRules::NAME->rules(),
             'biography' => AuthorValidationRules::BIOGRAPHY->rules(),
             'image_url' => AuthorValidationRules::IMAGE_URL->rules(),
-        ]);
+        ];
+    }
 
-        $relationshipsRules = [
+    /**
+     * Lấy quy tắc cho relationships
+     */
+    protected function getRelationshipRules(): array
+    {
+        return [
             'data.relationships.books.data.*.id' => AuthorValidationRules::BOOK_ID->rules(),
         ];
-
-        return array_merge($attributesRules, $relationshipsRules);
     }
 
-    public function messages(): array
+    /**
+     * Lấy lớp ValidationMessages
+     */
+    protected function getValidationMessagesClass(): string
     {
-        return AuthorValidationMessages::getJsonApiMessages();
+        return AuthorValidationMessages::class;
     }
 
+    /**
+     * Kiểm tra authorization
+     */
     public function authorize(): bool
     {
         return AuthUtils::userCan('create_authors');

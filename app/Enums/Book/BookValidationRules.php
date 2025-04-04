@@ -121,4 +121,46 @@ enum BookValidationRules
             [$uniqueRule]
         );
     }
+
+    /**
+     * Lấy quy tắc validation cho title với điều kiện unique khi loại trừ bản ghi có ID cụ thể
+     *
+     * @param string|null $edition Ấn bản sách
+     * @param int|null $exceptId ID sách cần loại trừ
+     * @return array
+     */
+    public static function getTitleRuleWithUniqueExcept(?string $edition, ?int $exceptId): array
+    {
+        $rules = self::TITLE->rules();
+        $rules[] = Rule::unique('books', 'title')
+            ->where(function($query) use ($edition) {
+                if ($edition) {
+                    $query->where('edition', $edition);
+                }
+            })
+            ->ignore($exceptId);
+
+        return $rules;
+    }
+
+    /**
+     * Lấy quy tắc validation cho edition với điều kiện unique khi loại trừ bản ghi có ID cụ thể
+     *
+     * @param string|null $title Tiêu đề sách
+     * @param int|null $exceptId ID sách cần loại trừ
+     * @return array
+     */
+    public static function getEditionRuleWithUniqueExcept(?string $title, ?int $exceptId): array
+    {
+        $rules = self::EDITION->rules();
+        $rules[] = Rule::unique('books', 'edition')
+            ->where(function($query) use ($title) {
+                if ($title) {
+                    $query->where('title', $title);
+                }
+            })
+            ->ignore($exceptId);
+
+        return $rules;
+    }
 }

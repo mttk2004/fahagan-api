@@ -18,7 +18,9 @@ class ForgotPasswordRequest extends BaseRequest implements HasValidationMessages
     protected function prepareForValidation(): void
     {
         // Chuyển đổi từ direct format sang JSON:API format
-        $this->convertToJsonApiFormat(['email']);
+        $this->convertToJsonApiFormat([
+            'email',
+        ]);
     }
 
     public function rules(): array

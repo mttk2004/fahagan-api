@@ -30,7 +30,7 @@ trait HandleBookExceptions
         if ($e instanceof ValidationException) {
             Log::info("Lỗi validation từ BookService khi {$action} sách: " . $e->getMessage());
 
-            return ResponseUtils::badRequest(
+            return ResponseUtils::validationError(
                 'Dữ liệu không hợp lệ.',
                 $e->errors()
             );
@@ -42,13 +42,13 @@ trait HandleBookExceptions
 
             // Kiểm tra xem lỗi liên quan đến title-edition hay không
             if (strpos($e->getMessage(), 'books_title_edition_unique') !== false) {
-                return ResponseUtils::badRequest(
+                return ResponseUtils::validationError(
                     'Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.',
                     ['title_edition' => 'Tiêu đề và phiên bản phải là duy nhất.']
                 );
             }
 
-            return ResponseUtils::badRequest(
+            return ResponseUtils::validationError(
                 'Lỗi ràng buộc dữ liệu: Thông tin cập nhật vi phạm ràng buộc duy nhất trong hệ thống.',
                 ['unique' => 'Dữ liệu đã tồn tại trong hệ thống.']
             );
@@ -57,7 +57,7 @@ trait HandleBookExceptions
         // Bắt lỗi PDOException (cha của UniqueConstraintViolationException)
         if ($e instanceof \PDOException) {
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'books_title_edition_unique') !== false) {
-                return ResponseUtils::badRequest(
+                return ResponseUtils::validationError(
                     'Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.',
                     ['title_edition' => 'Tiêu đề và phiên bản phải là duy nhất.']
                 );

@@ -4,41 +4,41 @@ namespace App\Http\Requests\V1;
 
 use App\Enums\Discount\DiscountValidationMessages;
 use App\Enums\Discount\DiscountValidationRules;
-use App\Http\Requests\BaseRequest;
-use App\Interfaces\HasValidationMessages;
-use App\Traits\HasApiJsonValidation;
-use App\Traits\HasRequestFormat;
+use App\Http\Requests\BaseRelationshipRequest;
+use App\Models\Discount;
 use App\Traits\HasUpdateRules;
 use App\Utils\AuthUtils;
+use Illuminate\Support\Arr;
 
-class DiscountUpdateRequest extends BaseRequest implements HasValidationMessages
+class DiscountUpdateRequest extends BaseRelationshipRequest
 {
-    use HasApiJsonValidation;
     use HasUpdateRules;
-    use HasRequestFormat;
 
     /**
-     * Chuẩn bị dữ liệu trước khi validation
+     * Lấy danh sách các attribute cần chuyển đổi
      */
-    protected function prepareForValidation(): void
+    protected function getAttributeNames(): array
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Discount có relationships targets
-        $this->convertToJsonApiFormat([
+        return [
             'name',
             'discount_type',
-            'discount_value'
-        ], true);
+            'discount_value',
+            'start_date',
+            'end_date',
+        ];
     }
 
-    public function rules(): array
+    /**
+     * Lấy quy tắc cho attributes
+     */
+    protected function getAttributeRules(): array
     {
-        // Lấy ID giảm giá từ route parameter
-        $discountId = request()->route('discount');
+        $id = request()->route('discount');
+        $discount = Discount::findOrFail($id);
 
-        $attributesRules = $this->mapAttributesRules([
+        return [
             'name' => HasUpdateRules::transformToUpdateRules(
-                DiscountValidationRules::getNameRuleWithUnique($discountId)
+                DiscountValidationRules::getNameRuleWithUniqueExcept($discount->id)
             ),
             'discount_type' => HasUpdateRules::transformToUpdateRules(
                 DiscountValidationRules::DISCOUNT_TYPE->rules()
@@ -52,9 +52,15 @@ class DiscountUpdateRequest extends BaseRequest implements HasValidationMessages
             'end_date' => HasUpdateRules::transformToUpdateRules(
                 DiscountValidationRules::END_DATE->rules()
             ),
-        ]);
+        ];
+    }
 
-        $relationshipsRules = [
+    /**
+     * Lấy quy tắc cho relationships
+     */
+    protected function getRelationshipRules(): array
+    {
+        return [
             'data.relationships.targets' => HasUpdateRules::transformToUpdateRules(
                 DiscountValidationRules::TARGET_ARRAY->rules()
             ),
@@ -65,15 +71,19 @@ class DiscountUpdateRequest extends BaseRequest implements HasValidationMessages
                 DiscountValidationRules::TARGET_ID->rules()
             ),
         ];
-
-        return array_merge($attributesRules, $relationshipsRules);
     }
 
-    public function messages(): array
+    /**
+     * Lấy lớp ValidationMessages
+     */
+    protected function getValidationMessagesClass(): string
     {
-        return DiscountValidationMessages::getJsonApiMessages();
+        return DiscountValidationMessages::class;
     }
 
+    /**
+     * Kiểm tra authorization
+     */
     public function authorize(): bool
     {
         return AuthUtils::userCan('edit_discounts');

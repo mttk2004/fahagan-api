@@ -25,12 +25,6 @@ trait HasRequestFormat
             return;
         }
 
-        // Nếu có keys cụ thể và tất cả keys đều tồn tại trong request
-        // thì mới thực hiện chuyển đổi
-        if (!empty($keys) && !$this->hasAllKeys($keys)) {
-            return;
-        }
-
         // Lấy tất cả dữ liệu từ request
         $allData = $this->all();
         $attributes = [];

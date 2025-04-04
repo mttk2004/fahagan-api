@@ -4,79 +4,83 @@ namespace App\Http\Requests\V1;
 
 use App\Enums\Book\BookValidationMessages;
 use App\Enums\Book\BookValidationRules;
-use App\Http\Requests\BaseRequest;
-use App\Interfaces\HasValidationMessages;
+use App\Http\Requests\BaseRelationshipRequest;
 use App\Models\Book;
-use App\Traits\HasApiJsonValidation;
-use App\Traits\HasRequestFormat;
 use App\Traits\HasUpdateRules;
 use App\Utils\AuthUtils;
 use Illuminate\Support\Arr;
 
-class BookUpdateRequest extends BaseRequest implements HasValidationMessages
+class BookUpdateRequest extends BaseRelationshipRequest
 {
-    use HasApiJsonValidation;
     use HasUpdateRules;
-    use HasRequestFormat;
 
     /**
-     * Chuẩn bị dữ liệu trước khi validation
+     * Lấy danh sách các attribute cần chuyển đổi
      */
-    protected function prepareForValidation(): void
+    protected function getAttributeNames(): array
     {
-        // Chuyển đổi từ direct format sang JSON:API format
-        // Book có relationships authors, genres, publisher
-        $this->convertToJsonApiFormat([
+        return [
             'title',
-            'price'
-        ], true);
+            'price',
+            'description',
+            'edition',
+            'pages',
+            'image_url',
+            'publication_date'
+        ];
     }
 
-    public function rules(): array
+    /**
+     * Lấy quy tắc cho attributes
+     */
+    protected function getAttributeRules(): array
     {
-        // Lấy ID sách từ route parameter
-        $bookId = request()->route('book');
+        $book = Book::findOrFail(request()->route('book'));
 
-        // Lấy thông tin sách hiện tại
-        $book = Book::find($bookId);
-
-        // Lấy input data từ request
-        $requestData = request()->all();
-        $requestEdition = Arr::get($requestData, 'data.attributes.edition');
-        $requestTitle = Arr::get($requestData, 'data.attributes.title');
-
-        $attributesRules = $this->mapAttributesRules([
-            'title' => BookValidationRules::getTitleRuleWithUniqueForUpdate(
-                $bookId,
-                $requestEdition,
-                $book ? $book->edition : null
+        return [
+            'title' => HasUpdateRules::transformToUpdateRules(
+                BookValidationRules::getTitleRuleWithUniqueExcept($book->edition, $book->id)
             ),
             'description' => HasUpdateRules::transformToUpdateRules(BookValidationRules::DESCRIPTION->rules()),
             'price' => HasUpdateRules::transformToUpdateRules(BookValidationRules::PRICE->rules()),
-            'edition' => BookValidationRules::getEditionRuleWithUniqueForUpdate(
-                $bookId,
-                $requestTitle,
-                $book ? $book->title : null
+            'edition' => HasUpdateRules::transformToUpdateRules(
+                BookValidationRules::getEditionRuleWithUniqueExcept($book->title, $book->id)
             ),
             'pages' => HasUpdateRules::transformToUpdateRules(BookValidationRules::PAGES->rules()),
             'image_url' => HasUpdateRules::transformToUpdateRules(BookValidationRules::IMAGE_URL->rules()),
             'publication_date' => HasUpdateRules::transformToUpdateRules(BookValidationRules::PUBLICATION_DATE->rules()),
-        ]);
-
-        $relationshipsRules = [
-            'data.relationships.authors.data.*.id' => HasUpdateRules::transformToUpdateRules(BookValidationRules::AUTHOR_ID->rules()),
-            'data.relationships.genres.data.*.id' => HasUpdateRules::transformToUpdateRules(BookValidationRules::GENRE_ID->rules()),
-            'data.relationships.publisher.id' => HasUpdateRules::transformToUpdateRules(BookValidationRules::PUBLISHER_ID->rules()),
         ];
-
-        return array_merge($attributesRules, $relationshipsRules);
     }
 
-    public function messages(): array
+    /**
+     * Lấy quy tắc cho relationships
+     */
+    protected function getRelationshipRules(): array
     {
-        return BookValidationMessages::getJsonApiMessages();
+        return [
+            'data.relationships.authors.data.*.id' => HasUpdateRules::transformToUpdateRules(
+                BookValidationRules::AUTHOR_ID->rules()
+            ),
+            'data.relationships.genres.data.*.id' => HasUpdateRules::transformToUpdateRules(
+                BookValidationRules::GENRE_ID->rules()
+            ),
+            'data.relationships.publisher.id' => HasUpdateRules::transformToUpdateRules(
+                BookValidationRules::PUBLISHER_ID->rules()
+            ),
+        ];
     }
 
+    /**
+     * Lấy lớp ValidationMessages
+     */
+    protected function getValidationMessagesClass(): string
+    {
+        return BookValidationMessages::class;
+    }
+
+    /**
+     * Kiểm tra authorization
+     */
     public function authorize(): bool
     {
         // Bỏ qua kiểm tra quyền trong môi trường test
