@@ -28,7 +28,7 @@ class PublisherControllerTest extends TestCase
         $this->adminUser->givePermissionTo([
             'create_publishers',
             'edit_publishers',
-            'delete_publishers'
+            'delete_publishers',
         ]);
     }
 
@@ -66,11 +66,11 @@ class PublisherControllerTest extends TestCase
                         'type',
                         'attributes' => [
                             'name',
-                            'biography'
+                            'biography',
                         ],
-                        'relationships'
-                    ]
-                ]
+                        'relationships',
+                    ],
+                ],
             ]);
     }
 
@@ -109,8 +109,8 @@ class PublisherControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'publisher'
-                ]
+                    'publisher',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
@@ -187,8 +187,8 @@ class PublisherControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'publisher'
-                ]
+                    'publisher',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database

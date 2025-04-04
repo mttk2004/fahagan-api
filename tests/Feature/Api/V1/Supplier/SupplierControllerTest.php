@@ -31,7 +31,7 @@ class SupplierControllerTest extends TestCase
             'create_suppliers',
             'edit_suppliers',
             'delete_suppliers',
-            'restore_suppliers'
+            'restore_suppliers',
         ]);
     }
 
@@ -76,10 +76,10 @@ class SupplierControllerTest extends TestCase
                             'city',
                             'district',
                             'ward',
-                            'address_line'
-                        ]
-                    ]
-                ]
+                            'address_line',
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -116,10 +116,10 @@ class SupplierControllerTest extends TestCase
                     'books' => [
                         'data' => $books->map(function ($book) {
                             return ['id' => $book->id];
-                        })->toArray()
-                    ]
-                ]
-            ]
+                        })->toArray(),
+                    ],
+                ],
+            ],
         ];
 
         // Gọi API tạo nhà cung cấp
@@ -132,8 +132,8 @@ class SupplierControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'supplier'
-                ]
+                    'supplier',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
@@ -154,7 +154,7 @@ class SupplierControllerTest extends TestCase
         foreach ($books as $book) {
             $this->assertDatabaseHas('book_supplier', [
                 'book_id' => $book->id,
-                'supplier_id' => $supplierId
+                'supplier_id' => $supplierId,
             ]);
         }
     }
@@ -169,7 +169,7 @@ class SupplierControllerTest extends TestCase
 
         // Kiểm tra đã bị xóa mềm
         $this->assertSoftDeleted('suppliers', [
-            'id' => $supplier->id
+            'id' => $supplier->id,
         ]);
 
         // Gọi API khôi phục nhà cung cấp
@@ -182,14 +182,14 @@ class SupplierControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'supplier'
-                ]
+                    'supplier',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database (đã được khôi phục)
         $this->assertDatabaseHas('suppliers', [
             'id' => $supplier->id,
-            'deleted_at' => null
+            'deleted_at' => null,
         ]);
     }
 
@@ -206,7 +206,7 @@ class SupplierControllerTest extends TestCase
             'name' => 'Tên Mới',
             'phone' => '9876543210',
             'email' => 'updated@example.com',
-            'books' => $books->pluck('id')->toArray()
+            'books' => $books->pluck('id')->toArray(),
         ];
 
         // Gọi API cập nhật nhà cung cấp
@@ -219,8 +219,8 @@ class SupplierControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'supplier'
-                ]
+                    'supplier',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
@@ -235,7 +235,7 @@ class SupplierControllerTest extends TestCase
         foreach ($books as $book) {
             $this->assertDatabaseHas('book_supplier', [
                 'book_id' => $book->id,
-                'supplier_id' => $supplier->id
+                'supplier_id' => $supplier->id,
             ]);
         }
     }
@@ -265,7 +265,7 @@ class SupplierControllerTest extends TestCase
         foreach ($books as $book) {
             $this->assertDatabaseMissing('book_supplier', [
                 'book_id' => $book->id,
-                'supplier_id' => $supplier->id
+                'supplier_id' => $supplier->id,
             ]);
         }
     }

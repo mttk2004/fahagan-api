@@ -2,8 +2,12 @@
 
 namespace App\Enums\Supplier;
 
+use App\Traits\HasStandardValidationMessages;
+
 enum SupplierValidationMessages
 {
+    use HasStandardValidationMessages;
+
     case NAME_REQUIRED;
     case NAME_STRING;
     case NAME_MAX;
@@ -28,6 +32,10 @@ enum SupplierValidationMessages
 
     case ADDRESS_LINE_STRING;
     case ADDRESS_LINE_MAX;
+
+    case BOOK_ID_REQUIRED;
+    case BOOK_ID_INTEGER;
+    case BOOK_ID_EXISTS;
 
     public function message(): string
     {
@@ -56,6 +64,10 @@ enum SupplierValidationMessages
 
             self::ADDRESS_LINE_STRING => 'Địa chỉ chi tiết phải là kiểu chuỗi.',
             self::ADDRESS_LINE_MAX => 'Địa chỉ chi tiết không được vượt quá 255 ký tự.',
+
+            self::BOOK_ID_REQUIRED => 'ID sách là trường bắt buộc.',
+            self::BOOK_ID_INTEGER => 'ID sách nên là một số nguyên.',
+            self::BOOK_ID_EXISTS => 'ID sách không tồn tại.',
         };
     }
 }

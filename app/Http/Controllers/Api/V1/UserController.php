@@ -41,6 +41,7 @@ class UserController extends Controller
         // Bỏ qua kiểm tra quyền khi trong môi trường test
         if (app()->environment('testing')) {
             $users = $this->userService->getAllUsers($request, $this->getPerPage($request));
+
             return new UserCollection($users);
         }
 
@@ -67,6 +68,7 @@ class UserController extends Controller
             // Bỏ qua kiểm tra quyền khi trong môi trường test
             if (app()->environment('testing')) {
                 $user = $this->userService->getUserById($user_id);
+
                 return ResponseUtils::success([
                     'user' => new UserResource($user),
                 ]);
@@ -131,6 +133,7 @@ class UserController extends Controller
         if (app()->environment('testing')) {
             try {
                 $this->userService->deleteUser($user_id);
+
                 return ResponseUtils::noContent(ResponseMessage::DELETED_USER->value);
             } catch (ModelNotFoundException) {
                 return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);

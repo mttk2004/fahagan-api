@@ -6,8 +6,6 @@ use Godruoyi\Snowflake\LaravelSequenceResolver;
 use Godruoyi\Snowflake\Snowflake;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
-use App\Models\Publisher;
-use App\Http\Resources\V1\PublisherCollection;
 
 class AppServiceProvider extends ServiceProvider
 {

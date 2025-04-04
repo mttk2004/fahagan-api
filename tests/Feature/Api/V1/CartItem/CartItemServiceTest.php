@@ -15,7 +15,9 @@ class CartItemServiceTest extends TestCase
     use RefreshDatabase;
 
     private CartItemService $cartItemService;
+
     private User $user;
+
     private Book $book;
 
     protected function setUp(): void
@@ -66,7 +68,7 @@ class CartItemServiceTest extends TestCase
         $this->assertDatabaseHas('cart_items', [
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
-            'quantity' => 3
+            'quantity' => 3,
         ]);
     }
 
@@ -111,7 +113,7 @@ class CartItemServiceTest extends TestCase
         $this->assertDatabaseHas('cart_items', [
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
-            'quantity' => 5
+            'quantity' => 5,
         ]);
     }
 
@@ -134,7 +136,7 @@ class CartItemServiceTest extends TestCase
         $this->assertDatabaseHas('cart_items', [
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
-            'quantity' => 2
+            'quantity' => 2,
         ]);
     }
 
@@ -152,7 +154,7 @@ class CartItemServiceTest extends TestCase
         // Kiểm tra dữ liệu đã bị xóa khỏi database
         $this->assertDatabaseMissing('cart_items', [
             'user_id' => $this->user->id,
-            'book_id' => $this->book->id
+            'book_id' => $this->book->id,
         ]);
     }
 

@@ -15,7 +15,7 @@ test('new users can register', function () {
             'status',
             'message',
             'data' => [
-                'user'
-            ]
+                'user',
+            ],
         ]);
 });

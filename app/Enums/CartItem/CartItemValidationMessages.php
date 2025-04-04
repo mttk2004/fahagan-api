@@ -2,8 +2,12 @@
 
 namespace App\Enums\CartItem;
 
+use App\Traits\HasStandardValidationMessages;
+
 enum CartItemValidationMessages
 {
+    use HasStandardValidationMessages;
+
     case BOOK_ID_REQUIRED;
     case BOOK_ID_INTEGER;
     case BOOK_ID_EXISTS;

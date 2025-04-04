@@ -32,7 +32,7 @@ class AddressController extends Controller
      */
     public function index()
     {
-        if (!AuthUtils::check()) {
+        if (! AuthUtils::check()) {
             return ResponseUtils::unauthorized();
         }
 
@@ -54,7 +54,7 @@ class AddressController extends Controller
      */
     public function store(AddressStoreRequest $request)
     {
-        if (!AuthUtils::check()) {
+        if (! AuthUtils::check()) {
             return ResponseUtils::unauthorized();
         }
 
@@ -76,7 +76,7 @@ class AddressController extends Controller
      */
     public function update(AddressUpdateRequest $request, $address_id)
     {
-        if (!AuthUtils::check()) {
+        if (! AuthUtils::check()) {
             return ResponseUtils::unauthorized();
         }
 
@@ -101,7 +101,7 @@ class AddressController extends Controller
      */
     public function destroy($address_id)
     {
-        if (!AuthUtils::check()) {
+        if (! AuthUtils::check()) {
             return ResponseUtils::unauthorized();
         }
 

@@ -53,6 +53,7 @@ class UserService
             return $user;
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -90,6 +91,7 @@ class UserService
             return $user->fresh();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -113,6 +115,7 @@ class UserService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }

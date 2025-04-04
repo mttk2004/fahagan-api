@@ -46,6 +46,7 @@ class CartItemService
             return $cartItem;
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -57,7 +58,7 @@ class CartItemService
      */
     public function updateCartItemQuantity(User $user, CartItemDTO $cartItemDTO): CartItem
     {
-        if (!$user->isBookInCart($cartItemDTO->book_id)) {
+        if (! $user->isBookInCart($cartItemDTO->book_id)) {
             return $this->addToCart($user, $cartItemDTO);
         }
 
@@ -75,6 +76,7 @@ class CartItemService
             return $cartItem;
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -86,7 +88,7 @@ class CartItemService
      */
     public function removeFromCart(User $user, int $bookId): bool
     {
-        if (!$user->isBookInCart($bookId)) {
+        if (! $user->isBookInCart($bookId)) {
             throw new Exception('Sách không tồn tại trong giỏ hàng.');
         }
 
@@ -100,6 +102,7 @@ class CartItemService
             return true;
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }

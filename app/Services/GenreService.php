@@ -49,7 +49,7 @@ class GenreService
             $genreData = $genreDTO->toArray();
 
             // Tự động tạo slug nếu không được cung cấp
-            if (!isset($genreData['slug']) && isset($genreData['name'])) {
+            if (! isset($genreData['slug']) && isset($genreData['name'])) {
                 $genreData['slug'] = Str::slug($genreData['name']);
             }
 
@@ -61,6 +61,7 @@ class GenreService
             return $genre;
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -103,7 +104,7 @@ class GenreService
             $genreData = $genreDTO->toArray();
 
             // Tự động cập nhật slug nếu tên được cập nhật mà không cung cấp slug mới
-            if (!isset($genreData['slug']) && isset($genreData['name']) && $genreData['name'] !== $genre->name) {
+            if (! isset($genreData['slug']) && isset($genreData['name']) && $genreData['name'] !== $genre->name) {
                 $genreData['slug'] = Str::slug($genreData['name']);
             }
 
@@ -115,6 +116,7 @@ class GenreService
             return $genre->fresh();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -138,6 +140,7 @@ class GenreService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -153,7 +156,7 @@ class GenreService
         try {
             $genre = Genre::withTrashed()->findOrFail($genreId);
 
-            if (!$genre->trashed()) {
+            if (! $genre->trashed()) {
                 throw new Exception('Thể loại này chưa bị xóa.');
             }
 
@@ -167,6 +170,7 @@ class GenreService
             return $genre->fresh();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }

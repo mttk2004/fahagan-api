@@ -14,8 +14,8 @@ class PublisherDTOTest extends TestCase
                 'attributes' => [
                     'name' => 'NXB Văn Học',
                     'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $publisherDTO = PublisherDTO::fromRequest($validatedData);
@@ -31,8 +31,8 @@ class PublisherDTOTest extends TestCase
                 'attributes' => [
                     'name' => 'NXB Văn Học',
                     // Không có trường biography
-                ]
-            ]
+                ],
+            ],
         ];
 
         $publisherDTO = PublisherDTO::fromRequest($validatedData);
@@ -46,7 +46,7 @@ class PublisherDTOTest extends TestCase
         $validatedData = [
             'data' => [
                 // Không có attributes
-            ]
+            ],
         ];
 
         $publisherDTO = PublisherDTO::fromRequest($validatedData);

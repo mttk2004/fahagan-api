@@ -5,11 +5,10 @@ namespace Tests\Feature\Api\V1\Author;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\User;
+use Database\Seeders\PublisherSeeder;
 use Database\Seeders\TestPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
-use Database\Seeders\PublisherSeeder;
 
 class AuthorControllerTest extends TestCase
 {
@@ -31,7 +30,7 @@ class AuthorControllerTest extends TestCase
         $this->adminUser->givePermissionTo([
             'create_authors',
             'edit_authors',
-            'delete_authors'
+            'delete_authors',
         ]);
     }
 
@@ -69,11 +68,11 @@ class AuthorControllerTest extends TestCase
                         'type',
                         'attributes' => [
                             'name',
-                            'biography'
+                            'biography',
                         ],
-                        'relationships'
-                    ]
-                ]
+                        'relationships',
+                    ],
+                ],
             ]);
     }
 
@@ -113,8 +112,8 @@ class AuthorControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'author'
-                ]
+                    'author',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
@@ -146,9 +145,9 @@ class AuthorControllerTest extends TestCase
                     'books' => [
                         'data' => array_map(function ($id) {
                             return ['id' => $id];
-                        }, $bookIds)
-                    ]
-                ]
+                        }, $bookIds),
+                    ],
+                ],
             ],
         ];
 
@@ -196,8 +195,8 @@ class AuthorControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'author'
-                ]
+                    'author',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database

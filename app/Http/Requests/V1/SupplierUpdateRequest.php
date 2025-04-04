@@ -6,56 +6,56 @@ use App\Enums\Supplier\SupplierValidationMessages;
 use App\Enums\Supplier\SupplierValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
+use App\Traits\HasApiJsonValidation;
+use App\Traits\HasUpdateRules;
 use App\Utils\AuthUtils;
 
 class SupplierUpdateRequest extends BaseRequest implements HasValidationMessages
 {
+    use HasApiJsonValidation;
+    use HasUpdateRules;
+
     public function rules(): array
     {
-        return [
-            'name' => ['sometimes', ...(SupplierValidationRules::NAME->rules(request('id')))],
-            'phone' => ['sometimes', ...(SupplierValidationRules::PHONE->rules())],
-            'email' => ['sometimes', ...(SupplierValidationRules::EMAIL->rules())],
-            'city' => ['sometimes', ...(SupplierValidationRules::CITY->rules())],
-            'district' => ['sometimes', ...(SupplierValidationRules::DISTRICT->rules())],
-            'ward' => ['sometimes', ...(SupplierValidationRules::WARD->rules())],
-            'address_line' => ['sometimes', ...(SupplierValidationRules::ADDRESS_LINE->rules())],
-            'books' => ['sometimes', 'array'],
-            'books.*' => ['sometimes', 'integer', 'exists:books,id'],
+        // Lấy ID supplier từ route parameter
+        $supplierId = request()->route('supplier');
+
+        $attributesRules = $this->mapAttributesRules([
+            'name' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::getNameRuleWithUnique($supplierId)
+            ),
+            'phone' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::PHONE->rules()
+            ),
+            'email' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::EMAIL->rules()
+            ),
+            'city' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::CITY->rules()
+            ),
+            'district' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::DISTRICT->rules()
+            ),
+            'ward' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::WARD->rules()
+            ),
+            'address_line' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::ADDRESS_LINE->rules()
+            ),
+        ]);
+
+        $relationshipsRules = [
+            'data.relationships.books.data.*.id' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::BOOK_ID->rules()
+            ),
         ];
+
+        return array_merge($attributesRules, $relationshipsRules);
     }
 
     public function messages(): array
     {
-        return [
-            'name.string' => SupplierValidationMessages::NAME_STRING->message(),
-            'name.max' => SupplierValidationMessages::NAME_MAX->message(),
-            'name.unique' => SupplierValidationMessages::NAME_UNIQUE->message(),
-
-            'phone.string' => SupplierValidationMessages::PHONE_STRING->message(),
-            'phone.max' => SupplierValidationMessages::PHONE_MAX->message(),
-            'phone.regex' => SupplierValidationMessages::PHONE_REGEX->message(),
-
-            'email.string' => SupplierValidationMessages::EMAIL_STRING->message(),
-            'email.email' => SupplierValidationMessages::EMAIL_EMAIL->message(),
-            'email.max' => SupplierValidationMessages::EMAIL_MAX->message(),
-
-            'city.string' => SupplierValidationMessages::CITY_STRING->message(),
-            'city.max' => SupplierValidationMessages::CITY_MAX->message(),
-
-            'district.string' => SupplierValidationMessages::DISTRICT_STRING->message(),
-            'district.max' => SupplierValidationMessages::DISTRICT_MAX->message(),
-
-            'ward.string' => SupplierValidationMessages::WARD_STRING->message(),
-            'ward.max' => SupplierValidationMessages::WARD_MAX->message(),
-
-            'address_line.string' => SupplierValidationMessages::ADDRESS_LINE_STRING->message(),
-            'address_line.max' => SupplierValidationMessages::ADDRESS_LINE_MAX->message(),
-
-            'books.array' => 'Danh sách sách phải là một mảng.',
-            'books.*.integer' => 'ID sách phải là một số nguyên.',
-            'books.*.exists' => 'ID sách không tồn tại.',
-        ];
+        return SupplierValidationMessages::getJsonApiMessages();
     }
 
     public function authorize(): bool

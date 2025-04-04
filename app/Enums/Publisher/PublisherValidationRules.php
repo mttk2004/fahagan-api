@@ -2,10 +2,13 @@
 
 namespace App\Enums\Publisher;
 
-use Illuminate\Validation\Rule;
+use App\Abstracts\BaseValidationRules;
+use App\Traits\HasUniqueRules;
 
 enum PublisherValidationRules
 {
+    use BaseValidationRules;
+
     case NAME;
     case BIOGRAPHY;
 
@@ -21,14 +24,11 @@ enum PublisherValidationRules
      * Lấy quy tắc validation cho name với kiểm tra unique
      * và loại trừ các bản ghi đã bị soft delete
      */
-    public static function getNameRuleWithUnique(): array
+    public static function getNameRuleWithUnique(?string $id = null): array
     {
-        $uniqueRule = Rule::unique('publishers', 'name')
-            ->whereNull('deleted_at');
-
         return array_merge(
             self::NAME->rules(),
-            [$uniqueRule]
+            [HasUniqueRules::createUniqueRule('publishers', 'name', $id)]
         );
     }
 }

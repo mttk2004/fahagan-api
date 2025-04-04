@@ -130,7 +130,7 @@ class AuthorServiceTest extends TestCase
         foreach ($bookIds as $bookId) {
             $this->assertDatabaseHas('author_book', [
                 'author_id' => $author->id,
-                'book_id' => $bookId
+                'book_id' => $bookId,
             ]);
         }
     }
@@ -224,7 +224,7 @@ class AuthorServiceTest extends TestCase
         foreach ($newBookIds as $bookId) {
             $this->assertDatabaseHas('author_book', [
                 'author_id' => $author->id,
-                'book_id' => $bookId
+                'book_id' => $bookId,
             ]);
         }
 
@@ -232,7 +232,7 @@ class AuthorServiceTest extends TestCase
         foreach ($oldBooks->pluck('id') as $oldBookId) {
             $this->assertDatabaseMissing('author_book', [
                 'author_id' => $author->id,
-                'book_id' => $oldBookId
+                'book_id' => $oldBookId,
             ]);
         }
     }

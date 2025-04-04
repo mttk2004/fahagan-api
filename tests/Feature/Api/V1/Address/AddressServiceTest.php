@@ -17,6 +17,7 @@ class AddressServiceTest extends TestCase
     use RefreshDatabase;
 
     private AddressService $addressService;
+
     private User $user;
 
     protected function setUp(): void
@@ -62,7 +63,7 @@ class AddressServiceTest extends TestCase
             'city' => 'Hà Nội',
             'district' => 'Cầu Giấy',
             'ward' => 'Dịch Vọng',
-            'address_line' => 'Số 1 Đường ABC'
+            'address_line' => 'Số 1 Đường ABC',
         ]);
     }
 
@@ -95,7 +96,7 @@ class AddressServiceTest extends TestCase
             'user_id' => $this->user->id,
             'name' => 'Nguyễn Văn A',
             'phone' => '0123456789',
-            'city' => 'Hà Nội'
+            'city' => 'Hà Nội',
         ]);
 
         // Tạo DTO cập nhật
@@ -120,7 +121,7 @@ class AddressServiceTest extends TestCase
             'user_id' => $this->user->id,
             'name' => 'Nguyễn Văn A',
             'phone' => '0123456789',
-            'city' => 'Hà Nội'
+            'city' => 'Hà Nội',
         ]);
 
         // Tạo DTO chỉ cập nhật thành phố
@@ -147,7 +148,7 @@ class AddressServiceTest extends TestCase
 
         // Kiểm tra địa chỉ đã bị xóa
         $this->assertDatabaseMissing('addresses', [
-            'id' => $address->id
+            'id' => $address->id,
         ]);
     }
 

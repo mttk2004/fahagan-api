@@ -2,8 +2,12 @@
 
 namespace App\Enums\CartItem;
 
+use App\Abstracts\BaseValidationRules;
+
 enum CartItemValidationRules
 {
+    use BaseValidationRules;
+
     case BOOK_ID;
     case QUANTITY;
 

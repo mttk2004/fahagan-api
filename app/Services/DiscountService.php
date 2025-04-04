@@ -72,7 +72,7 @@ class DiscountService
                 $deletedDiscount->update($data);
 
                 // Cập nhật targets nếu có
-                if (!empty($discountDTO->target_ids)) {
+                if (! empty($discountDTO->target_ids)) {
                     $this->syncTargets($deletedDiscount, $discountDTO->target_ids);
                 }
 
@@ -94,7 +94,7 @@ class DiscountService
             $discount = Discount::create($data);
 
             // Gán targets
-            if (!empty($discountDTO->target_ids)) {
+            if (! empty($discountDTO->target_ids)) {
                 $this->syncTargets($discount, $discountDTO->target_ids);
             }
 
@@ -159,7 +159,7 @@ class DiscountService
             }
 
             // Chỉ cập nhật khi có dữ liệu
-            if (!empty($data)) {
+            if (! empty($data)) {
                 DB::beginTransaction();
 
                 // Cập nhật mã giảm giá

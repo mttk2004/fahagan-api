@@ -2,10 +2,13 @@
 
 namespace App\Enums\Book;
 
+use App\Abstracts\BaseValidationRules;
 use Illuminate\Validation\Rule;
 
 enum BookValidationRules
 {
+    use BaseValidationRules;
+
     case TITLE;
     case DESCRIPTION;
     case PRICE;
@@ -37,7 +40,7 @@ enum BookValidationRules
      * Lấy quy tắc validation cho title với kiểm tra unique
      * và loại trừ các bản ghi đã bị soft delete
      */
-    public static function getTitleRuleWithUnique(string $edition = null): array
+    public static function getTitleRuleWithUnique(?string $edition = null): array
     {
         $uniqueRule = Rule::unique('books', 'title')
             ->whereNull('deleted_at');
@@ -56,7 +59,7 @@ enum BookValidationRules
      * Lấy quy tắc validation cho edition với kiểm tra unique
      * và loại trừ các bản ghi đã bị soft delete
      */
-    public static function getEditionRuleWithUnique(string $title = null): array
+    public static function getEditionRuleWithUnique(?string $title = null): array
     {
         $uniqueRule = Rule::unique('books', 'edition')
             ->whereNull('deleted_at');
@@ -67,6 +70,54 @@ enum BookValidationRules
 
         return array_merge(
             self::EDITION->rules(),
+            [$uniqueRule]
+        );
+    }
+
+    /**
+     * Lấy quy tắc validation cho title với kiểm tra unique cho update
+     * và loại trừ các bản ghi đã bị soft delete và bỏ qua bản ghi hiện tại
+     */
+    public static function getTitleRuleWithUniqueForUpdate(string $bookId, ?string $edition = null, ?string $defaultEdition = null): array
+    {
+        $titleRules = array_filter(self::TITLE->rules(), fn ($rule) => $rule !== 'required');
+        $uniqueRule = Rule::unique('books', 'title')
+            ->ignore($bookId)
+            ->whereNull('deleted_at');
+
+        if ($edition !== null) {
+            $uniqueRule->where('edition', $edition);
+        } elseif ($defaultEdition !== null) {
+            $uniqueRule->where('edition', $defaultEdition);
+        }
+
+        return array_merge(
+            ['sometimes'],
+            $titleRules,
+            [$uniqueRule]
+        );
+    }
+
+    /**
+     * Lấy quy tắc validation cho edition với kiểm tra unique cho update
+     * và loại trừ các bản ghi đã bị soft delete và bỏ qua bản ghi hiện tại
+     */
+    public static function getEditionRuleWithUniqueForUpdate(string $bookId, ?string $title = null, ?string $defaultTitle = null): array
+    {
+        $editionRules = array_filter(self::EDITION->rules(), fn ($rule) => $rule !== 'required');
+        $uniqueRule = Rule::unique('books', 'edition')
+            ->ignore($bookId)
+            ->whereNull('deleted_at');
+
+        if ($title !== null) {
+            $uniqueRule->where('title', $title);
+        } elseif ($defaultTitle !== null) {
+            $uniqueRule->where('title', $defaultTitle);
+        }
+
+        return array_merge(
+            ['sometimes'],
+            $editionRules,
             [$uniqueRule]
         );
     }

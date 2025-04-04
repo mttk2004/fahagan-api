@@ -62,8 +62,8 @@ class AddressControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'address'
-                ]
+                    'address',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
@@ -100,8 +100,8 @@ class AddressControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'address'
-                ]
+                    'address',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database

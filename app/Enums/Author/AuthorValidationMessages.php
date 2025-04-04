@@ -2,8 +2,12 @@
 
 namespace App\Enums\Author;
 
+use App\Traits\HasStandardValidationMessages;
+
 enum AuthorValidationMessages
 {
+    use HasStandardValidationMessages;
+
     case NAME_REQUIRED;
     case NAME_STRING;
     case NAME_MAX;

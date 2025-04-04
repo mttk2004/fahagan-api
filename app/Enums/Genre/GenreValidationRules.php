@@ -2,11 +2,13 @@
 
 namespace App\Enums\Genre;
 
-use App\Models\Genre;
-use Illuminate\Validation\Rule;
+use App\Abstracts\BaseValidationRules;
+use App\Traits\HasUniqueRules;
 
 enum GenreValidationRules
 {
+    use BaseValidationRules;
+
     case NAME;
     case SLUG;
     case DESCRIPTION;
@@ -14,29 +16,25 @@ enum GenreValidationRules
     public function rules(): array
     {
         return match($this) {
-            self::NAME => $this->getNameRuleWithUnique(),
-            self::SLUG => $this->getSlugRuleWithUnique(),
+            self::NAME => ['required', 'string', 'max:50'],
+            self::SLUG => ['required', 'string', 'max:100'],
             self::DESCRIPTION => ['sometimes', 'nullable', 'string', 'max:500'],
         };
     }
 
-    public function getNameRuleWithUnique(?int $genreId = null): array
+    public static function getNameRuleWithUnique(?int $genreId = null): array
     {
-        return [
-            'required',
-            'string',
-            'max:50',
-            Rule::unique('genres', 'name')->ignore($genreId)->whereNull('deleted_at'),
-        ];
+        return array_merge(
+            self::NAME->rules(),
+            [HasUniqueRules::createUniqueRule('genres', 'name', $genreId ? (string)$genreId : null)]
+        );
     }
 
-    public function getSlugRuleWithUnique(?int $genreId = null): array
+    public static function getSlugRuleWithUnique(?int $genreId = null): array
     {
-        return [
-            'required',
-            'string',
-            'max:100',
-            Rule::unique('genres', 'slug')->ignore($genreId)->whereNull('deleted_at'),
-        ];
+        return array_merge(
+            self::SLUG->rules(),
+            [HasUniqueRules::createUniqueRule('genres', 'slug', $genreId ? (string)$genreId : null)]
+        );
     }
 }

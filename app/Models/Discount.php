@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\App;
  */
 class Discount extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 

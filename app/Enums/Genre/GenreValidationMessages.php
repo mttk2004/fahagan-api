@@ -2,8 +2,12 @@
 
 namespace App\Enums\Genre;
 
+use App\Traits\HasStandardValidationMessages;
+
 enum GenreValidationMessages
 {
+    use HasStandardValidationMessages;
+
     case NAME_REQUIRED;
     case NAME_STRING;
     case NAME_MAX;
@@ -14,6 +18,8 @@ enum GenreValidationMessages
     case SLUG_MAX;
     case SLUG_UNIQUE;
 
+    case DESCRIPTION_SOMETIMES;
+    case DESCRIPTION_NULLABLE;
     case DESCRIPTION_STRING;
     case DESCRIPTION_MAX;
 
@@ -30,6 +36,8 @@ enum GenreValidationMessages
             self::SLUG_MAX => 'Slug nên có độ dài tối đa 100 ký tự.',
             self::SLUG_UNIQUE => 'Slug đã tồn tại.',
 
+            self::DESCRIPTION_SOMETIMES => 'Mô tả có thể có hoặc không.',
+            self::DESCRIPTION_NULLABLE => 'Mô tả có thể có giá trị null.',
             self::DESCRIPTION_STRING => 'Mô tả nên là một chuỗi.',
             self::DESCRIPTION_MAX => 'Mô tả nên có độ dài tối đa 500 ký tự.',
         };

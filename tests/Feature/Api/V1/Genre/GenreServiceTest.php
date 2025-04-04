@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api\V1\Genre;
 
 use App\DTOs\Genre\GenreDTO;
-use App\Exceptions\GenreNotFoundException;
 use App\Models\Genre;
 use App\Models\User;
 use App\Services\GenreService;
@@ -18,6 +17,7 @@ class GenreServiceTest extends TestCase
     use RefreshDatabase;
 
     private GenreService $genreService;
+
     private User $adminUser;
 
     protected function setUp(): void
@@ -36,7 +36,7 @@ class GenreServiceTest extends TestCase
             'create_genres',
             'edit_genres',
             'delete_genres',
-            'restore_genres'
+            'restore_genres',
         ]);
 
         // Khởi tạo GenreService
@@ -126,7 +126,7 @@ class GenreServiceTest extends TestCase
         $genreCreated = Genre::factory()->create([
             'name' => 'Mystery',
             'slug' => 'mystery',
-            'description' => 'Mystery novels'
+            'description' => 'Mystery novels',
         ]);
 
         // Gọi service để lấy thể loại theo ID
@@ -153,7 +153,7 @@ class GenreServiceTest extends TestCase
         $genreCreated = Genre::factory()->create([
             'name' => 'Horror',
             'slug' => 'horror',
-            'description' => 'Horror stories'
+            'description' => 'Horror stories',
         ]);
 
         // Gọi service để lấy thể loại theo slug
@@ -180,7 +180,7 @@ class GenreServiceTest extends TestCase
         $genreCreated = Genre::factory()->create([
             'name' => 'Old Name',
             'slug' => 'old-slug',
-            'description' => 'Old description'
+            'description' => 'Old description',
         ]);
 
         // Tạo DTO với thông tin cập nhật
@@ -204,7 +204,7 @@ class GenreServiceTest extends TestCase
             'id' => $genreCreated->id,
             'name' => 'New Name',
             'slug' => 'new-slug',
-            'description' => 'New description'
+            'description' => 'New description',
         ]);
     }
 
@@ -214,7 +214,7 @@ class GenreServiceTest extends TestCase
         $genreCreated = Genre::factory()->create([
             'name' => 'Original Name',
             'slug' => 'original-slug',
-            'description' => 'Original description'
+            'description' => 'Original description',
         ]);
 
         // Tạo DTO chỉ cập nhật tên
@@ -244,7 +244,7 @@ class GenreServiceTest extends TestCase
 
         // Kiểm tra thể loại đã bị xóa mềm
         $this->assertSoftDeleted('genres', [
-            'id' => $genre->id
+            'id' => $genre->id,
         ]);
     }
 
@@ -266,7 +266,7 @@ class GenreServiceTest extends TestCase
         $this->assertNull($restoredGenre->deleted_at);
         $this->assertDatabaseHas('genres', [
             'id' => $genre->id,
-            'deleted_at' => null
+            'deleted_at' => null,
         ]);
     }
 

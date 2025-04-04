@@ -16,6 +16,7 @@ class UserControllerTest extends TestCase
      * @var \Illuminate\Contracts\Auth\Authenticatable|\App\Models\User
      */
     private $user;
+
     private $adminUser;
 
     protected function setUp(): void
@@ -38,7 +39,7 @@ class UserControllerTest extends TestCase
             'view_users',
             'create_users',
             'edit_users',
-            'delete_users'
+            'delete_users',
         ]);
     }
 

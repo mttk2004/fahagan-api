@@ -2,8 +2,12 @@
 
 namespace App\Enums\Author;
 
+use App\Abstracts\BaseValidationRules;
+
 enum AuthorValidationRules
 {
+    use BaseValidationRules;
+
     case NAME;
     case BIOGRAPHY;
     case IMAGE_URL;

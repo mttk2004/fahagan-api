@@ -6,36 +6,34 @@ use App\Enums\Publisher\PublisherValidationMessages;
 use App\Enums\Publisher\PublisherValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
+use App\Traits\HasApiJsonValidation;
+use App\Traits\HasUpdateRules;
 use App\Utils\AuthUtils;
-use Illuminate\Validation\Rule;
 
 class PublisherUpdateRequest extends BaseRequest implements HasValidationMessages
 {
+    use HasApiJsonValidation;
+    use HasUpdateRules;
+
     public function rules(): array
     {
-        $publisherId = $this->route('publisher');
+        $publisherId = request()->route('publisher');
 
-        return [
-            'data.attributes.name' => [
-                'sometimes',
-                'string',
-                'max:255',
-                Rule::unique('publishers', 'name')
-                    ->whereNull('deleted_at')
-                    ->ignore($publisherId)
-            ],
-            'data.attributes.biography' => ['sometimes', 'string'],
-        ];
+        $attributesRules = $this->mapAttributesRules([
+            'name' => HasUpdateRules::transformToUpdateRules(
+                PublisherValidationRules::getNameRuleWithUnique($publisherId)
+            ),
+            'biography' => HasUpdateRules::transformToUpdateRules(
+                PublisherValidationRules::BIOGRAPHY->rules()
+            ),
+        ]);
+
+        return $attributesRules;
     }
 
     public function messages(): array
     {
-        return [
-            'data.attributes.name.string' => PublisherValidationMessages::NAME_STRING->message(),
-            'data.attributes.name.max' => PublisherValidationMessages::NAME_MAX->message(),
-            'data.attributes.name.unique' => PublisherValidationMessages::NAME_UNIQUE->message(),
-            'data.attributes.biography.string' => PublisherValidationMessages::BIOGRAPHY_STRING->message(),
-        ];
+        return PublisherValidationMessages::getJsonApiMessages();
     }
 
     public function authorize(): bool

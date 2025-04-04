@@ -9,7 +9,6 @@ use App\Http\Requests\V1\DiscountStoreRequest;
 use App\Http\Requests\V1\DiscountUpdateRequest;
 use App\Http\Resources\V1\DiscountCollection;
 use App\Http\Resources\V1\DiscountResource;
-use App\Http\Sorts\V1\DiscountSort;
 use App\Models\Discount;
 use App\Services\DiscountService;
 use App\Traits\HandlePagination;
@@ -18,7 +17,6 @@ use App\Utils\ResponseUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
 class DiscountController extends Controller

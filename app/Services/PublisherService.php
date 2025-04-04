@@ -65,6 +65,7 @@ class PublisherService
             return $publisher->fresh();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -102,6 +103,7 @@ class PublisherService
             return $publisher->fresh();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -125,6 +127,7 @@ class PublisherService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }

@@ -15,8 +15,8 @@ class AuthorDTOTest extends TestCase
                     'name' => 'Nguyễn Nhật Ánh',
                     'biography' => 'Tác giả nổi tiếng với nhiều tác phẩm văn học thiếu nhi và thanh thiếu niên.',
                     'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);
@@ -41,10 +41,10 @@ class AuthorDTOTest extends TestCase
                         'data' => [
                             ['id' => 1],
                             ['id' => 2],
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);
@@ -59,8 +59,8 @@ class AuthorDTOTest extends TestCase
             'data' => [
                 'attributes' => [
                     'name' => 'Nguyễn Nhật Ánh',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);

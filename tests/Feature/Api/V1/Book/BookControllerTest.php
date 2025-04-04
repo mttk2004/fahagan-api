@@ -20,6 +20,7 @@ class BookControllerTest extends TestCase
      * @var \Illuminate\Contracts\Auth\Authenticatable|\App\Models\User
      */
     private $user;
+
     private Publisher $publisher;
 
     protected function setUp(): void
@@ -34,7 +35,7 @@ class BookControllerTest extends TestCase
         $this->user->givePermissionTo([
             'create_books',
             'edit_books',
-            'delete_books'
+            'delete_books',
         ]);
 
         // Tạo một Publisher để sử dụng trong các test

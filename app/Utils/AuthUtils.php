@@ -24,7 +24,7 @@ class AuthUtils
     {
         $user = self::user();
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -35,7 +35,7 @@ class AuthUtils
             'user_id' => $user->id,
             'user_roles' => $user->getRoleNames(),
             'has_permission' => $hasPermission,
-            'all_permissions' => $user->getAllPermissions()->pluck('name')
+            'all_permissions' => $user->getAllPermissions()->pluck('name'),
         ]);
 
         return $hasPermission;

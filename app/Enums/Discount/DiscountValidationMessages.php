@@ -2,8 +2,12 @@
 
 namespace App\Enums\Discount;
 
+use App\Traits\HasStandardValidationMessages;
+
 enum DiscountValidationMessages
 {
+    use HasStandardValidationMessages;
+
     case NAME_REQUIRED;
     case NAME_STRING;
     case NAME_MAX;

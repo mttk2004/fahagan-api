@@ -4,7 +4,6 @@ namespace Tests\Unit\Services;
 
 use App\DTOs\Discount\DiscountDTO;
 use App\Models\Discount;
-use App\Models\DiscountTarget;
 use App\Services\DiscountService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -31,7 +31,7 @@ class GenreControllerTest extends TestCase
             'create_genres',
             'edit_genres',
             'delete_genres',
-            'restore_genres'
+            'restore_genres',
         ]);
     }
 
@@ -73,11 +73,11 @@ class GenreControllerTest extends TestCase
                             'name',
                             'slug',
                             'books_count',
-                            'description'
+                            'description',
                         ],
-                        'relationships'
-                    ]
-                ]
+                        'relationships',
+                    ],
+                ],
             ]);
     }
 
@@ -98,9 +98,9 @@ class GenreControllerTest extends TestCase
                     'genre' => [
                         'id',
                         'type',
-                        'attributes'
-                    ]
-                ]
+                        'attributes',
+                    ],
+                ],
             ]);
     }
 
@@ -137,8 +137,8 @@ class GenreControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'genre'
-                ]
+                    'genre',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
@@ -205,8 +205,8 @@ class GenreControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'genre'
-                ]
+                    'genre',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
@@ -222,7 +222,7 @@ class GenreControllerTest extends TestCase
         // Tạo một thể loại
         $genre = Genre::factory()->create([
             'name' => 'Thể loại cũ',
-            'slug' => 'the-loai-cu'
+            'slug' => 'the-loai-cu',
         ]);
 
         // Dữ liệu cập nhật chỉ có name
@@ -276,8 +276,8 @@ class GenreControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'genre'
-                ]
+                    'genre',
+                ],
             ]);
 
         // Kiểm tra thể loại đã được khôi phục

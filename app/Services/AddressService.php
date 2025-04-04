@@ -41,6 +41,7 @@ class AddressService
             return $address->fresh();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -79,6 +80,7 @@ class AddressService
             return $address->fresh();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -108,6 +110,7 @@ class AddressService
             return $deletedAddress;
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }

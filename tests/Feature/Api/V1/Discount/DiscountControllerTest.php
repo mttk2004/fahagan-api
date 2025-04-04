@@ -31,7 +31,7 @@ class DiscountControllerTest extends TestCase
             'create_discounts',
             'edit_discounts',
             'delete_discounts',
-            'view_discounts'
+            'view_discounts',
         ]);
     }
 
@@ -237,7 +237,7 @@ class DiscountControllerTest extends TestCase
             'create_discounts',
             'edit_discounts',
             'delete_discounts',
-            'view_discounts'
+            'view_discounts',
         ]);
 
         // Thử gọi API với user không có quyền
@@ -265,11 +265,11 @@ class DiscountControllerTest extends TestCase
                     'targets' => [
                         [
                             'type' => 'book',
-                            'id' => $book->id
-                        ]
-                    ]
-                ]
-            ]
+                            'id' => $book->id,
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         // Mock DiscountStoreRequest để tránh validation

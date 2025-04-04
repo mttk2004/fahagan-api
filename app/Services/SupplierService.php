@@ -56,7 +56,7 @@ class SupplierService
             $supplier = Supplier::create($supplierDTO->toArray());
 
             // Liên kết với books nếu có
-            if ($bookIds && !empty($bookIds)) {
+            if ($bookIds && ! empty($bookIds)) {
                 $supplier->suppliedBooks()->attach($bookIds);
             }
 
@@ -65,6 +65,7 @@ class SupplierService
             return $supplier->fresh()->load('suppliedBooks');
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -113,6 +114,7 @@ class SupplierService
             return $supplier->fresh()->load('suppliedBooks');
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -141,6 +143,7 @@ class SupplierService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -158,7 +161,7 @@ class SupplierService
         try {
             $supplier = Supplier::withTrashed()->findOrFail($supplierId);
 
-            if (!$supplier->trashed()) {
+            if (! $supplier->trashed()) {
                 throw new Exception('Nhà cung cấp này chưa bị xóa.');
             }
 
@@ -172,6 +175,7 @@ class SupplierService
             return $supplier->fresh()->load('suppliedBooks');
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }

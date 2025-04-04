@@ -49,7 +49,7 @@ class AuthorService
             $author = Author::create($authorDTO->toArray());
 
             // Gán sách nếu có
-            if (!empty($authorDTO->book_ids)) {
+            if (! empty($authorDTO->book_ids)) {
                 $author->writtenBooks()->attach($authorDTO->book_ids);
             }
 
@@ -58,6 +58,7 @@ class AuthorService
             return $author->fresh(['writtenBooks']);
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -91,7 +92,7 @@ class AuthorService
             $author->update($authorDTO->toArray());
 
             // Cập nhật quan hệ với sách nếu có
-            if (!empty($authorDTO->book_ids)) {
+            if (! empty($authorDTO->book_ids)) {
                 $author->writtenBooks()->sync($authorDTO->book_ids);
             }
 
@@ -100,6 +101,7 @@ class AuthorService
             return $author->fresh(['writtenBooks']);
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -123,6 +125,7 @@ class AuthorService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }

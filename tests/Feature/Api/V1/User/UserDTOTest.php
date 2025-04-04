@@ -17,8 +17,8 @@ class UserDTOTest extends TestCase
                     'email' => 'john.doe@example.com',
                     'phone' => '0987654321',
                     'is_customer' => true,
-                ]
-            ]
+                ],
+            ],
         ];
 
         $userDTO = UserDTO::fromRequest($validatedData);
@@ -42,8 +42,8 @@ class UserDTOTest extends TestCase
                     'phone' => '0123456789',
                     'password' => 'password123',
                     'is_customer' => false,
-                ]
-            ]
+                ],
+            ],
         ];
 
         $userDTO = UserDTO::fromRequest($validatedData);
@@ -64,8 +64,8 @@ class UserDTOTest extends TestCase
             'data' => [
                 'attributes' => [
                     'first_name' => 'Alex',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $userDTO = UserDTO::fromRequest($validatedData);

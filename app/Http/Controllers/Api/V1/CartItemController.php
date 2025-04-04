@@ -83,6 +83,7 @@ class CartItemController extends Controller
             if ($e->getMessage() === 'Sách đã tồn tại trong giỏ hàng.') {
                 return ResponseUtils::badRequest(ResponseMessage::ALREADY_IN_CART->value);
             }
+
             return ResponseUtils::serverError($e->getMessage());
         }
     }
@@ -101,11 +102,13 @@ class CartItemController extends Controller
 
         try {
             $this->cartItemService->removeFromCart($user, $book_id);
+
             return ResponseUtils::noContent(ResponseMessage::REMOVED_FROM_CART->value);
         } catch (Exception $e) {
             if ($e->getMessage() === 'Sách không tồn tại trong giỏ hàng.') {
                 return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_CART_ITEM->value);
             }
+
             return ResponseUtils::serverError($e->getMessage());
         }
     }

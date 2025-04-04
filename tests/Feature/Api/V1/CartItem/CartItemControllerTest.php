@@ -18,6 +18,7 @@ class CartItemControllerTest extends TestCase
      * @var Authenticatable|User
      */
     private $user;
+
     private Book $book;
 
     protected function setUp(): void
@@ -55,7 +56,7 @@ class CartItemControllerTest extends TestCase
         // Dữ liệu để thêm vào giỏ hàng
         $data = [
             'book_id' => $this->book->id,
-            'quantity' => 3
+            'quantity' => 3,
         ];
 
         // Gọi API để thêm vào giỏ hàng
@@ -69,15 +70,15 @@ class CartItemControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'cart_item'
-                ]
+                    'cart_item',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('cart_items', [
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
-            'quantity' => 3
+            'quantity' => 3,
         ]);
     }
 
@@ -89,7 +90,7 @@ class CartItemControllerTest extends TestCase
         // Dữ liệu để thêm lại vào giỏ hàng
         $data = [
             'book_id' => $this->book->id,
-            'quantity' => 3
+            'quantity' => 3,
         ];
 
         // Gọi API để thêm lại vào giỏ hàng
@@ -109,7 +110,7 @@ class CartItemControllerTest extends TestCase
         // Dữ liệu để cập nhật số lượng
         $data = [
             'book_id' => $this->book->id,
-            'quantity' => 5
+            'quantity' => 5,
         ];
 
         // Gọi API để cập nhật số lượng - Sửa thành POST và update-quantity
@@ -123,15 +124,15 @@ class CartItemControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    'cart_item'
-                ]
+                    'cart_item',
+                ],
             ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('cart_items', [
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
-            'quantity' => 5
+            'quantity' => 5,
         ]);
     }
 
@@ -140,7 +141,7 @@ class CartItemControllerTest extends TestCase
         // Dữ liệu để cập nhật sách chưa có trong giỏ
         $data = [
             'book_id' => $this->book->id,
-            'quantity' => 3
+            'quantity' => 3,
         ];
 
         // Gọi API để cập nhật - Sửa thành POST và update-quantity
@@ -153,7 +154,7 @@ class CartItemControllerTest extends TestCase
         $this->assertDatabaseHas('cart_items', [
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
-            'quantity' => 3
+            'quantity' => 3,
         ]);
     }
 
@@ -171,7 +172,7 @@ class CartItemControllerTest extends TestCase
         // Kiểm tra dữ liệu đã bị xóa khỏi database
         $this->assertDatabaseMissing('cart_items', [
             'user_id' => $this->user->id,
-            'book_id' => $this->book->id
+            'book_id' => $this->book->id,
         ]);
     }
 
@@ -190,7 +191,7 @@ class CartItemControllerTest extends TestCase
     {
         // Dữ liệu thiếu thông tin book_id
         $invalidData = [
-            'quantity' => 3
+            'quantity' => 3,
         ];
 
         // Gọi API với dữ liệu không hợp lệ
@@ -203,7 +204,7 @@ class CartItemControllerTest extends TestCase
         // Kiểm tra với số lượng không hợp lệ
         $invalidQuantityData = [
             'book_id' => $this->book->id,
-            'quantity' => -1
+            'quantity' => -1,
         ];
 
         $response = $this->actingAs($this->user)

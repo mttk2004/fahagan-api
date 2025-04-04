@@ -165,7 +165,7 @@ class BookController extends Controller
                 $this->bookService->deleteBook($bookId);
 
                 return ResponseUtils::success([
-                    'message' => ResponseMessage::DELETED_BOOK->value
+                    'message' => ResponseMessage::DELETED_BOOK->value,
                 ], ResponseMessage::DELETED_BOOK->value);
             } catch (ModelNotFoundException) {
                 return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
@@ -180,7 +180,7 @@ class BookController extends Controller
             $this->bookService->deleteBook($bookId);
 
             return ResponseUtils::success([
-                'message' => ResponseMessage::DELETED_BOOK->value
+                'message' => ResponseMessage::DELETED_BOOK->value,
             ], ResponseMessage::DELETED_BOOK->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);

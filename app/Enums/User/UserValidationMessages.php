@@ -2,8 +2,12 @@
 
 namespace App\Enums\User;
 
+use App\Traits\HasStandardValidationMessages;
+
 enum UserValidationMessages
 {
+    use HasStandardValidationMessages;
+
     case FIRST_NAME_REQUIRED;
     case FIRST_NAME_STRING;
     case FIRST_NAME_MAX;

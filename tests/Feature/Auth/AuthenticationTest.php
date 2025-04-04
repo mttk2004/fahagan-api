@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
@@ -17,8 +16,8 @@ test('users can authenticate using the login screen', function () {
             'message',
             'data' => [
                 'token',
-                'user'
-            ]
+                'user',
+            ],
         ]);
 });
 

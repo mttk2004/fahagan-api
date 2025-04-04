@@ -2,15 +2,22 @@
 
 namespace App\Enums\Discount;
 
-use Illuminate\Validation\Rule;
+use App\Traits\HasUniqueRules;
+use App\Traits\HasUpdateRules;
 
 enum DiscountValidationRules
 {
+    use HasUpdateRules;
+    use HasUniqueRules;
+
     case NAME;
     case DISCOUNT_TYPE;
     case DISCOUNT_VALUE;
     case START_DATE;
     case END_DATE;
+    case TARGET_TYPE;
+    case TARGET_ID;
+    case TARGET_ARRAY;
 
     public function rules(): array
     {
@@ -20,6 +27,9 @@ enum DiscountValidationRules
             self::DISCOUNT_VALUE => ['required', 'numeric', 'min:0'],
             self::START_DATE => ['required', 'date', 'before_or_equal:end_date'],
             self::END_DATE => ['required', 'date', 'after_or_equal:start_date'],
+            self::TARGET_TYPE => ['required', 'string', 'in:book,author,publisher,genre'],
+            self::TARGET_ID => ['required', 'integer'],
+            self::TARGET_ARRAY => ['required', 'array'],
         };
     }
 
@@ -29,16 +39,11 @@ enum DiscountValidationRules
      */
     public static function getNameRuleWithUnique(?string $id = null): array
     {
-        $uniqueRule = Rule::unique('discounts', 'name')
-            ->whereNull('deleted_at');
-
-        if ($id !== null) {
-            $uniqueRule->ignore($id);
-        }
-
-        return array_merge(
+        return self::addUniqueRule(
             self::NAME->rules(),
-            [$uniqueRule]
+            'discounts',
+            'name',
+            $id
         );
     }
 }

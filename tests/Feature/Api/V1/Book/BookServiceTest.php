@@ -19,6 +19,7 @@ class BookServiceTest extends TestCase
     use RefreshDatabase;
 
     private BookService $bookService;
+
     private Publisher $publisher;
 
     protected function setUp(): void
