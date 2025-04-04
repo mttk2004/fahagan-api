@@ -7,10 +7,29 @@ use App\Enums\Address\AddressValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Traits\HasApiJsonValidation;
+use App\Traits\HasRequestFormat;
 
 class AddressStoreRequest extends BaseRequest implements HasValidationMessages
 {
     use HasApiJsonValidation;
+    use HasRequestFormat;
+
+    /**
+     * Chuẩn bị dữ liệu trước khi validation
+     */
+    protected function prepareForValidation(): void
+    {
+        // Chuyển đổi từ direct format sang JSON:API format
+        // Address không có relationships, được phép sử dụng direct format
+        $this->convertToJsonApiFormat([
+            'name',
+            'phone',
+            'city',
+            'district',
+            'ward',
+            'address_line'
+        ]);
+    }
 
     public function rules(): array
     {

@@ -8,27 +8,24 @@ use App\Enums\CartItem\CartItemValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Traits\HasApiJsonValidation;
+use App\Traits\HasRequestFormat;
 
 class AddToCartRequest extends BaseRequest implements HasValidationMessages
 {
     use HasApiJsonValidation;
+    use HasRequestFormat;
 
     /**
      * Chuẩn bị dữ liệu trước khi validation
      */
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
-        // Nếu người dùng gửi dữ liệu không theo format JSON:API, chuyển đổi sang format JSON:API
-        if (! $this->has('data') && $this->has('book_id') && $this->has('quantity')) {
-            $this->merge([
-                'data' => [
-                    'attributes' => [
-                        'book_id' => $this->input('book_id'),
-                        'quantity' => $this->input('quantity'),
-                    ],
-                ],
-            ]);
-        }
+        // Chuyển đổi từ direct format sang JSON:API format
+        // AddToCart không có relationships, được phép sử dụng direct format
+        $this->convertToJsonApiFormat([
+            'book_id',
+            'quantity'
+        ]);
     }
 
     public function rules(): array

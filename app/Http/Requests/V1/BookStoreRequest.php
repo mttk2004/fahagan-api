@@ -7,11 +7,26 @@ use App\Enums\Book\BookValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Traits\HasApiJsonValidation;
+use App\Traits\HasRequestFormat;
 use App\Utils\AuthUtils;
 
 class BookStoreRequest extends BaseRequest implements HasValidationMessages
 {
     use HasApiJsonValidation;
+    use HasRequestFormat;
+
+    /**
+     * Chuẩn bị dữ liệu trước khi validation
+     */
+    protected function prepareForValidation(): void
+    {
+        // Chuyển đổi từ direct format sang JSON:API format
+        // Book có relationships authors, genres, publisher
+        $this->convertToJsonApiFormat([
+            'title',
+            'price'
+        ], true);
+    }
 
     public function rules(): array
     {

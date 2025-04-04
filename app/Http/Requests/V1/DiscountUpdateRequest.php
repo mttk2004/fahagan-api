@@ -7,6 +7,7 @@ use App\Enums\Discount\DiscountValidationRules;
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
 use App\Traits\HasApiJsonValidation;
+use App\Traits\HasRequestFormat;
 use App\Traits\HasUpdateRules;
 use App\Utils\AuthUtils;
 
@@ -14,6 +15,21 @@ class DiscountUpdateRequest extends BaseRequest implements HasValidationMessages
 {
     use HasApiJsonValidation;
     use HasUpdateRules;
+    use HasRequestFormat;
+
+    /**
+     * Chuẩn bị dữ liệu trước khi validation
+     */
+    protected function prepareForValidation(): void
+    {
+        // Chuyển đổi từ direct format sang JSON:API format
+        // Discount có relationships targets
+        $this->convertToJsonApiFormat([
+            'name',
+            'discount_type',
+            'discount_value'
+        ], true);
+    }
 
     public function rules(): array
     {

@@ -83,15 +83,21 @@ class AuthController extends Controller
     {
         $validated = $request->validated();
 
-        if (! Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
+        // Lấy attributes từ định dạng JSON:API
+        $attributes = $validated;
+        if (isset($validated['data']) && isset($validated['data']['attributes'])) {
+            $attributes = $validated['data']['attributes'];
+        }
+
+        if (! Auth::attempt(['email' => $attributes['email'], 'password' => $attributes['password']])) {
             return ResponseUtils::unauthorized(ResponseMessage::LOGIN_FAILED->value);
         }
 
-        $user = User::where('email', $validated['email'])->first();
+        $user = User::where('email', $attributes['email'])->first();
         $user->update(['last_login' => now()]);
 
         $token = $user->createToken(
-            'API token for ' . $validated['email'],
+            'API token for ' . $attributes['email'],
             ['*'],
             now()->addWeek()
         )->plainTextToken;
@@ -111,7 +117,7 @@ class AuthController extends Controller
     public function logout()
     {
         $user = AuthUtils::user();
-        if ($user && $user->currentAccessToken()) {
+        if ($user && method_exists($user->currentAccessToken(), 'delete')) {
             $user->currentAccessToken()->delete();
         }
 
@@ -135,8 +141,14 @@ class AuthController extends Controller
 
         $validatedData = $request->validated();
 
+        // Lấy attributes từ định dạng JSON:API
+        $attributes = $validatedData;
+        if (isset($validatedData['data']) && isset($validatedData['data']['attributes'])) {
+            $attributes = $validatedData['data']['attributes'];
+        }
+
         // Check if the old password is correct
-        if (! Hash::check($validatedData['old_password'], $user->password)) {
+        if (! Hash::check($attributes['old_password'], $user->password)) {
             return ResponseUtils::validationError(ResponseMessage::WRONG_OLD_PASSWORD->value);
         }
 
@@ -146,7 +158,7 @@ class AuthController extends Controller
                 last_name: null,
                 email: null,
                 phone: null,
-                password: $validatedData['new_password'],
+                password: $attributes['new_password'],
                 is_customer: null,
             );
 
@@ -169,7 +181,14 @@ class AuthController extends Controller
     public function forgotPassword(ForgotPasswordRequest $request)
     {
         $validated = $request->validated();
-        $status = Password::sendResetLink(['email' => $validated['email']]);
+
+        // Lấy attributes từ định dạng JSON:API
+        $attributes = $validated;
+        if (isset($validated['data']) && isset($validated['data']['attributes'])) {
+            $attributes = $validated['data']['attributes'];
+        }
+
+        $status = Password::sendResetLink(['email' => $attributes['email']]);
 
         return $status === Password::RESET_LINK_SENT
             ? ResponseUtils::success([], 'Email đặt lại mật khẩu đã được gửi.')
@@ -186,14 +205,25 @@ class AuthController extends Controller
      */
     public function resetPassword(Request $request)
     {
-        $request->validate([
+        $data = $request->all();
+
+        // Xử lý dữ liệu từ định dạng JSON:API nếu có
+        if (isset($data['data']) && isset($data['data']['attributes'])) {
+            $data = $data['data']['attributes'];
+        }
+
+        $validator = validator($data, [
             'token' => 'required',
             'email' => 'required|string|email',
             'password' => 'required|string|confirmed|min:8',
         ]);
 
+        if ($validator->fails()) {
+            return ResponseUtils::validationError($validator->errors()->first());
+        }
+
         $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            $validator->validated(),
             function ($user, $password) {
                 $user->password = Hash::make($password);
                 $user->save();
