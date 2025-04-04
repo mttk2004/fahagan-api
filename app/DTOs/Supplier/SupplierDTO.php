@@ -53,18 +53,12 @@ class SupplierDTO
     /**
      * Tạo DTO từ request data
      *
-     * @param array $requestData
+     * @param array $validatedData
      * @return self
      */
-    public static function fromRequestData(array $requestData): self
+    public static function fromRequest(array $validatedData): self
     {
-        // Handle both JSON:API format and direct format
-        $attributes = $requestData;
-
-        // Check if we have a JSON:API format
-        if (isset($requestData['data']) && isset($requestData['data']['attributes'])) {
-            $attributes = $requestData['data']['attributes'];
-        }
+        $attributes = $validatedData['data']['attributes'] ?? [];
 
         return new self(
             name: $attributes['name'] ?? null,

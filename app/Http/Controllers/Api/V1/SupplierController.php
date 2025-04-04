@@ -61,7 +61,7 @@ class SupplierController extends Controller
     {
         try {
             $validatedData = $request->validated();
-            $supplierDTO = SupplierDTO::fromRequestData($validatedData);
+            $supplierDTO = SupplierDTO::fromRequest($validatedData);
 
             // Lấy book IDs nếu có
             $bookIds = $validatedData['data']['relationships']['books']['data'] ?? [];
@@ -111,7 +111,7 @@ class SupplierController extends Controller
     {
         try {
             $validatedData = $request->validated();
-            $supplierDTO = SupplierDTO::fromRequestData($validatedData);
+            $supplierDTO = SupplierDTO::fromRequest($validatedData);
 
             // Lấy book IDs nếu có
             $bookIds = null;

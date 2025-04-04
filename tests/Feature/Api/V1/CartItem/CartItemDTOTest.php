@@ -10,8 +10,12 @@ class CartItemDTOTest extends TestCase
     public function test_it_creates_cart_item_dto_from_request()
     {
         $validatedData = [
-            'book_id' => 123,
-            'quantity' => 2,
+            'data' => [
+                'attributes' => [
+                    'book_id' => 123,
+                    'quantity' => 2,
+                ]
+            ]
         ];
 
         $cartItemDTO = CartItemDTO::fromRequest($validatedData);

@@ -14,9 +14,9 @@ class AddressDTO
     ) {
     }
 
-    public static function fromRequestData(array $requestData): self
+    public static function fromRequest(array $validatedData): self
     {
-        $attributes = $requestData['data']['attributes'] ?? $requestData;
+        $attributes = $validatedData['data']['attributes'] ?? [];
 
         return new self(
             name: $attributes['name'] ?? null,

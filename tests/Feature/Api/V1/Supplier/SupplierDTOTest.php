@@ -10,35 +10,43 @@ class SupplierDTOTest extends TestCase
     public function test_it_creates_supplier_dto_from_request()
     {
         $requestData = [
-            'name' => 'Nhà Sách Test',
-            'phone' => '0123456789',
-            'email' => 'test@example.com',
-            'city' => 'Hà Nội',
-            'district' => 'Cầu Giấy',
-            'ward' => 'Dịch Vọng',
-            'address_line' => 'Số 1 Đường ABC',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nhà Sách Test',
+                    'phone' => '0123456789',
+                    'email' => 'test@example.com',
+                    'city' => 'Hà Nội',
+                    'district' => 'Cầu Giấy',
+                    'ward' => 'Dịch Vọng',
+                    'address_line' => 'Số 1 Đường ABC',
+                ]
+            ]
         ];
 
-        $supplierDTO = SupplierDTO::fromRequestData($requestData);
+        $supplierDTO = SupplierDTO::fromRequest($requestData);
 
-        $this->assertEquals($requestData['name'], $supplierDTO->name);
-        $this->assertEquals($requestData['phone'], $supplierDTO->phone);
-        $this->assertEquals($requestData['email'], $supplierDTO->email);
-        $this->assertEquals($requestData['city'], $supplierDTO->city);
-        $this->assertEquals($requestData['district'], $supplierDTO->district);
-        $this->assertEquals($requestData['ward'], $supplierDTO->ward);
-        $this->assertEquals($requestData['address_line'], $supplierDTO->address_line);
+        $this->assertEquals($requestData['data']['attributes']['name'], $supplierDTO->name);
+        $this->assertEquals($requestData['data']['attributes']['phone'], $supplierDTO->phone);
+        $this->assertEquals($requestData['data']['attributes']['email'], $supplierDTO->email);
+        $this->assertEquals($requestData['data']['attributes']['city'], $supplierDTO->city);
+        $this->assertEquals($requestData['data']['attributes']['district'], $supplierDTO->district);
+        $this->assertEquals($requestData['data']['attributes']['ward'], $supplierDTO->ward);
+        $this->assertEquals($requestData['data']['attributes']['address_line'], $supplierDTO->address_line);
     }
 
     public function test_it_creates_supplier_dto_with_nullable_properties()
     {
         $requestData = [
-            'name' => 'Nhà Sách Test',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nhà Sách Test',
+                ]
+            ]
         ];
 
-        $supplierDTO = SupplierDTO::fromRequestData($requestData);
+        $supplierDTO = SupplierDTO::fromRequest($requestData);
 
-        $this->assertEquals($requestData['name'], $supplierDTO->name);
+        $this->assertEquals($requestData['data']['attributes']['name'], $supplierDTO->name);
         $this->assertNull($supplierDTO->phone);
         $this->assertNull($supplierDTO->email);
         $this->assertNull($supplierDTO->city);

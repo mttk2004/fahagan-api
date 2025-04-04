@@ -58,7 +58,7 @@ class AddressController extends Controller
             return ResponseUtils::unauthorized();
         }
 
-        $addressDTO = AddressDTO::fromRequestData($request->validated());
+        $addressDTO = AddressDTO::fromRequest($request->validated());
         $address = $this->addressService->createAddress(AuthUtils::user(), $addressDTO);
 
         return ResponseUtils::created([
@@ -81,7 +81,7 @@ class AddressController extends Controller
         }
 
         try {
-            $addressDTO = AddressDTO::fromRequestData($request->validated());
+            $addressDTO = AddressDTO::fromRequest($request->validated());
             $address = $this->addressService->updateAddress(AuthUtils::user(), $address_id, $addressDTO);
 
             return ResponseUtils::success([

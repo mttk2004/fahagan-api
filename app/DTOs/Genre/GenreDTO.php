@@ -13,7 +13,7 @@ class GenreDTO
 
     public static function fromRequest(array $validatedData): self
     {
-        $attributes = $validatedData['data']['attributes'] ?? $validatedData;
+        $attributes = $validatedData['data']['attributes'] ?? [];
 
         return new self(
             name: $attributes['name'] ?? null,

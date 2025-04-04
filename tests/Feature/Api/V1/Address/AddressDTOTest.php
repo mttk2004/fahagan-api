@@ -10,33 +10,41 @@ class AddressDTOTest extends TestCase
     public function test_it_creates_address_dto_from_request_data()
     {
         $requestData = [
-            'name' => 'Nguyễn Văn A',
-            'phone' => '0123456789',
-            'city' => 'Hà Nội',
-            'district' => 'Cầu Giấy',
-            'ward' => 'Dịch Vọng',
-            'address_line' => 'Số 1 Đường ABC',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nguyễn Văn A',
+                    'phone' => '0123456789',
+                    'city' => 'Hà Nội',
+                    'district' => 'Cầu Giấy',
+                    'ward' => 'Dịch Vọng',
+                    'address_line' => 'Số 1 Đường ABC',
+                ]
+            ]
         ];
 
-        $addressDTO = AddressDTO::fromRequestData($requestData);
+        $addressDTO = AddressDTO::fromRequest($requestData);
 
-        $this->assertEquals($requestData['name'], $addressDTO->name);
-        $this->assertEquals($requestData['phone'], $addressDTO->phone);
-        $this->assertEquals($requestData['city'], $addressDTO->city);
-        $this->assertEquals($requestData['district'], $addressDTO->district);
-        $this->assertEquals($requestData['ward'], $addressDTO->ward);
-        $this->assertEquals($requestData['address_line'], $addressDTO->address_line);
+        $this->assertEquals($requestData['data']['attributes']['name'], $addressDTO->name);
+        $this->assertEquals($requestData['data']['attributes']['phone'], $addressDTO->phone);
+        $this->assertEquals($requestData['data']['attributes']['city'], $addressDTO->city);
+        $this->assertEquals($requestData['data']['attributes']['district'], $addressDTO->district);
+        $this->assertEquals($requestData['data']['attributes']['ward'], $addressDTO->ward);
+        $this->assertEquals($requestData['data']['attributes']['address_line'], $addressDTO->address_line);
     }
 
     public function test_it_creates_address_dto_with_nullable_properties()
     {
         $requestData = [
-            'name' => 'Nguyễn Văn A',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nguyễn Văn A',
+                ]
+            ]
         ];
 
-        $addressDTO = AddressDTO::fromRequestData($requestData);
+        $addressDTO = AddressDTO::fromRequest($requestData);
 
-        $this->assertEquals($requestData['name'], $addressDTO->name);
+        $this->assertEquals($requestData['data']['attributes']['name'], $addressDTO->name);
         $this->assertNull($addressDTO->phone);
         $this->assertNull($addressDTO->city);
         $this->assertNull($addressDTO->district);
