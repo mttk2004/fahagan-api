@@ -58,14 +58,22 @@ class SupplierDTO
      */
     public static function fromRequestData(array $requestData): self
     {
+        // Handle both JSON:API format and direct format
+        $attributes = $requestData;
+
+        // Check if we have a JSON:API format
+        if (isset($requestData['data']) && isset($requestData['data']['attributes'])) {
+            $attributes = $requestData['data']['attributes'];
+        }
+
         return new self(
-            name: $requestData['name'] ?? null,
-            phone: $requestData['phone'] ?? null,
-            email: $requestData['email'] ?? null,
-            city: $requestData['city'] ?? null,
-            district: $requestData['district'] ?? null,
-            ward: $requestData['ward'] ?? null,
-            address_line: $requestData['address_line'] ?? null
+            name: $attributes['name'] ?? null,
+            phone: $attributes['phone'] ?? null,
+            email: $attributes['email'] ?? null,
+            city: $attributes['city'] ?? null,
+            district: $attributes['district'] ?? null,
+            ward: $attributes['ward'] ?? null,
+            address_line: $attributes['address_line'] ?? null
         );
     }
 }

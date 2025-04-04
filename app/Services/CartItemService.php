@@ -22,16 +22,31 @@ class CartItemService
     }
 
     /**
-     * Thêm sản phẩm vào giỏ hàng
+     * Tìm sản phẩm trong giỏ hàng
      *
-     * @throws Exception
+     * @param User $user
+     * @param int $bookId
+     * @return CartItem|null
      */
-    public function addToCart(User $user, CartItemDTO $cartItemDTO): CartItem
+    public function findCartItem(User $user, int $bookId): ?CartItem
     {
-        if ($user->isBookInCart($cartItemDTO->book_id)) {
-            throw new Exception('Sách đã tồn tại trong giỏ hàng.');
+        if (!$user->isBookInCart($bookId)) {
+            return null;
         }
 
+        return $user->getCartItemByBook($bookId);
+    }
+
+    /**
+     * Thêm sản phẩm vào giỏ hàng không cần kiểm tra tồn tại
+     *
+     * @param User $user
+     * @param CartItemDTO $cartItemDTO
+     * @return CartItem
+     * @throws Exception
+     */
+    public function addToCartNoChecking(User $user, CartItemDTO $cartItemDTO): CartItem
+    {
         try {
             DB::beginTransaction();
 
@@ -52,6 +67,20 @@ class CartItemService
     }
 
     /**
+     * Thêm sản phẩm vào giỏ hàng
+     *
+     * @throws Exception
+     */
+    public function addToCart(User $user, CartItemDTO $cartItemDTO): CartItem
+    {
+        if ($user->isBookInCart($cartItemDTO->book_id)) {
+            throw new Exception('Sách đã tồn tại trong giỏ hàng.');
+        }
+
+        return $this->addToCartNoChecking($user, $cartItemDTO);
+    }
+
+    /**
      * Cập nhật số lượng sản phẩm trong giỏ hàng
      *
      * @throws Exception
@@ -59,7 +88,7 @@ class CartItemService
     public function updateCartItemQuantity(User $user, CartItemDTO $cartItemDTO): CartItem
     {
         if (! $user->isBookInCart($cartItemDTO->book_id)) {
-            return $this->addToCart($user, $cartItemDTO);
+            return $this->addToCartNoChecking($user, $cartItemDTO);
         }
 
         try {

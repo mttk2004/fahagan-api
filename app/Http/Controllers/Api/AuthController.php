@@ -43,13 +43,21 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
+            $validated = $request->validated();
+
+            // Get attributes from JSON:API format
+            $attributes = $validated;
+            if (isset($validated['data']) && isset($validated['data']['attributes'])) {
+                $attributes = $validated['data']['attributes'];
+            }
+
             $userDTO = new UserDTO(
-                first_name: $request->validated()['first_name'],
-                last_name: $request->validated()['last_name'],
-                email: $request->validated()['email'],
-                phone: $request->validated()['phone'],
-                password: $request->validated()['password'],
-                is_customer: $request->validated()['is_customer'] ?? true,
+                first_name: $attributes['first_name'],
+                last_name: $attributes['last_name'],
+                email: $attributes['email'],
+                phone: $attributes['phone'],
+                password: $attributes['password'],
+                is_customer: $attributes['is_customer'] ?? true,
             );
 
             $user = $this->userService->createUser($userDTO);
@@ -73,17 +81,17 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $request->validated();
+        $validated = $request->validated();
 
-        if (! Auth::attempt($request->only(['email', 'password']))) {
+        if (! Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
             return ResponseUtils::unauthorized(ResponseMessage::LOGIN_FAILED->value);
         }
 
-        $user = User::where('email', $request->input('email'))->first();
+        $user = User::where('email', $validated['email'])->first();
         $user->update(['last_login' => now()]);
 
         $token = $user->createToken(
-            'API token for ' . $request->input('email'),
+            'API token for ' . $validated['email'],
             ['*'],
             now()->addWeek()
         )->plainTextToken;
@@ -102,7 +110,10 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        AuthUtils::user()->currentAccessToken()->delete();
+        $user = AuthUtils::user();
+        if ($user && $user->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+        }
 
         return ResponseUtils::noContent(ResponseMessage::LOGOUT_SUCCESS->value);
     }
@@ -157,7 +168,8 @@ class AuthController extends Controller
      */
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $status = Password::sendResetLink($request->only('email'));
+        $validated = $request->validated();
+        $status = Password::sendResetLink(['email' => $validated['email']]);
 
         return $status === Password::RESET_LINK_SENT
             ? ResponseUtils::success([], 'Email đặt lại mật khẩu đã được gửi.')

@@ -6,7 +6,7 @@ use App\Traits\HasStandardValidationRules;
 use App\Traits\HasUniqueRules;
 use App\Traits\HasUpdateRules;
 
-abstract class BaseValidationRules
+trait BaseValidationRules
 {
     use HasUpdateRules;
     use HasUniqueRules;

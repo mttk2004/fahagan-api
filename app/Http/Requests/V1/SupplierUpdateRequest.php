@@ -42,6 +42,9 @@ class SupplierUpdateRequest extends BaseRequest implements HasValidationMessages
             'address_line' => HasUpdateRules::transformToUpdateRules(
                 SupplierValidationRules::ADDRESS_LINE->rules()
             ),
+            'books.*' => HasUpdateRules::transformToUpdateRules(
+                SupplierValidationRules::BOOK_ID->rules()
+            ),
         ]);
 
         $relationshipsRules = [

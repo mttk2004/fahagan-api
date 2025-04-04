@@ -104,14 +104,16 @@ class SupplierControllerTest extends TestCase
 
         // Tạo dữ liệu để tạo nhà cung cấp mới
         $supplierData = [
-            'name' => 'Nhà Sách Test',
-            'phone' => '0123456789',
-            'email' => 'test@example.com',
-            'city' => 'Hà Nội',
-            'district' => 'Cầu Giấy',
-            'ward' => 'Dịch Vọng',
-            'address_line' => 'Số 1 Đường ABC',
             'data' => [
+                'attributes' => [
+                    'name' => 'Nhà Sách Test',
+                    'phone' => '0123456789',
+                    'email' => 'test@example.com',
+                    'city' => 'Hà Nội',
+                    'district' => 'Cầu Giấy',
+                    'ward' => 'Dịch Vọng',
+                    'address_line' => 'Số 1 Đường ABC',
+                ],
                 'relationships' => [
                     'books' => [
                         'data' => $books->map(function ($book) {
@@ -119,7 +121,7 @@ class SupplierControllerTest extends TestCase
                         })->toArray(),
                     ],
                 ],
-            ],
+            ]
         ];
 
         // Gọi API tạo nhà cung cấp
@@ -203,10 +205,20 @@ class SupplierControllerTest extends TestCase
 
         // Dữ liệu cập nhật
         $updateData = [
-            'name' => 'Tên Mới',
-            'phone' => '9876543210',
-            'email' => 'updated@example.com',
-            'books' => $books->pluck('id')->toArray(),
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                    'phone' => '9876543210',
+                    'email' => 'updated@example.com',
+                ],
+                'relationships' => [
+                    'books' => [
+                        'data' => $books->map(function ($book) {
+                            return ['id' => $book->id];
+                        })->toArray(),
+                    ],
+                ],
+            ]
         ];
 
         // Gọi API cập nhật nhà cung cấp
@@ -274,13 +286,17 @@ class SupplierControllerTest extends TestCase
     {
         // Tạo dữ liệu để tạo nhà cung cấp mới
         $supplierData = [
-            'name' => 'Nhà Sách Test',
-            'phone' => '0123456789',
-            'email' => 'test@example.com',
-            'city' => 'Hà Nội',
-            'district' => 'Cầu Giấy',
-            'ward' => 'Dịch Vọng',
-            'address_line' => 'Số 1 Đường ABC',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nhà Sách Test',
+                    'phone' => '0123456789',
+                    'email' => 'test@example.com',
+                    'city' => 'Hà Nội',
+                    'district' => 'Cầu Giấy',
+                    'ward' => 'Dịch Vọng',
+                    'address_line' => 'Số 1 Đường ABC',
+                ],
+            ]
         ];
 
         // Gọi API tạo nhà cung cấp không có xác thực
@@ -300,9 +316,13 @@ class SupplierControllerTest extends TestCase
 
         // Dữ liệu cập nhật
         $updateData = [
-            'name' => 'Tên Mới',
-            'phone' => '9876543210',
-            'email' => 'updated@example.com',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                    'phone' => '9876543210',
+                    'email' => 'updated@example.com',
+                ],
+            ]
         ];
 
         // Gọi API cập nhật nhà cung cấp với tài khoản không có quyền
@@ -333,8 +353,12 @@ class SupplierControllerTest extends TestCase
     {
         // Tạo dữ liệu không hợp lệ (thiếu name là trường bắt buộc)
         $invalidData = [
-            'phone' => '0123456789',
-            'email' => 'invalid-email', // Email không đúng định dạng
+            'data' => [
+                'attributes' => [
+                    'phone' => '0123456789',
+                    'email' => 'invalid-email', // Email không đúng định dạng
+                ]
+            ]
         ];
 
         // Gọi API tạo nhà cung cấp với dữ liệu không hợp lệ
@@ -343,6 +367,6 @@ class SupplierControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'email']);
+            ->assertJsonValidationErrors(['data.attributes.name', 'data.attributes.email']);
     }
 }

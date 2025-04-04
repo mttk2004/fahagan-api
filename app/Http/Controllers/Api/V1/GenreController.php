@@ -59,7 +59,8 @@ class GenreController extends Controller
     public function store(GenreStoreRequest $request)
     {
         try {
-            $genreDTO = $this->createGenreDTOFromRequest($request);
+            $validatedData = $request->validated();
+            $genreDTO = GenreDTO::fromRequest($validatedData);
 
             $genre = $this->genreService->createGenre($genreDTO);
 
@@ -142,9 +143,10 @@ class GenreController extends Controller
     public function update(GenreUpdateRequest $request, $genre_id)
     {
         try {
-            $genreDTO = $this->createGenreDTOFromRequest($request);
+            $validatedData = $request->validated();
+            $genreDTO = GenreDTO::fromRequest($validatedData);
 
-            if ($this->isEmptyUpdateData($request->validated())) {
+            if ($this->isEmptyUpdateData($validatedData)) {
                 return ResponseUtils::badRequest('Không có dữ liệu nào để cập nhật.');
             }
 
@@ -210,23 +212,6 @@ class GenreController extends Controller
         } catch (Exception $e) {
             return $this->handleGenreException($e, [], $genre_id, 'khôi phục');
         }
-    }
-
-    /**
-     * Tạo GenreDTO từ request đã validate
-     *
-     * @param GenreStoreRequest|GenreUpdateRequest $request
-     * @return GenreDTO
-     */
-    private function createGenreDTOFromRequest(GenreStoreRequest|GenreUpdateRequest $request): GenreDTO
-    {
-        $validatedData = $request->validated();
-
-        return new GenreDTO(
-            name: $validatedData['name'] ?? null,
-            slug: $validatedData['slug'] ?? null,
-            description: $validatedData['description'] ?? null
-        );
     }
 
     /**

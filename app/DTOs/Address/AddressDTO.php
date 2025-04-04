@@ -16,13 +16,15 @@ class AddressDTO
 
     public static function fromRequestData(array $requestData): self
     {
+        $attributes = $requestData['data']['attributes'] ?? $requestData;
+
         return new self(
-            name: $requestData['name'] ?? null,
-            phone: $requestData['phone'] ?? null,
-            city: $requestData['city'] ?? null,
-            district: $requestData['district'] ?? null,
-            ward: $requestData['ward'] ?? null,
-            address_line: $requestData['address_line'] ?? null,
+            name: $attributes['name'] ?? null,
+            phone: $attributes['phone'] ?? null,
+            city: $attributes['city'] ?? null,
+            district: $attributes['district'] ?? null,
+            ward: $attributes['ward'] ?? null,
+            address_line: $attributes['address_line'] ?? null,
         );
     }
 

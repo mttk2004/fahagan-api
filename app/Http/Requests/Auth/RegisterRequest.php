@@ -21,6 +21,7 @@ class RegisterRequest extends BaseRequest implements HasValidationMessages
             'phone' => UserValidationRules::getPhoneRuleWithUnique(),
             'email' => UserValidationRules::getEmailRuleWithUnique(),
             'password' => UserValidationRules::PASSWORD->rules(),
+            'password_confirmation' => ['required', 'same:data.attributes.password'],
             'is_customer' => UserValidationRules::IS_CUSTOMER->rules(),
         ]);
 
@@ -29,7 +30,13 @@ class RegisterRequest extends BaseRequest implements HasValidationMessages
 
     public function messages(): array
     {
-        return UserValidationMessages::getJsonApiMessages();
+        return array_merge(
+            UserValidationMessages::getJsonApiMessages(),
+            [
+                'data.attributes.password_confirmation.required' => 'Xác nhận mật khẩu là bắt buộc.',
+                'data.attributes.password_confirmation.same' => 'Xác nhận mật khẩu không khớp với mật khẩu.',
+            ]
+        );
     }
 
     public function authorize(): bool

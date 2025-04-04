@@ -12,9 +12,17 @@ class CartItemDTO
 
     public static function fromRequest(array $validatedData): self
     {
+        // Handle both JSON:API format and direct format
+        $attributes = $validatedData;
+
+        // Check if we have a JSON:API format
+        if (isset($validatedData['data']) && isset($validatedData['data']['attributes'])) {
+            $attributes = $validatedData['data']['attributes'];
+        }
+
         return new self(
-            book_id: $validatedData['book_id'],
-            quantity: $validatedData['quantity'],
+            book_id: $attributes['book_id'],
+            quantity: $attributes['quantity'],
         );
     }
 

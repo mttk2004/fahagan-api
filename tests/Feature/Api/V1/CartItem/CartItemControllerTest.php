@@ -199,7 +199,7 @@ class CartItemControllerTest extends TestCase
             ->postJson('/api/v1/cart/add', $invalidData);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['book_id']);
+            ->assertJsonValidationErrors(['data.attributes.book_id']);
 
         // Kiểm tra với số lượng không hợp lệ
         $invalidQuantityData = [
@@ -211,6 +211,6 @@ class CartItemControllerTest extends TestCase
             ->postJson('/api/v1/cart/add', $invalidQuantityData);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['quantity']);
+            ->assertJsonValidationErrors(['data.attributes.quantity']);
     }
 }

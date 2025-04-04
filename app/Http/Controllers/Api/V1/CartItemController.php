@@ -50,11 +50,22 @@ class CartItemController extends Controller
         $cartItemDTO = $request->toDTO();
 
         try {
-            $cartItem = $this->cartItemService->updateCartItemQuantity($user, $cartItemDTO);
+            // Kiểm tra xem sách đã tồn tại trong giỏ hàng chưa
+            $cartItem = $this->cartItemService->findCartItem($user, $cartItemDTO->book_id);
+
+            if ($cartItem) {
+                // Nếu đã tồn tại, cập nhật số lượng
+                $cartItem = $this->cartItemService->updateCartItemQuantity($user, $cartItemDTO);
+                $message = ResponseMessage::UPDATED_CART_ITEM->value;
+            } else {
+                // Nếu chưa tồn tại, thêm mới
+                $cartItem = $this->cartItemService->addToCartNoChecking($user, $cartItemDTO);
+                $message = ResponseMessage::ADDED_TO_CART->value;
+            }
 
             return ResponseUtils::success([
                 'cart_item' => new CartItemResource($cartItem),
-            ], ResponseMessage::UPDATED_CART_ITEM->value);
+            ], $message);
         } catch (Exception $e) {
             return ResponseUtils::serverError($e->getMessage());
         }

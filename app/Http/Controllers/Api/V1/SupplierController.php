@@ -115,8 +115,16 @@ class SupplierController extends Controller
 
             // Lấy book IDs nếu có
             $bookIds = null;
+
+            // Handle direct format
             if (isset($validatedData['books'])) {
                 $bookIds = $validatedData['books'];
+            }
+            // Handle JSON:API format
+            elseif (isset($validatedData['data']['relationships']['books']['data'])) {
+                $bookIds = collect($validatedData['data']['relationships']['books']['data'])
+                    ->pluck('id')
+                    ->toArray();
             }
 
             $supplier = $this->supplierService->updateSupplier($supplier_id, $supplierDTO, $bookIds);

@@ -42,14 +42,18 @@ class AddressControllerTest extends TestCase
 
     public function test_it_can_create_address()
     {
-        // Tạo dữ liệu để tạo địa chỉ mới
+        // Tạo dữ liệu để tạo địa chỉ mới với cấu trúc JSON:API
         $addressData = [
-            'name' => 'Nguyễn Văn A',
-            'phone' => '0385123456',
-            'city' => 'Hà Nội',
-            'district' => 'Cầu Giấy',
-            'ward' => 'Dịch Vọng',
-            'address_line' => 'Số 1 Đường ABC',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nguyễn Văn A',
+                    'phone' => '0385123456',
+                    'city' => 'Hà Nội',
+                    'district' => 'Cầu Giấy',
+                    'ward' => 'Dịch Vọng',
+                    'address_line' => 'Số 1 Đường ABC',
+                ]
+            ]
         ];
 
         // Gọi API tạo địa chỉ
@@ -83,11 +87,15 @@ class AddressControllerTest extends TestCase
         // Tạo một địa chỉ
         $address = Address::factory()->create(['user_id' => $this->user->id]);
 
-        // Dữ liệu cập nhật
+        // Dữ liệu cập nhật với cấu trúc JSON:API
         $updateData = [
-            'name' => 'Tên Mới',
-            'phone' => '0386123456',
-            'city' => 'Hồ Chí Minh',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                    'phone' => '0386123456',
+                    'city' => 'Hồ Chí Minh',
+                ]
+            ]
         ];
 
         // Gọi API cập nhật địa chỉ
@@ -116,9 +124,13 @@ class AddressControllerTest extends TestCase
 
     public function test_it_returns_404_when_updating_nonexistent_address()
     {
-        // Dữ liệu cập nhật
+        // Dữ liệu cập nhật với định dạng JSON:API
         $updateData = [
-            'name' => 'Tên Mới',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                ]
+            ]
         ];
 
         // Gọi API cập nhật địa chỉ không tồn tại
@@ -182,9 +194,18 @@ class AddressControllerTest extends TestCase
         // Tạo một địa chỉ cho người dùng khác
         $address = Address::factory()->create(['user_id' => $anotherUser->id]);
 
+        // Cập nhật dữ liệu theo định dạng JSON:API
+        $updateData = [
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                ]
+            ]
+        ];
+
         // Gọi API xem địa chỉ của người dùng khác
         $response = $this->actingAs($this->user)
-            ->patchJson("/api/v1/addresses/{$address->id}", ['name' => 'Tên Mới']);
+            ->patchJson("/api/v1/addresses/{$address->id}", $updateData);
 
         // Kiểm tra response phải trả về lỗi 404
         $response->assertStatus(404);
@@ -192,10 +213,14 @@ class AddressControllerTest extends TestCase
 
     public function test_it_validates_input_when_creating_address()
     {
-        // Tạo dữ liệu không hợp lệ (thiếu các trường bắt buộc)
+        // Tạo dữ liệu không hợp lệ (thiếu các trường bắt buộc) với cấu trúc JSON:API
         $invalidData = [
-            'name' => 'Nguyễn Văn A',
-            'phone' => 'invalid-phone', // Số điện thoại không đúng định dạng
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nguyễn Văn A',
+                    'phone' => 'invalid-phone', // Số điện thoại không đúng định dạng
+                ]
+            ]
         ];
 
         // Gọi API tạo địa chỉ với dữ liệu không hợp lệ
@@ -204,6 +229,12 @@ class AddressControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['phone', 'city', 'district', 'ward', 'address_line']);
+            ->assertJsonValidationErrors([
+                'data.attributes.phone',
+                'data.attributes.city',
+                'data.attributes.district',
+                'data.attributes.ward',
+                'data.attributes.address_line'
+            ]);
     }
 }

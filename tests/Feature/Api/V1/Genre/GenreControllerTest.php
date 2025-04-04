@@ -120,11 +120,15 @@ class GenreControllerTest extends TestCase
 
     public function test_it_can_create_genre()
     {
-        // Tạo dữ liệu để tạo thể loại mới
+        // Tạo dữ liệu để tạo thể loại mới với định dạng JSON:API
         $genreData = [
-            'name' => 'Tiểu thuyết lịch sử',
-            'slug' => 'tieu-thuyet-lich-su',
-            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tiểu thuyết lịch sử',
+                    'slug' => 'tieu-thuyet-lich-su',
+                    'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+                ]
+            ]
         ];
 
         // Gọi API tạo thể loại
@@ -151,11 +155,15 @@ class GenreControllerTest extends TestCase
 
     public function test_it_creates_slug_automatically_if_not_provided()
     {
-        // Tạo dữ liệu không có slug
+        // Tạo dữ liệu không có slug với định dạng JSON:API
         $genreData = [
-            'name' => 'Tiểu thuyết lịch sử',
-            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
-            'slug' => 'tieu-thuyet-lich-su',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tiểu thuyết lịch sử',
+                    'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+                    'slug' => 'tieu-thuyet-lich-su',
+                ]
+            ]
         ];
 
         // Gọi API tạo thể loại
@@ -189,10 +197,14 @@ class GenreControllerTest extends TestCase
         // Tạo một thể loại
         $genre = Genre::factory()->create();
 
-        // Dữ liệu cập nhật
+        // Dữ liệu cập nhật với định dạng JSON:API
         $updateData = [
-            'name' => 'Tên Mới',
-            'description' => 'Mô tả mới',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                    'description' => 'Mô tả mới',
+                ]
+            ]
         ];
 
         // Gọi API cập nhật thể loại
@@ -225,9 +237,13 @@ class GenreControllerTest extends TestCase
             'slug' => 'the-loai-cu',
         ]);
 
-        // Dữ liệu cập nhật chỉ có name
+        // Dữ liệu cập nhật chỉ có name với định dạng JSON:API
         $updateData = [
-            'name' => 'Thể loại mới',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Thể loại mới',
+                ]
+            ]
         ];
 
         // Gọi API cập nhật thể loại
@@ -298,11 +314,15 @@ class GenreControllerTest extends TestCase
 
     public function test_it_requires_authentication_to_create_genre()
     {
-        // Tạo dữ liệu để tạo thể loại mới
+        // Tạo dữ liệu để tạo thể loại mới với định dạng JSON:API
         $genreData = [
-            'name' => 'Tiểu thuyết lịch sử',
-            'slug' => 'tieu-thuyet-lich-su',
-            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tiểu thuyết lịch sử',
+                    'slug' => 'tieu-thuyet-lich-su',
+                    'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+                ]
+            ]
         ];
 
         // Gọi API tạo thể loại không có xác thực
@@ -320,10 +340,14 @@ class GenreControllerTest extends TestCase
         // Tạo một user bình thường không có quyền cập nhật thể loại
         $regularUser = User::factory()->create(['is_customer' => true]);
 
-        // Dữ liệu cập nhật
+        // Dữ liệu cập nhật với định dạng JSON:API
         $updateData = [
-            'name' => 'Tên Mới',
-            'description' => 'Mô tả mới',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                    'description' => 'Mô tả mới',
+                ]
+            ]
         ];
 
         // Gọi API cập nhật thể loại với user không có quyền
@@ -352,19 +376,22 @@ class GenreControllerTest extends TestCase
 
     public function test_it_validates_input_when_creating_genre()
     {
-        // Tạo dữ liệu thiếu trường bắt buộc
+        // Tạo dữ liệu không hợp lệ (thiếu các trường bắt buộc) với định dạng JSON:API
         $invalidData = [
-            // Thiếu trường 'name' bắt buộc
-            'slug' => 'tieu-thuyet',
-            'description' => 'Mô tả...',
+            'data' => [
+                'attributes' => []
+            ]
         ];
 
-        // Gọi API tạo thể loại
+        // Gọi API tạo thể loại với dữ liệu không hợp lệ
         $response = $this->actingAs($this->adminUser)
             ->postJson('/api/v1/genres', $invalidData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name']);
+            ->assertJsonValidationErrors([
+                'data.attributes.name',
+                'data.attributes.slug'
+            ]);
     }
 }
