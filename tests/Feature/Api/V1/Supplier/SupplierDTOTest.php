@@ -19,8 +19,8 @@ class SupplierDTOTest extends TestCase
                     'district' => 'Cầu Giấy',
                     'ward' => 'Dịch Vọng',
                     'address_line' => 'Số 1 Đường ABC',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $supplierDTO = SupplierDTO::fromRequest($requestData);
@@ -40,8 +40,8 @@ class SupplierDTOTest extends TestCase
             'data' => [
                 'attributes' => [
                     'name' => 'Nhà Sách Test',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $supplierDTO = SupplierDTO::fromRequest($requestData);

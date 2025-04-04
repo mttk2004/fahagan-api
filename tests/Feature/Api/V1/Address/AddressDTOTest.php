@@ -18,8 +18,8 @@ class AddressDTOTest extends TestCase
                     'district' => 'Cầu Giấy',
                     'ward' => 'Dịch Vọng',
                     'address_line' => 'Số 1 Đường ABC',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $addressDTO = AddressDTO::fromRequest($requestData);
@@ -38,8 +38,8 @@ class AddressDTOTest extends TestCase
             'data' => [
                 'attributes' => [
                     'name' => 'Nguyễn Văn A',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $addressDTO = AddressDTO::fromRequest($requestData);

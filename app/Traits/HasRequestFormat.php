@@ -44,7 +44,7 @@ trait HasRequestFormat
         $jsonApiData = ['data' => ['attributes' => $attributes]];
 
         // Thêm relationships nếu có
-        if (!empty($relationships)) {
+        if (! empty($relationships)) {
             $jsonApiData['data']['relationships'] = $relationships;
         }
 
@@ -61,7 +61,7 @@ trait HasRequestFormat
     protected function hasAllKeys(array $keys): bool
     {
         foreach ($keys as $key) {
-            if (!$this->has($key)) {
+            if (! $this->has($key)) {
                 return false;
             }
         }

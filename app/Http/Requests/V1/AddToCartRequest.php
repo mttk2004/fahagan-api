@@ -14,7 +14,7 @@ class AddToCartRequest extends BaseRequest implements HasValidationMessages
     {
         $this->convertToJsonApiFormat([
             'book_id',
-            'quantity'
+            'quantity',
         ]);
     }
 

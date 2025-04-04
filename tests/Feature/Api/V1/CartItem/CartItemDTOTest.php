@@ -14,8 +14,8 @@ class CartItemDTOTest extends TestCase
                 'attributes' => [
                     'book_id' => 123,
                     'quantity' => 2,
-                ]
-            ]
+                ],
+            ],
         ];
 
         $cartItemDTO = CartItemDTO::fromRequest($validatedData);

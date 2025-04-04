@@ -50,6 +50,6 @@ class LoginRequest extends BaseRequest implements HasValidationMessages
 
     public function authorize(): bool
     {
-        return !AuthUtils::user();
+        return ! AuthUtils::user();
     }
 }

@@ -19,7 +19,7 @@ class JsonApiFormatter
     {
         $data = $request->input('data');
 
-        if (!$data || !isset($data['attributes'])) {
+        if (! $data || ! isset($data['attributes'])) {
             return [];
         }
 
@@ -36,7 +36,7 @@ class JsonApiFormatter
     {
         $data = $request->input('data');
 
-        if (!$data || !isset($data['relationships'])) {
+        if (! $data || ! isset($data['relationships'])) {
             return [];
         }
 
@@ -53,17 +53,17 @@ class JsonApiFormatter
     {
         $data = $request->input('data');
 
-        if (!$data || !is_array($data)) {
+        if (! $data || ! is_array($data)) {
             return false;
         }
 
         // Kiểm tra các thành phần bắt buộc
-        if (!isset($data['type'])) {
+        if (! isset($data['type'])) {
             return false;
         }
 
         // Phải có ít nhất một trong hai: attributes hoặc relationships
-        if (!isset($data['attributes']) && !isset($data['relationships'])) {
+        if (! isset($data['attributes']) && ! isset($data['relationships'])) {
             return false;
         }
 

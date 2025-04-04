@@ -102,8 +102,8 @@ class GenreDTOTest extends TestCase
                     'name' => 'Tiểu thuyết lịch sử',
                     'slug' => 'tieu-thuyet-lich-su',
                     'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Tạo DTO từ dữ liệu request
@@ -122,8 +122,8 @@ class GenreDTOTest extends TestCase
             'data' => [
                 'attributes' => [
                     'name' => 'Tiểu thuyết trinh thám',
-                ]
-            ]
+                ],
+            ],
         ];
 
         // Tạo DTO từ dữ liệu request

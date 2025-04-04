@@ -19,6 +19,7 @@ class ChangePasswordRequest extends BaseRequest implements HasValidationMessages
             'password_confirmation',
         ]);
     }
+
     public function rules(): array
     {
         return [

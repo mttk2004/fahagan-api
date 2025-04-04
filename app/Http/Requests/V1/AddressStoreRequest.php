@@ -18,7 +18,7 @@ class AddressStoreRequest extends BaseRequest implements HasValidationMessages
             'city',
             'district',
             'ward',
-            'address_line'
+            'address_line',
         ]);
     }
 

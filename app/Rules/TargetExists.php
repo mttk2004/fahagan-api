@@ -8,7 +8,6 @@ use App\Models\Genre;
 use App\Models\Publisher;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Translation\PotentiallyTranslatedString;
 
 class TargetExists implements ValidationRule
 {
@@ -23,7 +22,7 @@ class TargetExists implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         // Chỉ xử lý nếu đây là ID của target
-        if (!preg_match('/^data\.relationships\.targets\.(\d+)\.id$/', $attribute, $matches)) {
+        if (! preg_match('/^data\.relationships\.targets\.(\d+)\.id$/', $attribute, $matches)) {
             return;
         }
 
@@ -33,7 +32,7 @@ class TargetExists implements ValidationRule
 
         // Lấy kiểu target
         $type = $request->input($typeAttribute);
-        if (!$type) {
+        if (! $type) {
             return;
         }
 
@@ -43,19 +42,23 @@ class TargetExists implements ValidationRule
         switch ($type) {
             case 'book':
                 $exists = Book::where('id', $value)->exists();
+
                 break;
             case 'genre':
                 $exists = Genre::where('id', $value)->exists();
+
                 break;
             case 'author':
                 $exists = Author::where('id', $value)->exists();
+
                 break;
             case 'publisher':
                 $exists = Publisher::where('id', $value)->exists();
+
                 break;
         }
 
-        if (!$exists) {
+        if (! $exists) {
             $fail("Không tìm thấy {$type} với ID là {$value}.");
         }
     }

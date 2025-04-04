@@ -136,7 +136,7 @@ class ResponseUtils
                 if (str_starts_with($field, 'data.relationships')) {
                     $matches = [];
                     preg_match('/data\.relationships\.([^.]+)/', $field, $matches);
-                    if (!empty($matches[1])) {
+                    if (! empty($matches[1])) {
                         $relationName = $matches[1];
                         $cleanedField = $relationName;
                         $processedErrors[$cleanedField][] = $message;
@@ -145,15 +145,15 @@ class ResponseUtils
                     }
                 }
                 // Check if it's an attribute error
-                else if (str_starts_with($field, 'data.attributes.')) {
+                elseif (str_starts_with($field, 'data.attributes.')) {
                     $cleanedField = str_replace('data.attributes.', '', $field);
 
                     // Process date comparison error messages
                     if (str_contains($message, 'before or equal to') && str_contains($message, 'date')) {
                         $message = "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc";
-                    } else if (str_contains($message, 'after or equal to') && str_contains($message, 'date')) {
+                    } elseif (str_contains($message, 'after or equal to') && str_contains($message, 'date')) {
                         $message = "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu";
-                    } else if (str_contains($message, 'The data.attributes.') && str_contains($message, 'field')) {
+                    } elseif (str_contains($message, 'The data.attributes.') && str_contains($message, 'field')) {
                         // Extract field name from English error message
                         $fieldMatches = [];
                         if (preg_match('/The data.attributes.([^.]+) field/', $message, $fieldMatches)) {
@@ -161,7 +161,7 @@ class ResponseUtils
 
                             if (str_contains($message, 'must be a valid date')) {
                                 $message = "Trường $fieldName phải là ngày hợp lệ";
-                            } else if (str_contains($message, 'date format')) {
+                            } elseif (str_contains($message, 'date format')) {
                                 $message = "Trường $fieldName phải có định dạng ngày/tháng/năm";
                             }
                         }

@@ -10,7 +10,6 @@ class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
 {
     use HasRequestFormat;
 
-
     protected function prepareForValidation(): void
     {
         $this->convertToJsonApiFormat([
@@ -19,7 +18,7 @@ class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
             'city',
             'district',
             'ward',
-            'address_line'
+            'address_line',
         ]);
     }
 
