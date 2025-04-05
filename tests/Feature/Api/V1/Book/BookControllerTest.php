@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Enums\ResponseMessage;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Genre;
@@ -30,13 +31,9 @@ class BookControllerTest extends TestCase
     // Chạy seeder để tạo các quyền cần thiết
     $this->seed(TestPermissionSeeder::class);
 
-    // Tạo một người dùng và gán quyền quản lý sách
+    // Tạo một Admin user
     $this->user = User::factory()->create();
-    $this->user->givePermissionTo([
-      'create_books',
-      'edit_books',
-      'delete_books',
-    ]);
+    $this->user->assignRole('admin');
 
     // Tạo một Publisher để sử dụng trong các test
     $this->publisher = Publisher::factory()->create();
@@ -84,7 +81,7 @@ class BookControllerTest extends TestCase
     $response->assertStatus(404)
       ->assertJson([
         'status' => 404,
-        'message' => 'Không tìm thấy sách.',
+        'message' => ResponseMessage::NOT_FOUND_BOOK->value,
       ]);
   }
 
