@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1\Supplier;
 
+use App\Enums\ResponseMessage;
 use App\Models\Book;
 use App\Models\Supplier;
 use App\Models\User;
@@ -93,7 +94,7 @@ class SupplierControllerTest extends TestCase
     $response->assertStatus(404)
       ->assertJson([
         'status' => 404,
-        'message' => 'Không tìm thấy nhà cung cấp.',
+        'message' => ResponseMessage::NOT_FOUND_SUPPLIER->value,
       ]);
   }
 
