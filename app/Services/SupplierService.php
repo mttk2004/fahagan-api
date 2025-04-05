@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\Supplier\SupplierDTO;
 use App\Filters\SupplierFilter;
 use App\Http\Sorts\V1\SupplierSort;
@@ -22,7 +23,7 @@ class SupplierService
      * @param int $perPage
      * @return LengthAwarePaginator
      */
-    public function getAllSuppliers(Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllSuppliers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         $query = Supplier::query();
 

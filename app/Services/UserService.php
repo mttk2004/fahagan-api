@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\User\UserDTO;
 use App\Filters\UserFilter;
 use App\Http\Sorts\V1\UserSort;
@@ -18,7 +19,7 @@ class UserService
     /**
      * Lấy danh sách người dùng với filter và sort
      */
-    public function getAllUsers(Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllUsers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         $query = User::query();
 

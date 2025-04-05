@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\Author\AuthorDTO;
 use App\Filters\AuthorFilter;
 use App\Http\Sorts\V1\AuthorSort;
@@ -18,7 +19,7 @@ class AuthorService
     /**
      * Lấy danh sách tác giả với filter và sort
      */
-    public function getAllAuthors(Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllAuthors(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         $query = Author::query();
 

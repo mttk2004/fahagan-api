@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\Book\BookDTO;
 use App\Filters\BookFilter;
 use App\Http\Sorts\V1\BookSort;
@@ -19,7 +20,7 @@ class BookService
     /**
      * Lấy danh sách sách với filter và sort
      */
-    public function getAllBooks(Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllBooks(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         $query = Book::query();
 
@@ -48,28 +49,28 @@ class BookService
         // Kiểm tra xem có đủ thông tin cần thiết hay không
         if (! isset($data['title']) || ! isset($data['edition'])) {
             throw ValidationException::withMessages([
-                'data.attributes.title' => ['Tiêu đề sách là bắt buộc.'],
-                'data.attributes.edition' => ['Phiên bản sách là bắt buộc.'],
+              'data.attributes.title' => ['Tiêu đề sách là bắt buộc.'],
+              'data.attributes.edition' => ['Phiên bản sách là bắt buộc.'],
             ]);
         }
 
         // Kiểm tra xem có sách nào (chưa bị xóa) với cùng title và edition hay không
         $existingBook = Book::where('title', $data['title'])
-            ->where('edition', $data['edition'])
-            ->first();
+          ->where('edition', $data['edition'])
+          ->first();
 
         if ($existingBook) {
             throw ValidationException::withMessages([
-                'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
+              'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
             ]);
         }
 
         // Kiểm tra xem có sách nào đã bị xóa mềm với cùng title và edition
         $deletedBook = Book::withTrashed()
-            ->where('title', $data['title'])
-            ->where('edition', $data['edition'])
-            ->onlyTrashed() // Chỉ lấy các sách đã bị xóa
-            ->first();
+          ->where('title', $data['title'])
+          ->where('edition', $data['edition'])
+          ->onlyTrashed() // Chỉ lấy các sách đã bị xóa
+          ->first();
 
         // Nếu tồn tại, khôi phục và cập nhật
         if ($deletedBook) {
@@ -128,7 +129,7 @@ class BookService
             // Nếu là lỗi ràng buộc duy nhất, chuyển nó thành ValidationException
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'books_title_edition_unique') !== false) {
                 throw ValidationException::withMessages([
-                    'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
+                  'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
                 ]);
             }
 
@@ -172,17 +173,19 @@ class BookService
 
             // Nếu đang cập nhật cả title và edition, kiểm tra xem có sách nào khác
             // với cùng title và edition hay không
-            if (isset($data['title']) && isset($data['edition']) &&
-                ($data['title'] !== $oldTitle || $data['edition'] !== $oldEdition)) {
+            if (
+                isset($data['title']) && isset($data['edition']) &&
+                ($data['title'] !== $oldTitle || $data['edition'] !== $oldEdition)
+            ) {
 
                 $existingBook = Book::where('title', $data['title'])
-                    ->where('edition', $data['edition'])
-                    ->where('id', '!=', $bookId)
-                    ->first();
+                  ->where('edition', $data['edition'])
+                  ->where('id', '!=', $bookId)
+                  ->first();
 
                 if ($existingBook) {
                     throw ValidationException::withMessages([
-                        'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
+                      'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
                     ]);
                 }
             }
@@ -199,15 +202,15 @@ class BookService
 
                     // Kiểm tra xem có sách nào khác với title mới và edition hiện tại không
                     $existingBook = Book::where('title', $data['title'])
-                        ->where('edition', $oldEdition)
-                        ->where('id', '!=', $bookId)
-                        ->first();
+                      ->where('edition', $oldEdition)
+                      ->where('id', '!=', $bookId)
+                      ->first();
 
                     if ($existingBook) {
                         DB::rollBack();
 
                         throw ValidationException::withMessages([
-                            'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề khác hoặc cập nhật cả phiên bản.'],
+                          'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề khác hoặc cập nhật cả phiên bản.'],
                         ]);
                     }
                 } elseif (isset($data['edition']) && ! isset($data['title'])) {
@@ -216,15 +219,15 @@ class BookService
 
                     // Kiểm tra xem có sách nào khác với title hiện tại và edition mới không
                     $existingBook = Book::where('title', $oldTitle)
-                        ->where('edition', $data['edition'])
-                        ->where('id', '!=', $bookId)
-                        ->first();
+                      ->where('edition', $data['edition'])
+                      ->where('id', '!=', $bookId)
+                      ->first();
 
                     if ($existingBook) {
                         DB::rollBack();
 
                         throw ValidationException::withMessages([
-                            'data.attributes.edition' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng phiên bản khác hoặc cập nhật cả tiêu đề.'],
+                          'data.attributes.edition' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng phiên bản khác hoặc cập nhật cả tiêu đề.'],
                         ]);
                     }
                 }
@@ -261,7 +264,7 @@ class BookService
             // Nếu là lỗi ràng buộc duy nhất, chuyển nó thành ValidationException
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'books_title_edition_unique') !== false) {
                 throw ValidationException::withMessages([
-                    'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
+                  'data.attributes.title' => ['Đã tồn tại sách với tiêu đề và phiên bản này. Vui lòng sử dụng tiêu đề hoặc phiên bản khác.'],
                 ]);
             }
 

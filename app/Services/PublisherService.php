@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\Publisher\PublisherDTO;
 use App\Filters\PublisherFilter;
 use App\Http\Sorts\V1\PublisherSort;
@@ -18,7 +19,7 @@ class PublisherService
     /**
      * Lấy danh sách nhà xuất bản với filter và sort
      */
-    public function getAllPublishers(Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllPublishers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         $query = Publisher::query();
 
@@ -47,8 +48,8 @@ class PublisherService
 
             // Kiểm tra xem nhà xuất bản đã bị xóa mềm hay chưa
             $existingPublisher = Publisher::withTrashed()
-                ->where('name', $publisherDTO->name)
-                ->first();
+              ->where('name', $publisherDTO->name)
+              ->first();
 
             if ($existingPublisher && $existingPublisher->trashed()) {
                 // Nếu đã bị xóa mềm, restore và cập nhật

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\Address\AddressDTO;
 use App\Models\Address;
 use App\Models\User;
@@ -16,7 +17,7 @@ class AddressService
     /**
      * Lấy danh sách địa chỉ của người dùng
      */
-    public function getAllAddresses(User $user, Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllAddresses(User $user, Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         return $user->addresses()->paginate($perPage);
     }

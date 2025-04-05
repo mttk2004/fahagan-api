@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\Genre\GenreDTO;
 use App\Filters\GenreFilter;
 use App\Http\Sorts\V1\GenreSort;
@@ -19,7 +20,7 @@ class GenreService
     /**
      * Lấy danh sách thể loại với filter và sort
      */
-    public function getAllGenres(Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllGenres(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         $query = Genre::query();
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\ApplicationConstants;
 use App\DTOs\Discount\DiscountDTO;
 use App\Models\Discount;
 use App\Models\DiscountTarget;
@@ -18,7 +19,7 @@ class DiscountService
     /**
      * Lấy danh sách mã giảm giá
      */
-    public function getAllDiscounts(Request $request, int $perPage = 15): LengthAwarePaginator
+    public function getAllDiscounts(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
         $query = Discount::query();
 
@@ -41,7 +42,7 @@ class DiscountService
         // Kiểm tra xem có đủ thông tin cần thiết hay không
         if (! isset($data['name'])) {
             throw ValidationException::withMessages([
-                'data.attributes.name' => ['Tên mã giảm giá là bắt buộc.'],
+              'data.attributes.name' => ['Tên mã giảm giá là bắt buộc.'],
             ]);
         }
 
@@ -50,15 +51,15 @@ class DiscountService
 
         if ($existingDiscount) {
             throw ValidationException::withMessages([
-                'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
+              'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
             ]);
         }
 
         // Kiểm tra xem có mã giảm giá nào đã bị xóa mềm với cùng tên
         $deletedDiscount = Discount::withTrashed()
-            ->where('name', $data['name'])
-            ->onlyTrashed() // Chỉ lấy các mã giảm giá đã bị xóa
-            ->first();
+          ->where('name', $data['name'])
+          ->onlyTrashed() // Chỉ lấy các mã giảm giá đã bị xóa
+          ->first();
 
         // Nếu tồn tại, khôi phục và cập nhật
         if ($deletedDiscount) {
@@ -107,7 +108,7 @@ class DiscountService
             // Nếu là lỗi ràng buộc duy nhất, chuyển nó thành ValidationException
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'discounts_name_unique') !== false) {
                 throw ValidationException::withMessages([
-                    'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
+                  'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
                 ]);
             }
 
@@ -148,12 +149,12 @@ class DiscountService
             // Kiểm tra xem có tên mã giảm giá mới, và nếu có, đảm bảo rằng nó là duy nhất
             if (isset($data['name']) && $data['name'] !== $discount->name) {
                 $existingDiscount = Discount::where('name', $data['name'])
-                    ->where('id', '!=', $discountId)
-                    ->first();
+                  ->where('id', '!=', $discountId)
+                  ->first();
 
                 if ($existingDiscount) {
                     throw ValidationException::withMessages([
-                        'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
+                      'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
                     ]);
                 }
             }
@@ -217,9 +218,9 @@ class DiscountService
         // Thêm targets mới
         foreach ($targetIds as $targetId) {
             DiscountTarget::create([
-                'discount_id' => $discount->id,
-                'target_id' => $targetId,
-                'target_type' => 'book', // Mặc định là book, cần cập nhật sau với giá trị thực tế
+              'discount_id' => $discount->id,
+              'target_id' => $targetId,
+              'target_type' => 'book', // Mặc định là book, cần cập nhật sau với giá trị thực tế
             ]);
         }
     }
