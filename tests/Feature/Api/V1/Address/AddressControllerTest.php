@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1\Address;
 
+use App\Enums\ResponseMessage;
 use App\Models\Address;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -179,7 +180,7 @@ class AddressControllerTest extends TestCase
     $response->assertStatus(404)
       ->assertJson([
         'status' => 404,
-        'message' => 'Không tìm thấy địa chỉ.',
+        'message' => ResponseMessage::NOT_FOUND_ADDRESS->value,
       ]);
   }
 
@@ -211,7 +212,7 @@ class AddressControllerTest extends TestCase
     $response->assertStatus(404)
       ->assertJson([
         'status' => 404,
-        'message' => 'Không tìm thấy địa chỉ.',
+        'message' => ResponseMessage::NOT_FOUND_ADDRESS->value,
       ]);
   }
 
