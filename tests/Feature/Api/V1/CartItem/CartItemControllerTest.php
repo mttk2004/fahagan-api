@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1\CartItem;
 
+use App\Enums\ResponseMessage;
 use App\Models\Book;
 use App\Models\User;
 use Database\Seeders\TestPermissionSeeder;
@@ -184,7 +185,7 @@ class CartItemControllerTest extends TestCase
 
     $response->assertStatus(404)
       ->assertJsonPath('status', 404)
-      ->assertJsonPath('message', 'Sách không tồn tại trong giỏ hàng.');
+      ->assertJsonPath('message', ResponseMessage::NOT_FOUND_CART_ITEM->value);
   }
 
   public function test_it_validates_input_for_adding_to_cart()
