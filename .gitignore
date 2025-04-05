@@ -26,3 +26,4 @@ composer.lock
 .cursor
 /public/docs/
 .php-cs-fixer.cache
+.cursorrules
