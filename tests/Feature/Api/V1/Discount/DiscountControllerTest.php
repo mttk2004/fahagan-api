@@ -155,7 +155,7 @@ class DiscountControllerTest extends TestCase
     $updateData = [
       'data' => [
         'attributes' => [
-          'name' => 'Giảm giá đã cập nhật',
+          'name' => ResponseMessage::UPDATED_DISCOUNT->value,
           'discount_value' => 20,
         ],
       ],

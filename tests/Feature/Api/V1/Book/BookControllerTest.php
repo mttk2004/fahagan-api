@@ -34,11 +34,9 @@ class BookControllerTest extends TestCase
     // Tạo một user và gán các quyền
     $this->user = User::factory()->create();
     $this->user->givePermissionTo([
-      'view_books',
       'create_books',
       'edit_books',
       'delete_books',
-      'restore_books',
     ]);
 
     // Tạo một Publisher để sử dụng trong các test

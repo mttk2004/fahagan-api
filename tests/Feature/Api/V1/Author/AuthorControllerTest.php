@@ -27,11 +27,9 @@ class AuthorControllerTest extends TestCase
       'is_customer' => false,
     ]);
     $this->adminUser->givePermissionTo([
-      'view_authors',
       'create_authors',
       'edit_authors',
       'delete_authors',
-      'restore_authors',
     ]);
   }
 
