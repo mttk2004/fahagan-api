@@ -23,11 +23,17 @@ class GenreControllerTest extends TestCase
     // Chạy seeder để tạo các quyền cần thiết
     $this->seed(TestPermissionSeeder::class);
 
-    // Tạo một Admin user
+    // Tạo một user và gán các quyền
     $this->adminUser = User::factory()->create([
       'is_customer' => false,
     ]);
-    $this->adminUser->assignRole('admin');
+    $this->adminUser->givePermissionTo([
+      'view_genres',
+      'create_genres',
+      'edit_genres',
+      'delete_genres',
+      'restore_genres',
+    ]);
   }
 
   public function test_it_can_get_list_of_genres()
@@ -113,17 +119,46 @@ class GenreControllerTest extends TestCase
       ]);
   }
 
-  public function test_it_can_create_genre()
+  public function test_it_can_create_genre_in_json_api_format()
   {
     // Tạo dữ liệu để tạo thể loại mới với định dạng JSON:API
     $genreData = [
       'data' => [
         'attributes' => [
           'name' => 'Tiểu thuyết lịch sử',
-          'slug' => 'tieu-thuyet-lich-su',
           'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
         ],
       ],
+    ];
+
+    // Gọi API tạo thể loại
+    $response = $this->actingAs($this->adminUser)
+      ->postJson('/api/v1/genres', $genreData);
+
+    // Kiểm tra response
+    $response->assertStatus(201)
+      ->assertJsonStructure([
+        'status',
+        'message',
+        'data' => [
+          'genre',
+        ],
+      ]);
+
+    // Kiểm tra dữ liệu trong database
+    $this->assertDatabaseHas('genres', [
+      'name' => 'Tiểu thuyết lịch sử',
+      'slug' => 'tieu-thuyet-lich-su',
+      'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+    ]);
+  }
+
+  public function test_it_can_create_genre_in_direct_format()
+  {
+    // Tạo dữ liệu để tạo thể loại mới với định dạng trực tiếp
+    $genreData = [
+      'name' => 'Tiểu thuyết lịch sử',
+      'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
     ];
 
     // Gọi API tạo thể loại
@@ -156,7 +191,6 @@ class GenreControllerTest extends TestCase
         'attributes' => [
           'name' => 'Tiểu thuyết lịch sử',
           'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
-          'slug' => 'tieu-thuyet-lich-su',
         ],
       ],
     ];
@@ -386,7 +420,7 @@ class GenreControllerTest extends TestCase
     $response->assertStatus(422)
       ->assertJsonValidationErrors([
         'data.attributes.name',
-        'data.attributes.slug',
+        'data.attributes.description',
       ]);
   }
 }

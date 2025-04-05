@@ -26,9 +26,15 @@ class DiscountControllerTest extends TestCase
     // Chạy seeder để tạo các quyền cần thiết
     $this->seed(TestPermissionSeeder::class);
 
-    // Tạo một Admin user
+    // Tạo một user và gán các quyền
     $this->user = User::factory()->create();
-    $this->user->assignRole('admin');
+    $this->user->givePermissionTo([
+      'view_discounts',
+      'create_discounts',
+      'edit_discounts',
+      'delete_discounts',
+      'restore_discounts',
+    ]);
   }
 
   public function test_it_can_get_list_of_discounts()

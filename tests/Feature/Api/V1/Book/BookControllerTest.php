@@ -31,9 +31,15 @@ class BookControllerTest extends TestCase
     // Chạy seeder để tạo các quyền cần thiết
     $this->seed(TestPermissionSeeder::class);
 
-    // Tạo một Admin user
+    // Tạo một user và gán các quyền
     $this->user = User::factory()->create();
-    $this->user->assignRole('admin');
+    $this->user->givePermissionTo([
+      'view_books',
+      'create_books',
+      'edit_books',
+      'delete_books',
+      'restore_books',
+    ]);
 
     // Tạo một Publisher để sử dụng trong các test
     $this->publisher = Publisher::factory()->create();

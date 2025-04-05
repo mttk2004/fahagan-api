@@ -22,11 +22,17 @@ class AuthorControllerTest extends TestCase
     // Chạy seeder để tạo các quyền cần thiết
     $this->seed(TestPermissionSeeder::class);
 
-    // Tạo một người dùng admin
+    // Tạo một người dùng và gán các quyền
     $this->adminUser = User::factory()->create([
       'is_customer' => false,
     ]);
-    $this->adminUser->assignRole('Admin');
+    $this->adminUser->givePermissionTo([
+      'view_authors',
+      'create_authors',
+      'edit_authors',
+      'delete_authors',
+      'restore_authors',
+    ]);
   }
 
   public function test_it_can_get_list_of_authors()
