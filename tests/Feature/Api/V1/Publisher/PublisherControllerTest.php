@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1\Publisher;
 
+use App\Enums\ResponseMessage;
 use App\Models\Publisher;
 use App\Models\User;
 use Database\Seeders\TestPermissionSeeder;
@@ -83,7 +84,7 @@ class PublisherControllerTest extends TestCase
     $response->assertStatus(404)
       ->assertJson([
         'status' => 404,
-        'message' => 'Không tìm thấy nhà xuất bản.',
+        'message' => ResponseMessage::NOT_FOUND_PUBLISHER->value,
       ]);
   }
 
