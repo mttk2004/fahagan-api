@@ -2,10 +2,9 @@
 
 namespace Tests\Feature\Api\V1\Author;
 
+use App\Enums\ResponseMessage;
 use App\Models\Author;
-use App\Models\Book;
 use App\Models\User;
-use Database\Seeders\PublisherSeeder;
 use Database\Seeders\TestPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -23,15 +22,11 @@ class AuthorControllerTest extends TestCase
     // Chạy seeder để tạo các quyền cần thiết
     $this->seed(TestPermissionSeeder::class);
 
-    // Tạo một người dùng admin và gán quyền quản lý tác giả
+    // Tạo một người dùng admin
     $this->adminUser = User::factory()->create([
       'is_customer' => false,
     ]);
-    $this->adminUser->givePermissionTo([
-      'create_authors',
-      'edit_authors',
-      'delete_authors',
-    ]);
+    $this->adminUser->assignRole('Admin');
   }
 
   public function test_it_can_get_list_of_authors()
@@ -85,7 +80,7 @@ class AuthorControllerTest extends TestCase
     $response->assertStatus(404)
       ->assertJson([
         'status' => 404,
-        'message' => 'Không tìm thấy tác giả.',
+        'message' => ResponseMessage::NOT_FOUND_AUTHOR->value,
       ]);
   }
 
@@ -124,7 +119,7 @@ class AuthorControllerTest extends TestCase
     ]);
   }
 
-  public function test_it_can_create_author_in_direct_input_format()
+  public function test_it_can_create_author_in_direct_format()
   {
     // Tạo dữ liệu để tạo tác giả mới
     $authorData = [

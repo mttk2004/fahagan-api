@@ -120,7 +120,7 @@ class PublisherControllerTest extends TestCase
     ]);
   }
 
-  public function test_it_can_create_publisher_in_direct_input_format()
+  public function test_it_can_create_publisher_in_direct_format()
   {
     // Tạo dữ liệu để tạo nhà xuất bản mới
     $publisherData = [
