@@ -66,7 +66,7 @@ class CartItemControllerTest extends TestCase
 
     $response->assertStatus(201)
       ->assertJsonPath('status', 201)
-      ->assertJsonPath('message', 'Thêm vào giỏ hàng thành công.')
+      ->assertJsonPath('message', ResponseMessage::ADDED_TO_CART->value)
       ->assertJsonStructure([
         'status',
         'message',
@@ -100,7 +100,7 @@ class CartItemControllerTest extends TestCase
 
     $response->assertStatus(400)
       ->assertJsonPath('status', 400)
-      ->assertJsonPath('message', 'Sách đã tồn tại trong giỏ hàng.');
+      ->assertJsonPath('message', ResponseMessage::ALREADY_IN_CART->value);
   }
 
   public function test_it_can_update_cart_item_quantity()
@@ -114,13 +114,12 @@ class CartItemControllerTest extends TestCase
       'quantity' => 5,
     ];
 
-    // Gọi API để cập nhật số lượng - Sửa thành POST và update-quantity
     $response = $this->actingAs($this->user)
       ->postJson('/api/v1/cart/update-quantity', $data);
 
     $response->assertStatus(200)
       ->assertJsonPath('status', 200)
-      ->assertJsonPath('message', 'Số lượng sách trong giỏ hàng đã được cập nhật.')
+      ->assertJsonPath('message', ResponseMessage::UPDATED_CART_ITEM->value)
       ->assertJsonStructure([
         'status',
         'message',
