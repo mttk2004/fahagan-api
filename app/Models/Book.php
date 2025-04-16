@@ -5,12 +5,10 @@ namespace App\Models;
 use App\Interfaces\Discountable;
 use App\Interfaces\HasBookRelations;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
@@ -48,6 +46,7 @@ class Book extends Model implements HasBookRelations, Discountable
             'publication_date',
             'image_url',
             'sold_count',
+            'available_count',
             'publisher_id',
         ];
 
@@ -59,23 +58,6 @@ class Book extends Model implements HasBookRelations, Discountable
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
-    }
-
-    protected function availableCount(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->bookInstances()->available()->count()
-        );
-    }
-
-    public function bookInstances(): HasMany
-    {
-        return $this->hasMany(BookInstance::class);
-    }
-
-    public function availableInstances(): HasMany
-    {
-        return $this->hasMany(BookInstance::class)->where('status', 'available');
     }
 
     public function authors(): BelongsToMany

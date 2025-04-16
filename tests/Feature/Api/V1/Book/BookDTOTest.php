@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\DTOs;
+namespace Tests\Feature\Api\V1\Book;
 
 use App\DTOs\Book\BookDTO;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +21,8 @@ class BookDTOTest extends TestCase
             1,
             [1, 2, 3],
             [4, 5, 6],
-            10
+            10,
+            31
         );
 
         // Kiểm tra các thuộc tính
@@ -80,6 +81,7 @@ class BookDTOTest extends TestCase
                     'image_url' => 'https://example.com/book.jpg',
                     'publication_date' => '2023-01-01',
                     'sold_count' => 10,
+                    'available_count' => 31,
                 ],
                 'relationships' => [
                     'publisher' => [
@@ -116,6 +118,7 @@ class BookDTOTest extends TestCase
         $this->assertEquals([1, 2], $bookDTO->author_ids);
         $this->assertEquals([3, 4], $bookDTO->genre_ids);
         $this->assertEquals(10, $bookDTO->sold_count);
+        $this->assertEquals(31, $bookDTO->available_count);
     }
 
     public function test_it_can_convert_to_array()

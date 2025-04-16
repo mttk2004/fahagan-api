@@ -2,20 +2,21 @@
 
 namespace App\DTOs\Book;
 
-class BookDTO
+readonly class BookDTO
 {
     public function __construct(
-        public readonly ?string $title,
-        public readonly ?string $description,
-        public readonly ?float $price,
-        public readonly ?int $edition,
-        public readonly ?int $pages,
-        public readonly ?string $image_url,
-        public readonly ?string $publication_date,
-        public readonly ?int $publisher_id,
-        public readonly array $author_ids = [],
-        public readonly array $genre_ids = [],
-        public readonly ?int $sold_count = 0,
+        public ?string $title,
+        public ?string $description,
+        public ?float $price,
+        public ?int $edition,
+        public ?int $pages,
+        public ?string $image_url,
+        public ?string $publication_date,
+        public ?int $publisher_id,
+        public array $author_ids = [],
+        public array $genre_ids = [],
+        public ?int $sold_count = 0,
+        public ?int $available_count = 0,
     ) {
     }
 
@@ -54,6 +55,7 @@ class BookDTO
             author_ids: $author_ids,
             genre_ids: $genre_ids,
             sold_count: isset($attributes['sold_count']) ? (int)$attributes['sold_count'] : 0,
+            available_count: isset($attributes['available_count']) ? (int)$attributes['available_count'] : 0,
         );
     }
 
@@ -95,6 +97,10 @@ class BookDTO
 
         if ($this->sold_count !== null) {
             $data['sold_count'] = $this->sold_count;
+        }
+
+        if ($this->available_count !== null) {
+            $data['available_count'] = $this->available_count;
         }
 
         return $data;

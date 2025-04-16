@@ -34,6 +34,7 @@ class BookFactory extends Factory
             'pages' => fake()->numberBetween(234, 876),
             'publication_date' => $fakePublicationDate->format('d-m-Y'),
             'sold_count' => fake()->numberBetween(9, 999),
+            'available_count' => fake()->numberBetween(1, 999),
             'created_at' => $fakeCreatedAt,
             'updated_at' => null,
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api\V1;
+namespace Tests\Feature\Api\V1\Book;
 
 use App\Enums\ResponseMessage;
 use App\Models\Author;
@@ -9,18 +9,20 @@ use App\Models\Genre;
 use App\Models\Publisher;
 use App\Models\User;
 use Database\Seeders\TestPermissionSeeder;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
+
 
 class BookControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
-     * @var \Illuminate\Contracts\Auth\Authenticatable|\App\Models\User
+     * @var User|Authenticatable
      */
-    private $user;
+    private Authenticatable|User $user;
 
     private Publisher $publisher;
 
@@ -71,7 +73,7 @@ class BookControllerTest extends TestCase
         $book->genres()->attach($genres->pluck('id')->toArray());
 
         // Gọi API với ID của book và kiểm tra response
-        $response = $this->getJson("/api/v1/books/{$book->id}");
+        $response = $this->getJson("/api/v1/books/$book->id");
 
         $response->assertStatus(200);
     }
@@ -80,7 +82,7 @@ class BookControllerTest extends TestCase
     {
         // Gọi API với một ID không tồn tại
         $invalidId = 'non-existent-id';
-        $response = $this->getJson("/api/v1/books/{$invalidId}");
+        $response = $this->getJson("/api/v1/books/$invalidId");
 
         $response->assertStatus(404)
           ->assertJson([
@@ -198,7 +200,7 @@ class BookControllerTest extends TestCase
 
         // Gọi API với dữ liệu cập nhật
         $response = $this->actingAs($this->user)
-          ->patchJson("/api/v1/books/{$book->id}", $updateData);
+          ->patchJson("/api/v1/books/$book->id", $updateData);
 
         $response->assertStatus(200)
           ->assertJson(function (AssertableJson $json) {
@@ -219,7 +221,7 @@ class BookControllerTest extends TestCase
     public function test_it_prevents_updating_to_existing_title_and_edition_combination()
     {
         // Tạo hai books với title và edition khác nhau
-        $book1 = Book::factory()->create([
+        Book::factory()->create([
           'title' => 'Sách thứ nhất',
           'edition' => 1,
           'publisher_id' => $this->publisher->id,
@@ -243,7 +245,7 @@ class BookControllerTest extends TestCase
 
         // Gọi API với dữ liệu cập nhật
         $response = $this->actingAs($this->user)
-          ->patchJson("/api/v1/books/{$book2->id}", $updateData);
+          ->patchJson("/api/v1/books/$book2->id", $updateData);
 
         $response->assertStatus(422);
     }
@@ -257,7 +259,7 @@ class BookControllerTest extends TestCase
 
         // Gọi API để xóa book
         $response = $this->actingAs($this->user)
-          ->deleteJson("/api/v1/books/{$book->id}");
+          ->deleteJson("/api/v1/books/$book->id");
 
         $response->assertStatus(200)
           ->assertJsonStructure([
@@ -303,7 +305,7 @@ class BookControllerTest extends TestCase
         $listResponse->assertStatus(200);
 
         // Truy cập API lấy chi tiết sách (không yêu cầu xác thực)
-        $showResponse = $this->getJson("/api/v1/books/{$book->id}");
+        $showResponse = $this->getJson("/api/v1/books/$book->id");
         $showResponse->assertStatus(200);
 
         // Kiểm tra rằng những API được ủy quyền (không phải là API công khai) có thể truy cập bởi người dùng có quyền

@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->date('publication_date');
             $table->string('image_url')->default('');
             $table->unsignedInteger('sold_count')->default(0);
+            $table->unsignedInteger('available_count')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
