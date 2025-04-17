@@ -24,184 +24,185 @@ use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
-  use HandleUserExceptions;
+    use HandleUserExceptions;
 
-  public function __construct(
-    private readonly UserService $userService
-  ) {}
-
-  /**
-   * Register a new user
-   *
-   * @param RegisterRequest $request
-   *
-   * @return JsonResponse
-   * @group Auth
-   * @unauthenticated
-   */
-  public function register(RegisterRequest $request)
-  {
-    try {
-      $validated = $request->validated();
-
-      $userDTO = new UserDTO(
-        first_name: $validated['first_name'],
-        last_name: $validated['last_name'],
-        email: $validated['email'],
-        phone: $validated['phone'],
-        password: $validated['password'],
-        is_customer: $validated['is_customer'] ?? true,
-      );
-
-      $user = $this->userService->createUser($userDTO);
-
-      return ResponseUtils::created([
-        'user' => new UserResource($user),
-      ], ResponseMessage::REGISTER_SUCCESS->value);
-    } catch (Exception $e) {
-      return $this->handleUserException($e, $request->validated(), null, 'đăng ký');
-    }
-  }
-
-  /**
-   * Login
-   *
-   * @param LoginRequest $request
-   *
-   * @return JsonResponse
-   * @group Auth
-   * @unauthenticated
-   */
-  public function login(LoginRequest $request)
-  {
-    $validated = $request->validated();
-
-    if (! Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
-      return ResponseUtils::unauthorized(ResponseMessage::LOGIN_FAILED->value);
+    public function __construct(
+        private readonly UserService $userService
+    ) {
     }
 
-    $user = User::where('email', $validated['email'])->first();
-    $user->update(['last_login' => now()]);
+    /**
+     * Register a new user
+     *
+     * @param RegisterRequest $request
+     *
+     * @return JsonResponse
+     * @group Auth
+     * @unauthenticated
+     */
+    public function register(RegisterRequest $request)
+    {
+        try {
+            $validated = $request->validated();
 
-    $token = $user->createToken(
-      'API token for ' . $validated['email'],
-      ['*'],
-      now()->addWeek()
-    )->plainTextToken;
+            $userDTO = new UserDTO(
+                first_name: $validated['first_name'],
+                last_name: $validated['last_name'],
+                email: $validated['email'],
+                phone: $validated['phone'],
+                password: $validated['password'],
+                is_customer: $validated['is_customer'] ?? true,
+            );
 
-    return ResponseUtils::success([
-      'token' => $token,
-      'user' => new UserResource($user),
-    ], ResponseMessage::LOGIN_SUCCESS->value);
-  }
+            $user = $this->userService->createUser($userDTO);
 
-  /**
-   * Logout
-   *
-   * @return JsonResponse
-   * @group Auth
-   */
-  public function logout()
-  {
-    $user = AuthUtils::user();
-    if ($user && method_exists($user->currentAccessToken(), 'delete')) {
-      $user->currentAccessToken()->delete();
+            return ResponseUtils::created([
+              'user' => new UserResource($user),
+            ], ResponseMessage::REGISTER_SUCCESS->value);
+        } catch (Exception $e) {
+            return $this->handleUserException($e, $request->validated(), null, 'đăng ký');
+        }
     }
 
-    return ResponseUtils::noContent(ResponseMessage::LOGOUT_SUCCESS->value);
-  }
+    /**
+     * Login
+     *
+     * @param LoginRequest $request
+     *
+     * @return JsonResponse
+     * @group Auth
+     * @unauthenticated
+     */
+    public function login(LoginRequest $request)
+    {
+        $validated = $request->validated();
 
-  /**
-   * Change password
-   *
-   * @param ChangePasswordRequest $request
-   *
-   * @return JsonResponse
-   * @group Auth
-   */
-  public function changePassword(ChangePasswordRequest $request)
-  {
-    $user = AuthUtils::user();
-    if (! $user) {
-      return ResponseUtils::unauthorized();
+        if (! Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
+            return ResponseUtils::unauthorized(ResponseMessage::LOGIN_FAILED->value);
+        }
+
+        $user = User::where('email', $validated['email'])->first();
+        $user->update(['last_login' => now()]);
+
+        $token = $user->createToken(
+            'API token for ' . $validated['email'],
+            ['*'],
+            now()->addWeek()
+        )->plainTextToken;
+
+        return ResponseUtils::success([
+          'token' => $token,
+          'user' => new UserResource($user),
+        ], ResponseMessage::LOGIN_SUCCESS->value);
     }
 
-    $validated = $request->validated();
+    /**
+     * Logout
+     *
+     * @return JsonResponse
+     * @group Auth
+     */
+    public function logout()
+    {
+        $user = AuthUtils::user();
+        if ($user && method_exists($user->currentAccessToken(), 'delete')) {
+            $user->currentAccessToken()->delete();
+        }
 
-    // Check if the old password is correct
-    if (! Hash::check($validated['old_password'], $user->password)) {
-      return ResponseUtils::validationError(ResponseMessage::WRONG_OLD_PASSWORD->value);
+        return ResponseUtils::noContent(ResponseMessage::LOGOUT_SUCCESS->value);
     }
 
-    try {
-      $userDTO = new UserDTO(
-        first_name: null,
-        last_name: null,
-        email: null,
-        phone: null,
-        password: $validated['new_password'],
-        is_customer: null,
-      );
+    /**
+     * Change password
+     *
+     * @param ChangePasswordRequest $request
+     *
+     * @return JsonResponse
+     * @group Auth
+     */
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $user = AuthUtils::user();
+        if (! $user) {
+            return ResponseUtils::unauthorized();
+        }
 
-      $this->userService->updateUser($user->id, $userDTO);
+        $validated = $request->validated();
 
-      return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
-    } catch (Exception $e) {
-      return $this->handleUserException($e, $request->validated(), $user->id, 'đổi mật khẩu');
-    }
-  }
+        // Check if the old password is correct
+        if (! Hash::check($validated['old_password'], $user->password)) {
+            return ResponseUtils::validationError(ResponseMessage::WRONG_OLD_PASSWORD->value);
+        }
 
-  /**
-   * Forgot password
-   *
-   * @param ForgotPasswordRequest $request
-   *
-   * @return JsonResponse
-   * @group Auth
-   */
-  public function forgotPassword(ForgotPasswordRequest $request)
-  {
-    $validated = $request->validated();
+        try {
+            $userDTO = new UserDTO(
+                first_name: null,
+                last_name: null,
+                email: null,
+                phone: null,
+                password: $validated['new_password'],
+                is_customer: null,
+            );
 
-    $status = Password::sendResetLink(['email' => $validated['email']]);
+            $this->userService->updateUser($user->id, $userDTO);
 
-    return $status === Password::RESET_LINK_SENT
-      ? ResponseUtils::success([], 'Email đặt lại mật khẩu đã được gửi.')
-      : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
-  }
-
-  /**
-   * Reset password
-   *
-   * @param Request $request
-   *
-   * @return JsonResponse
-   * @group Auth
-   */
-  public function resetPassword(Request $request)
-  {
-    $data = $request->all();
-
-    $validator = validator($data, [
-      'token' => 'required',
-      'email' => 'required|string|email',
-      'password' => 'required|string|confirmed|min:8',
-    ]);
-
-    if ($validator->fails()) {
-      return ResponseUtils::validationError($validator->errors()->first());
+            return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
+        } catch (Exception $e) {
+            return $this->handleUserException($e, $request->validated(), $user->id, 'đổi mật khẩu');
+        }
     }
 
-    $status = Password::reset(
-      $validator->validated(),
-      function ($user, $password) {
-        $user->password = Hash::make($password);
-        $user->save();
-      }
-    );
+    /**
+     * Forgot password
+     *
+     * @param ForgotPasswordRequest $request
+     *
+     * @return JsonResponse
+     * @group Auth
+     */
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        $validated = $request->validated();
 
-    return $status === Password::PASSWORD_RESET
-      ? ResponseUtils::success([], 'Mật khẩu đã được đặt lại thành công.')
-      : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
-  }
+        $status = Password::sendResetLink(['email' => $validated['email']]);
+
+        return $status === Password::RESET_LINK_SENT
+          ? ResponseUtils::success([], 'Email đặt lại mật khẩu đã được gửi.')
+          : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
+    }
+
+    /**
+     * Reset password
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @group Auth
+     */
+    public function resetPassword(Request $request)
+    {
+        $data = $request->all();
+
+        $validator = validator($data, [
+          'token' => 'required',
+          'email' => 'required|string|email',
+          'password' => 'required|string|confirmed|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseUtils::validationError($validator->errors()->first());
+        }
+
+        $status = Password::reset(
+            $validator->validated(),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+          ? ResponseUtils::success([], 'Mật khẩu đã được đặt lại thành công.')
+          : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
+    }
 }
