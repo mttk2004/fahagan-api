@@ -14,6 +14,13 @@ jobs:
   php-cs-fixer:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+      statuses: write
+      actions: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
