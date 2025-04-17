@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\ApplicationConstants;
+use App\DTOs\BaseDTO;
 use App\DTOs\User\UserDTO;
 use App\Filters\UserFilter;
 use App\Http\Sorts\V1\UserSort;
@@ -14,110 +15,87 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class UserService
+class UserService extends BaseService
 {
-    /**
-     * Lấy danh sách người dùng với filter và sort
-     */
-    public function getAllUsers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
-    {
-        $query = User::query();
+  /**
+   * UserService constructor.
+   */
+  public function __construct()
+  {
+    $this->model = new User();
+    $this->filterClass = UserFilter::class;
+    $this->sortClass = UserSort::class;
+    $this->with = [];
+  }
 
-        // Apply filters
-        $userFilter = new UserFilter($request);
-        $query = $userFilter->apply($query);
+  /**
+   * Lấy danh sách người dùng với filter và sort
+   */
+  public function getAllUsers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
+  {
+    return $this->getAll($request, $perPage);
+  }
 
-        // Apply sorting
-        $userSort = new UserSort($request);
-        $query = $userSort->apply($query);
+  /**
+   * Tạo người dùng mới
+   *
+   * @throws ValidationException
+   * @throws Exception
+   */
+  public function createUser(UserDTO $userDTO): User
+  {
+    return $this->create($userDTO);
+  }
 
-        // Paginate
-        return $query->paginate($perPage);
+  /**
+   * Lấy thông tin chi tiết người dùng
+   *
+   * @throws ModelNotFoundException
+   */
+  public function getUserById(string|int $userId): User
+  {
+    return $this->getById($userId);
+  }
+
+  /**
+   * Cập nhật người dùng
+   *
+   * @throws ModelNotFoundException
+   * @throws ValidationException
+   * @throws Exception
+   */
+  public function updateUser(string|int $userId, UserDTO $userDTO): User
+  {
+    return $this->update($userId, $userDTO);
+  }
+
+  /**
+   * Xóa người dùng
+   *
+   * @throws ModelNotFoundException
+   * @throws Exception
+   */
+  public function deleteUser(string|int $userId): void
+  {
+    $this->delete($userId);
+  }
+
+  /**
+   * Find a trashed resource based on unique attributes
+   *
+   * @param BaseDTO $dto
+   * @return \Illuminate\Database\Eloquent\Model|null
+   */
+  protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+  {
+    // Đảm bảo DTO là kiểu UserDTO trước khi tiếp tục
+    if (!($dto instanceof UserDTO) || !isset($dto->email)) {
+      return null;
     }
 
-    /**
-     * Tạo người dùng mới
-     *
-     * @throws ValidationException
-     * @throws Exception
-     */
-    public function createUser(UserDTO $userDTO): User
-    {
-        try {
-            DB::beginTransaction();
-
-            // Tạo người dùng
-            $user = User::create($userDTO->toArray());
-
-            DB::commit();
-
-            return $user;
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Lấy thông tin chi tiết người dùng
-     *
-     * @throws ModelNotFoundException
-     */
-    public function getUserById(string|int $userId): User
-    {
-        return User::findOrFail($userId);
-    }
-
-    /**
-     * Cập nhật người dùng
-     *
-     * @throws ModelNotFoundException
-     * @throws ValidationException
-     * @throws Exception
-     */
-    public function updateUser(string|int $userId, UserDTO $userDTO): User
-    {
-        try {
-            // Tìm người dùng hiện tại
-            $user = User::findOrFail($userId);
-
-            DB::beginTransaction();
-
-            // Cập nhật thông tin người dùng
-            $user->update($userDTO->toArray());
-
-            DB::commit();
-
-            return $user->fresh();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Xóa người dùng
-     *
-     * @throws ModelNotFoundException
-     * @throws Exception
-     */
-    public function deleteUser(string|int $userId): void
-    {
-        try {
-            $user = User::findOrFail($userId);
-
-            DB::beginTransaction();
-
-            // Xóa người dùng
-            $user->delete();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
-    }
+    return User::withTrashed()
+      ->where('email', $dto->email)
+      ->onlyTrashed()
+      ->first();
+  }
 }

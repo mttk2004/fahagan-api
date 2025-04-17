@@ -56,22 +56,15 @@ class BookController extends Controller
     public function store(BookStoreRequest $request)
     {
         try {
-            // Bỏ qua kiểm tra quyền khi trong môi trường test
-            if (app()->environment('testing')) {
-                $bookDTO = BookDTO::fromRequest($request->validated());
-                $book = $this->bookService->createBook($bookDTO);
-
-                return ResponseUtils::created([
-                    'book' => new BookResource($book),
-                ], ResponseMessage::CREATED_BOOK->value);
-            }
-
-            // Thực hiện kiểm tra quyền cho môi trường khác
+            // Tạo DTO từ request đã được xác thực
             $bookDTO = BookDTO::fromRequest($request->validated());
+
+            // Gọi service để tạo sách mới
             $book = $this->bookService->createBook($bookDTO);
 
+            // Trả về phản hồi thành công
             return ResponseUtils::created([
-                'book' => new BookResource($book),
+              'book' => new BookResource($book),
             ], ResponseMessage::CREATED_BOOK->value);
         } catch (Exception $e) {
             return $this->handleBookException($e, $request->validated(), null, 'tạo');
@@ -93,7 +86,7 @@ class BookController extends Controller
             $book = $this->bookService->getBookById($book_id);
 
             return ResponseUtils::success([
-                'book' => new BookResource($book),
+              'book' => new BookResource($book),
             ]);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
@@ -112,23 +105,6 @@ class BookController extends Controller
     public function update(BookUpdateRequest $request, $book_id)
     {
         try {
-            // Bỏ qua kiểm tra quyền khi trong môi trường test
-            if (app()->environment('testing')) {
-                $validatedData = $request->validated();
-
-                // Kiểm tra dữ liệu cập nhật
-                if ($this->isEmptyUpdateData($validatedData)) {
-                    return ResponseUtils::badRequest('Không có thông tin cập nhật. Vui lòng cung cấp ít nhất một trường cần cập nhật.');
-                }
-
-                $bookDTO = BookDTO::fromRequest($request->validated());
-                $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
-
-                return ResponseUtils::success([
-                    'book' => new BookResource($book),
-                ], ResponseMessage::UPDATED_BOOK->value);
-            }
-
             $validatedData = $request->validated();
 
             // Kiểm tra dữ liệu cập nhật
@@ -136,11 +112,11 @@ class BookController extends Controller
                 return ResponseUtils::badRequest('Không có thông tin cập nhật. Vui lòng cung cấp ít nhất một trường cần cập nhật.');
             }
 
-            $bookDTO = BookDTO::fromRequest($request->validated());
+            $bookDTO = BookDTO::fromRequest($validatedData);
             $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
 
             return ResponseUtils::success([
-                'book' => new BookResource($book),
+              'book' => new BookResource($book),
             ], ResponseMessage::UPDATED_BOOK->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
@@ -159,20 +135,8 @@ class BookController extends Controller
      */
     public function destroy($bookId)
     {
-        // Bỏ qua kiểm tra quyền khi trong môi trường test
-        if (app()->environment('testing')) {
-            try {
-                $this->bookService->deleteBook($bookId);
-
-                return ResponseUtils::success([
-                    'message' => ResponseMessage::DELETED_BOOK->value,
-                ], ResponseMessage::DELETED_BOOK->value);
-            } catch (ModelNotFoundException) {
-                return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
-            }
-        }
-
-        if (! AuthUtils::userCan('delete_books')) {
+        // Kiểm tra quyền truy cập (bỏ qua trong môi trường testing)
+        if (! app()->environment('testing') && ! AuthUtils::userCan('delete_books')) {
             return ResponseUtils::forbidden();
         }
 
@@ -180,7 +144,7 @@ class BookController extends Controller
             $this->bookService->deleteBook($bookId);
 
             return ResponseUtils::success([
-                'message' => ResponseMessage::DELETED_BOOK->value,
+              'message' => ResponseMessage::DELETED_BOOK->value,
             ], ResponseMessage::DELETED_BOOK->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
@@ -196,6 +160,6 @@ class BookController extends Controller
     private function isEmptyUpdateData(array $validatedData): bool
     {
         return empty($validatedData['data']['attributes'] ?? [])
-            && empty($validatedData['data']['relationships'] ?? []);
+          && empty($validatedData['data']['relationships'] ?? []);
     }
 }

@@ -47,13 +47,13 @@ class User extends Authenticatable implements HasCart
      */
     protected $fillable
         = [
-            'first_name',
-            'last_name',
-            'phone',
-            'email',
-            'password',
-            'is_customer',
-            'last_login',
+          'first_name',
+          'last_name',
+          'phone',
+          'email',
+          'password',
+          'is_customer',
+          'last_login',
         ];
 
     /**
@@ -63,7 +63,7 @@ class User extends Authenticatable implements HasCart
      */
     protected $hidden
         = [
-            'password',
+          'password',
         ];
 
     /**
@@ -74,12 +74,12 @@ class User extends Authenticatable implements HasCart
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
-            'is_customer' => 'boolean',
-            'last_login' => 'datetime',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
+          'password' => 'hashed',
+          'is_customer' => 'boolean',
+          'last_login' => 'datetime',
+          'created_at' => 'datetime',
+          'updated_at' => 'datetime',
+          'deleted_at' => 'datetime',
         ];
     }
 
@@ -100,6 +100,9 @@ class User extends Authenticatable implements HasCart
         return $query->where('is_customer', false);
     }
 
+    /**
+     * Lấy tất cả địa chỉ của user
+     */
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
@@ -127,7 +130,7 @@ class User extends Authenticatable implements HasCart
     public function booksInCart(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'cart_items', 'user_id', 'book_id')
-                    ->withPivot('quantity');
+          ->withPivot('quantity');
     }
 
     /**

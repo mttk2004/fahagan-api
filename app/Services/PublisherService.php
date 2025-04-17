@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\ApplicationConstants;
+use App\DTOs\BaseDTO;
 use App\DTOs\Publisher\PublisherDTO;
 use App\Filters\PublisherFilter;
 use App\Http\Sorts\V1\PublisherSort;
@@ -11,28 +12,27 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class PublisherService
+class PublisherService extends BaseService
 {
+    /**
+     * PublisherService constructor.
+     */
+    public function __construct()
+    {
+        $this->model = new Publisher();
+        $this->filterClass = PublisherFilter::class;
+        $this->sortClass = PublisherSort::class;
+        $this->with = ['publishedBooks'];
+    }
+
     /**
      * Lấy danh sách nhà xuất bản với filter và sort
      */
     public function getAllPublishers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
-        $query = Publisher::query();
-
-        // Apply filters
-        $publisherFilter = new PublisherFilter($request);
-        $query = $publisherFilter->apply($query);
-
-        // Apply sorting
-        $publisherSort = new PublisherSort($request);
-        $query = $publisherSort->apply($query);
-
-        // Paginate
-        return $query->paginate($perPage);
+        return $this->getAll($request, $perPage);
     }
 
     /**
@@ -43,32 +43,32 @@ class PublisherService
      */
     public function createPublisher(PublisherDTO $publisherDTO): Publisher
     {
-        try {
-            DB::beginTransaction();
+        // Kiểm tra xem tên nhà xuất bản đã tồn tại chưa (bao gồm cả đã xóa mềm)
+        if (isset($publisherDTO->name)) {
+            $existingPublisher = Publisher::where('name', $publisherDTO->name)->first();
 
-            // Kiểm tra xem nhà xuất bản đã bị xóa mềm hay chưa
-            $existingPublisher = Publisher::withTrashed()
-              ->where('name', $publisherDTO->name)
-              ->first();
-
-            if ($existingPublisher && $existingPublisher->trashed()) {
-                // Nếu đã bị xóa mềm, restore và cập nhật
-                $existingPublisher->restore();
-                $existingPublisher->update($publisherDTO->toArray());
-                $publisher = $existingPublisher;
-            } else {
-                // Tạo nhà xuất bản mới
-                $publisher = Publisher::create($publisherDTO->toArray());
+            if ($existingPublisher) {
+                throw ValidationException::withMessages([
+                  'data.attributes.name' => ['Tên nhà xuất bản đã tồn tại. Vui lòng chọn tên khác.'],
+                ]);
             }
 
-            DB::commit();
+            // Kiểm tra nhà xuất bản đã xóa mềm
+            $trashedPublisher = Publisher::withTrashed()
+              ->where('name', $publisherDTO->name)
+              ->onlyTrashed()
+              ->first();
 
-            return $publisher->fresh();
-        } catch (Exception $e) {
-            DB::rollBack();
+            if ($trashedPublisher) {
+                // Khôi phục nhà xuất bản đã xóa mềm và cập nhật thông tin
+                $trashedPublisher->restore();
+                $trashedPublisher->update($publisherDTO->toArray());
 
-            throw $e;
+                return $trashedPublisher->fresh($this->with);
+            }
         }
+
+        return $this->create($publisherDTO);
     }
 
     /**
@@ -78,7 +78,7 @@ class PublisherService
      */
     public function getPublisherById(string|int $publisherId): Publisher
     {
-        return Publisher::with(['publishedBooks'])->findOrFail($publisherId);
+        return $this->getById($publisherId);
     }
 
     /**
@@ -90,23 +90,7 @@ class PublisherService
      */
     public function updatePublisher(string|int $publisherId, PublisherDTO $publisherDTO): Publisher
     {
-        try {
-            // Tìm nhà xuất bản hiện tại
-            $publisher = Publisher::findOrFail($publisherId);
-
-            DB::beginTransaction();
-
-            // Cập nhật thông tin nhà xuất bản
-            $publisher->update($publisherDTO->toArray());
-
-            DB::commit();
-
-            return $publisher->fresh();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
+        return $this->update($publisherId, $publisherDTO);
     }
 
     /**
@@ -117,19 +101,25 @@ class PublisherService
      */
     public function deletePublisher(string|int $publisherId): void
     {
-        try {
-            $publisher = Publisher::findOrFail($publisherId);
+        $this->delete($publisherId);
+    }
 
-            DB::beginTransaction();
-
-            // Xóa nhà xuất bản
-            $publisher->delete();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
+    /**
+     * Find a trashed resource based on unique attributes
+     *
+     * @param BaseDTO $dto
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+    {
+        // Đảm bảo DTO là kiểu PublisherDTO trước khi tiếp tục
+        if (! ($dto instanceof PublisherDTO) || ! isset($dto->name)) {
+            return null;
         }
+
+        return Publisher::withTrashed()
+          ->where('name', $dto->name)
+          ->onlyTrashed()
+          ->first();
     }
 }

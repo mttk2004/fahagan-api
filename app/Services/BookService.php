@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\ApplicationConstants;
+use App\DTOs\BaseDTO;
 use App\DTOs\Book\BookDTO;
 use App\Filters\BookFilter;
 use App\Http\Sorts\V1\BookSort;
@@ -15,25 +16,25 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class BookService
+class BookService extends BaseService
 {
+    /**
+     * BookService constructor.
+     */
+    public function __construct()
+    {
+        $this->model = new Book();
+        $this->filterClass = BookFilter::class;
+        $this->sortClass = BookSort::class;
+        $this->with = ['authors', 'genres', 'publisher'];
+    }
+
     /**
      * Lấy danh sách sách với filter và sort
      */
     public function getAllBooks(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
-        $query = Book::query();
-
-        // Apply filters
-        $bookFilter = new BookFilter($request);
-        $query = $bookFilter->apply($query);
-
-        // Apply sorting
-        $bookSort = new BookSort($request);
-        $query = $bookSort->apply($query);
-
-        // Paginate
-        return $query->paginate($perPage);
+        return $this->getAll($request, $perPage);
     }
 
     /**
@@ -54,6 +55,46 @@ class BookService
             ]);
         }
 
+        // Kiểm tra xem có sách nào đã bị xóa mềm với cùng title và edition hay không
+        $trashedBook = Book::withTrashed()
+          ->where('title', $data['title'])
+          ->where('edition', $data['edition'])
+          ->onlyTrashed()
+          ->first();
+
+        if ($trashedBook) {
+            try {
+                DB::beginTransaction();
+
+                // Khôi phục sách đã bị xóa mềm
+                $trashedBook->restore();
+
+                // Cập nhật thông tin từ DTO
+                $trashedBook->update($data);
+
+                // Xử lý relations nếu có
+                $relations = [];
+                if (! empty($bookDTO->author_ids)) {
+                    $relations['authors'] = $bookDTO->author_ids;
+                }
+                if (! empty($bookDTO->genre_ids)) {
+                    $relations['genres'] = $bookDTO->genre_ids;
+                }
+
+                if (! empty($relations)) {
+                    $this->syncRelations($trashedBook, $relations);
+                }
+
+                DB::commit();
+
+                return $trashedBook->fresh($this->with);
+            } catch (Exception $e) {
+                DB::rollBack();
+
+                throw $e;
+            }
+        }
+
         // Kiểm tra xem có sách nào (chưa bị xóa) với cùng title và edition hay không
         $existingBook = Book::where('title', $data['title'])
           ->where('edition', $data['edition'])
@@ -65,67 +106,33 @@ class BookService
             ]);
         }
 
-        // Kiểm tra xem có sách nào đã bị xóa mềm với cùng title và edition
-        $deletedBook = Book::withTrashed()
-          ->where('title', $data['title'])
-          ->where('edition', $data['edition'])
-          ->onlyTrashed() // Chỉ lấy các sách đã bị xóa
-          ->first();
-
-        // Nếu tồn tại, khôi phục và cập nhật
-        if ($deletedBook) {
-            try {
-                DB::beginTransaction();
-
-                // Khôi phục sách
-                $deletedBook->restore();
-
-                // Cập nhật thông tin mới
-                $deletedBook->update($data);
-
-                // Cập nhật quan hệ authors nếu có
-                if (! empty($bookDTO->author_ids)) {
-                    $deletedBook->authors()->sync($bookDTO->author_ids);
-                }
-
-                // Cập nhật quan hệ genres nếu có
-                if (! empty($bookDTO->genre_ids)) {
-                    $deletedBook->genres()->sync($bookDTO->genre_ids);
-                }
-
-                DB::commit();
-
-                return $deletedBook->fresh(['authors', 'genres', 'publisher']);
-            } catch (Exception $e) {
-                DB::rollBack();
-
-                throw $e;
-            }
+        // Tạo sách với relations
+        $relations = [];
+        if (! empty($bookDTO->author_ids)) {
+            $relations['authors'] = $bookDTO->author_ids;
+        }
+        if (! empty($bookDTO->genre_ids)) {
+            $relations['genres'] = $bookDTO->genre_ids;
         }
 
-        // Tạo sách mới nếu không tìm thấy sách đã xóa với cùng title và edition
         try {
+            // Tạo sách mới - tránh sử dụng chuỗi phương thức với tap() vì nó trả về Builder không phải Model
             DB::beginTransaction();
 
-            // Tạo sách
-            $book = Book::create($data);
+            // Đầu tiên tạo Book model
+            $book = $this->model::create($data);
 
-            // Gán tác giả
-            if (! empty($bookDTO->author_ids)) {
-                $book->authors()->attach($bookDTO->author_ids);
-            }
-
-            // Gán thể loại
-            if (! empty($bookDTO->genre_ids)) {
-                $book->genres()->attach($bookDTO->genre_ids);
+            // Sau đó đồng bộ các mối quan hệ nếu có
+            if (! empty($relations)) {
+                $this->syncRelations($book, $relations);
             }
 
             DB::commit();
 
-            return $book->fresh(['authors', 'genres', 'publisher']);
+            // Trả về book với eager loaded relations
+            return $book->fresh($this->with);
         } catch (QueryException $e) {
             DB::rollBack();
-
             // Nếu là lỗi ràng buộc duy nhất, chuyển nó thành ValidationException
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'books_title_edition_unique') !== false) {
                 throw ValidationException::withMessages([
@@ -148,7 +155,7 @@ class BookService
      */
     public function getBookById(string|int $bookId): Book
     {
-        return Book::with(['authors', 'genres', 'publisher'])->findOrFail($bookId);
+        return $this->getById($bookId);
     }
 
     /**
@@ -177,7 +184,6 @@ class BookService
                 isset($data['title']) && isset($data['edition']) &&
                 ($data['title'] !== $oldTitle || $data['edition'] !== $oldEdition)
             ) {
-
                 $existingBook = Book::where('title', $data['title'])
                   ->where('edition', $data['edition'])
                   ->where('id', '!=', $bookId)
@@ -232,31 +238,58 @@ class BookService
                     }
                 }
 
-                // Cập nhật sách
-                $book->update($data);
+                try {
+                    // Cập nhật bookDTO với dữ liệu đã được kiểm tra
+                    // Sử dụng phương thức fromRequest hoặc tạo DTO với các tham số cụ thể
+                    $requestData = [
+                      'data' => [
+                        'attributes' => $data,
+                        'relationships' => [],
+                      ],
+                    ];
 
-                // Kiểm tra xem relationships authors có trong request gốc hay không
-                $hasAuthorsInRequest = isset($originalRequest['data']['relationships']['authors']);
+                    // Nếu có author_ids, thêm vào relationships
+                    if (! empty($bookDTO->author_ids)) {
+                        $requestData['data']['relationships']['authors']['data'] = collect($bookDTO->author_ids)
+                          ->map(fn ($id) => ['id' => $id])
+                          ->toArray();
+                    }
 
-                // Chỉ đồng bộ tác giả khi relationships authors có trong request
-                if ($hasAuthorsInRequest) {
-                    $book->authors()->sync($bookDTO->author_ids);
+                    // Nếu có genre_ids, thêm vào relationships
+                    if (! empty($bookDTO->genre_ids)) {
+                        $requestData['data']['relationships']['genres']['data'] = collect($bookDTO->genre_ids)
+                          ->map(fn ($id) => ['id' => $id])
+                          ->toArray();
+                    }
+
+                    $updatedBookDTO = BookDTO::fromRequest($requestData);
+
+                    // Chuẩn bị relations
+                    $relations = [];
+
+                    // Kiểm tra xem relationships authors có trong request gốc hay không
+                    $hasAuthorsInRequest = isset($originalRequest['data']['relationships']['authors']);
+                    if ($hasAuthorsInRequest) {
+                        $relations['authors'] = $updatedBookDTO->author_ids;
+                    }
+
+                    // Kiểm tra xem relationships genres có trong request gốc hay không
+                    $hasGenresInRequest = isset($originalRequest['data']['relationships']['genres']);
+                    if ($hasGenresInRequest) {
+                        $relations['genres'] = $updatedBookDTO->genre_ids;
+                    }
+
+                    DB::rollBack(); // Rollback transaction đã bắt đầu để sử dụng transaction của BaseService
+
+                    return $this->update($bookId, $updatedBookDTO, $relations);
+                } catch (Exception $e) {
+                    DB::rollBack();
+
+                    throw $e;
                 }
-
-                // Kiểm tra xem relationships genres có trong request gốc hay không
-                $hasGenresInRequest = isset($originalRequest['data']['relationships']['genres']);
-
-                // Chỉ đồng bộ thể loại khi relationships genres có trong request
-                if ($hasGenresInRequest) {
-                    $book->genres()->sync($bookDTO->genre_ids);
-                }
-
-                DB::commit();
-
-                return $book->fresh(['authors', 'genres', 'publisher']);
             }
 
-            return $book->fresh(['authors', 'genres', 'publisher']);
+            return $this->fresh($book);
         } catch (ValidationException $e) {
             // ValidationException sẽ được ném lên cho controller xử lý
             throw $e;
@@ -270,7 +303,7 @@ class BookService
 
             throw $e;
         } catch (Exception $e) {
-            if (isset($book)) {
+            if (isset($book) && DB::transactionLevel() > 0) {
                 // Rollback transaction nếu có
                 DB::rollBack();
             }
@@ -286,26 +319,55 @@ class BookService
      */
     public function deleteBook(string|int $bookId): Book
     {
-        try {
-            DB::beginTransaction();
+        $book = $this->delete($bookId);
 
-            $book = Book::findOrFail($bookId);
+        return $book ?? $this->getById($bookId);
+    }
 
-            // Xóa các mối quan hệ discount liên quan đến sách này
-            $book->getAllActiveDiscounts()->each(function ($discount) use ($book) {
-                $discount->targets()->where('target_id', $book->id)->delete();
-            });
-
-            // Soft delete sách
-            $book->delete();
-
-            DB::commit();
-
-            return $book;
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
+    /**
+     * Find a trashed resource based on unique attributes
+     *
+     * @param BaseDTO $dto
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+    {
+        // Đảm bảo DTO là kiểu BookDTO trước khi tiếp tục
+        if (! ($dto instanceof BookDTO) || ! isset($dto->title) || ! isset($dto->edition)) {
+            return null;
         }
+
+        return Book::withTrashed()
+          ->where('title', $dto->title)
+          ->where('edition', $dto->edition)
+          ->onlyTrashed()
+          ->first();
+    }
+
+    /**
+     * Actions to perform before deleting a resource
+     *
+     * @param \Illuminate\Database\Eloquent\Model $resource
+     * @return void
+     */
+    protected function beforeDelete(\Illuminate\Database\Eloquent\Model $resource): void
+    {
+        // Đảm bảo tài nguyên là đối tượng Book trước khi tiếp tục
+        if ($resource instanceof Book) {
+            // Xóa các mối quan hệ discount liên quan đến sách này
+            $resource->getAllActiveDiscounts()->each(function ($discount) use ($resource) {
+                $discount->targets()->where('target_id', $resource->id)->delete();
+            });
+        }
+    }
+
+    /**
+     * Whether to return the deleted resource
+     *
+     * @return bool
+     */
+    protected function returnDeletedResource(): bool
+    {
+        return true;
     }
 }

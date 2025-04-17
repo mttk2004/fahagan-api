@@ -11,11 +11,21 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class SupplierService
+class SupplierService extends BaseService
 {
+    /**
+     * SupplierService constructor.
+     */
+    public function __construct()
+    {
+        $this->model = new Supplier();
+        $this->filterClass = SupplierFilter::class;
+        $this->sortClass = SupplierSort::class;
+        $this->with = ['suppliedBooks'];
+    }
+
     /**
      * Lấy danh sách tất cả nhà cung cấp với filter và sắp xếp
      *
@@ -25,18 +35,7 @@ class SupplierService
      */
     public function getAllSuppliers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
-        $query = Supplier::query();
-
-        // Apply filters
-        $supplierFilter = new SupplierFilter($request);
-        $query = $supplierFilter->apply($query);
-
-        // Apply sorting
-        $supplierSort = new SupplierSort($request);
-        $query = $supplierSort->apply($query);
-
-        // Paginate
-        return $query->paginate($perPage);
+        return $this->getAll($request, $perPage);
     }
 
     /**
@@ -50,25 +49,12 @@ class SupplierService
      */
     public function createSupplier(SupplierDTO $supplierDTO, ?array $bookIds = null): Supplier
     {
-        try {
-            DB::beginTransaction();
-
-            // Tạo nhà cung cấp
-            $supplier = Supplier::create($supplierDTO->toArray());
-
-            // Liên kết với books nếu có
-            if ($bookIds && ! empty($bookIds)) {
-                $supplier->suppliedBooks()->attach($bookIds);
-            }
-
-            DB::commit();
-
-            return $supplier->fresh()->load('suppliedBooks');
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
+        $relations = [];
+        if ($bookIds && ! empty($bookIds)) {
+            $relations['suppliedBooks'] = $bookIds;
         }
+
+        return $this->create($supplierDTO, $relations);
     }
 
     /**
@@ -80,7 +66,7 @@ class SupplierService
      */
     public function getSupplierById(string|int $supplierId): Supplier
     {
-        return Supplier::with('suppliedBooks')->findOrFail($supplierId);
+        return $this->getById($supplierId);
     }
 
     /**
@@ -96,28 +82,12 @@ class SupplierService
      */
     public function updateSupplier(string|int $supplierId, SupplierDTO $supplierDTO, ?array $bookIds = null): Supplier
     {
-        try {
-            // Tìm nhà cung cấp hiện tại
-            $supplier = Supplier::findOrFail($supplierId);
-
-            DB::beginTransaction();
-
-            // Cập nhật thông tin nhà cung cấp
-            $supplier->update($supplierDTO->toArray());
-
-            // Cập nhật sách liên quan nếu có
-            if ($bookIds !== null) {
-                $supplier->suppliedBooks()->sync($bookIds);
-            }
-
-            DB::commit();
-
-            return $supplier->fresh()->load('suppliedBooks');
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
+        $relations = null;
+        if ($bookIds !== null) {
+            $relations = ['suppliedBooks' => $bookIds];
         }
+
+        return $this->update($supplierId, $supplierDTO, $relations);
     }
 
     /**
@@ -130,23 +100,7 @@ class SupplierService
      */
     public function deleteSupplier(string|int $supplierId): void
     {
-        try {
-            $supplier = Supplier::findOrFail($supplierId);
-
-            DB::beginTransaction();
-
-            // Xóa mối quan hệ với sách
-            $supplier->suppliedBooks()->detach();
-
-            // Xóa nhà cung cấp
-            $supplier->delete();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
+        $this->delete($supplierId);
     }
 
     /**
@@ -159,25 +113,31 @@ class SupplierService
      */
     public function restoreSupplier(string|int $supplierId): Supplier
     {
-        try {
-            $supplier = Supplier::withTrashed()->findOrFail($supplierId);
+        return $this->restore($supplierId);
+    }
 
-            if (! $supplier->trashed()) {
-                throw new Exception('Nhà cung cấp này chưa bị xóa.');
-            }
-
-            DB::beginTransaction();
-
-            // Khôi phục nhà cung cấp
-            $supplier->restore();
-
-            DB::commit();
-
-            return $supplier->fresh()->load('suppliedBooks');
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
+    /**
+     * Actions to perform before deleting a resource
+     *
+     * @param \Illuminate\Database\Eloquent\Model $resource
+     * @return void
+     */
+    protected function beforeDelete(\Illuminate\Database\Eloquent\Model $resource): void
+    {
+        // Đảm bảo tài nguyên là đối tượng Supplier trước khi tiếp tục
+        if ($resource instanceof Supplier) {
+            // Xóa mối quan hệ với sách
+            $resource->suppliedBooks()->detach();
         }
+    }
+
+    /**
+     * Get the message when trying to restore a resource that is not deleted
+     *
+     * @return string
+     */
+    protected function getResourceNotDeletedMessage(): string
+    {
+        return "Nhà cung cấp này chưa bị xóa.";
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\ApplicationConstants;
+use App\DTOs\BaseDTO;
 use App\DTOs\Author\AuthorDTO;
 use App\Filters\AuthorFilter;
 use App\Http\Sorts\V1\AuthorSort;
@@ -14,120 +15,97 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class AuthorService
+class AuthorService extends BaseService
 {
-    /**
-     * Lấy danh sách tác giả với filter và sort
-     */
-    public function getAllAuthors(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
-    {
-        $query = Author::query();
+  /**
+   * AuthorService constructor.
+   */
+  public function __construct()
+  {
+    $this->model = new Author();
+    $this->filterClass = AuthorFilter::class;
+    $this->sortClass = AuthorSort::class;
+    $this->with = ['writtenBooks'];
+  }
 
-        // Apply filters
-        $authorFilter = new AuthorFilter($request);
-        $query = $authorFilter->apply($query);
+  /**
+   * Lấy danh sách tác giả với filter và sort
+   */
+  public function getAllAuthors(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
+  {
+    return $this->getAll($request, $perPage);
+  }
 
-        // Apply sorting
-        $authorSort = new AuthorSort($request);
-        $query = $authorSort->apply($query);
-
-        // Paginate
-        return $query->paginate($perPage);
+  /**
+   * Tạo tác giả mới
+   *
+   * @throws ValidationException
+   * @throws Exception
+   */
+  public function createAuthor(AuthorDTO $authorDTO): Author
+  {
+    $relations = [];
+    if (!empty($authorDTO->book_ids)) {
+      $relations['writtenBooks'] = $authorDTO->book_ids;
     }
 
-    /**
-     * Tạo tác giả mới
-     *
-     * @throws ValidationException
-     * @throws Exception
-     */
-    public function createAuthor(AuthorDTO $authorDTO): Author
-    {
-        try {
-            DB::beginTransaction();
+    return $this->create($authorDTO, $relations);
+  }
 
-            // Tạo tác giả
-            $author = Author::create($authorDTO->toArray());
+  /**
+   * Lấy thông tin chi tiết tác giả
+   *
+   * @throws ModelNotFoundException
+   */
+  public function getAuthorById(string|int $authorId): Author
+  {
+    return $this->getById($authorId);
+  }
 
-            // Gán sách nếu có
-            if (! empty($authorDTO->book_ids)) {
-                $author->writtenBooks()->attach($authorDTO->book_ids);
-            }
-
-            DB::commit();
-
-            return $author->fresh(['writtenBooks']);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
+  /**
+   * Cập nhật tác giả
+   *
+   * @throws ModelNotFoundException
+   * @throws ValidationException
+   * @throws Exception
+   */
+  public function updateAuthor(string|int $authorId, AuthorDTO $authorDTO): Author
+  {
+    $relations = [];
+    if (!empty($authorDTO->book_ids)) {
+      $relations['writtenBooks'] = $authorDTO->book_ids;
     }
 
-    /**
-     * Lấy thông tin chi tiết tác giả
-     *
-     * @throws ModelNotFoundException
-     */
-    public function getAuthorById(string|int $authorId): Author
-    {
-        return Author::with(['writtenBooks'])->findOrFail($authorId);
+    return $this->update($authorId, $authorDTO, $relations);
+  }
+
+  /**
+   * Xóa tác giả
+   *
+   * @throws ModelNotFoundException
+   * @throws Exception
+   */
+  public function deleteAuthor(string|int $authorId): void
+  {
+    $this->delete($authorId);
+  }
+
+  /**
+   * Find a trashed resource based on unique attributes
+   *
+   * @param BaseDTO $dto
+   * @return \Illuminate\Database\Eloquent\Model|null
+   */
+  protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+  {
+    // Đảm bảo DTO là kiểu AuthorDTO trước khi tiếp tục
+    if (!($dto instanceof AuthorDTO) || !isset($dto->name)) {
+      return null;
     }
 
-    /**
-     * Cập nhật tác giả
-     *
-     * @throws ModelNotFoundException
-     * @throws ValidationException
-     * @throws Exception
-     */
-    public function updateAuthor(string|int $authorId, AuthorDTO $authorDTO): Author
-    {
-        try {
-            // Tìm tác giả hiện tại
-            $author = Author::findOrFail($authorId);
-
-            DB::beginTransaction();
-
-            // Cập nhật thông tin tác giả
-            $author->update($authorDTO->toArray());
-
-            // Cập nhật quan hệ với sách nếu có
-            if (! empty($authorDTO->book_ids)) {
-                $author->writtenBooks()->sync($authorDTO->book_ids);
-            }
-
-            DB::commit();
-
-            return $author->fresh(['writtenBooks']);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Xóa tác giả
-     *
-     * @throws ModelNotFoundException
-     * @throws Exception
-     */
-    public function deleteAuthor(string|int $authorId): void
-    {
-        try {
-            $author = Author::findOrFail($authorId);
-
-            DB::beginTransaction();
-
-            // Xóa tác giả
-            $author->delete();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
-    }
+    return Author::withTrashed()
+      ->where('name', $dto->name)
+      ->onlyTrashed()
+      ->first();
+  }
 }
