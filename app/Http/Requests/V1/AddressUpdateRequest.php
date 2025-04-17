@@ -4,61 +4,66 @@ namespace App\Http\Requests\V1;
 
 use App\Http\Requests\BaseRequest;
 use App\Interfaces\HasValidationMessages;
-use App\Traits\HasRequestFormat;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 
 class AddressUpdateRequest extends BaseRequest implements HasValidationMessages
 {
-    use HasRequestFormat;
+  public function rules(): array
+  {
+    return [
+      'name' => ['sometimes', 'string', 'max:255'],
+      'phone' => ['sometimes', 'string', 'regex:/^0[35789][0-9]{8}$/'],
+      'city' => ['sometimes', 'string', 'max:255'],
+      'district' => ['sometimes', 'string', 'max:255'],
+      'ward' => ['sometimes', 'string', 'max:255'],
+      'address_line' => ['sometimes', 'string', 'max:255'],
+    ];
+  }
 
-    protected function prepareForValidation(): void
-    {
-        $this->convertToJsonApiFormat([
-            'name',
-            'phone',
-            'city',
-            'district',
-            'ward',
-            'address_line',
-        ]);
-    }
+  public function messages(): array
+  {
+    return [
+      'name.string' => 'Tên nên là một chuỗi.',
+      'name.max' => 'Tên không được vượt quá 255 ký tự.',
 
-    public function rules(): array
-    {
-        return [
-            'data.attributes.name' => ['sometimes', 'string', 'max:255'],
-            'data.attributes.phone' => ['sometimes', 'string', 'regex:/^0[35789][0-9]{8}$/'],
-            'data.attributes.city' => ['sometimes', 'string', 'max:255'],
-            'data.attributes.district' => ['sometimes', 'string', 'max:255'],
-            'data.attributes.ward' => ['sometimes', 'string', 'max:255'],
-            'data.attributes.address_line' => ['sometimes', 'string', 'max:255'],
-        ];
-    }
+      'phone.string' => 'Số điện thoại nên là một chuỗi.',
+      'phone.regex' => 'Số điện thoại không hợp lệ.',
 
-    public function messages(): array
-    {
-        return [
-            'data.attributes.name.string' => 'Tên nên là một chuỗi.',
-            'data.attributes.name.max' => 'Tên không được vượt quá 255 ký tự.',
+      'city.string' => 'Thành phố nên là một chuỗi.',
+      'city.max' => 'Thành phố không được vượt quá 255 ký tự.',
 
-            'data.attributes.phone.string' => 'Số điện thoại nên là một chuỗi.',
-            'data.attributes.phone.regex' => 'Số điện thoại không hợp lệ.',
+      'district.string' => 'Quận/Huyện nên là một chuỗi.',
+      'district.max' => 'Quận/Huyện không được vượt quá 255 ký tự.',
 
-            'data.attributes.city.string' => 'Thành phố nên là một chuỗi.',
-            'data.attributes.city.max' => 'Thành phố không được vượt quá 255 ký tự.',
+      'ward.string' => 'Phường/Xã nên là một chuỗi.',
+      'ward.max' => 'Phường/Xã không được vượt quá 255 ký tự.',
 
-            'data.attributes.district.string' => 'Quận/Huyện nên là một chuỗi.',
-            'data.attributes.district.max' => 'Quận/Huyện không được vượt quá 255 ký tự.',
+      'address_line.string' => 'Địa chỉ nên là một chuỗi.',
+      'address_line.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
+    ];
+  }
 
-            'data.attributes.ward.string' => 'Phường/Xã nên là một chuỗi.',
-            'data.attributes.ward.max' => 'Phường/Xã không được vượt quá 255 ký tự.',
+  public function authorize(): bool
+  {
+    return true;
+  }
 
-            'data.attributes.address_line.string' => 'Địa chỉ nên là một chuỗi.',
-            'data.attributes.address_line.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
-        ];
-    }
-
-    public function authorize(): bool
-    {
-        return true;
-    }
+  /**
+   * Handle a failed validation attempt.
+   *
+   * @param Validator $validator
+   * @return void
+   * @throws HttpResponseException
+   */
+  protected function failedValidation(Validator $validator): void
+  {
+    throw new HttpResponseException(
+      response()->json([
+        'message' => 'Validation errors',
+        'errors' => $validator->errors(),
+      ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
+    );
+  }
 }
