@@ -3,69 +3,79 @@
 use App\Models\User;
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+  $user = User::factory()->create();
 
-    $response = $this->post('/api/login', [
-      'email' => $user->email,
-      'password' => 'password',
+  $response = $this->post('/api/login', [
+    'email' => $user->email,
+    'password' => 'password',
+  ]);
+
+  $response->assertStatus(200)
+    ->assertJsonStructure([
+      'status',
+      'message',
+      'data' => [
+        'token',
+        'user',
+      ],
     ]);
-
-    $response->assertStatus(200)
-      ->assertJsonStructure([
-        'status',
-        'message',
-        'data' => [
-          'token',
-          'user',
-        ],
-      ]);
 });
 
-// Đã loại bỏ test với JSON:API format vì không còn hỗ trợ
-
 test('users can not authenticate with invalid email', function () {
-    $user = User::factory()->create();
+  $user = User::factory()->create();
 
-    $response = $this->post('/api/login', [
-      'email' => 'invalid@email.com',
-      'password' => 'password',
-    ]);
-    $response->assertStatus(401);
+  $response = $this->post('/api/login', [
+    'email' => 'invalid@email.com',
+    'password' => 'password',
+  ]);
+  $response->assertStatus(401);
 });
 
 test('users can not authenticate with invalid email format', function () {
-    $user = User::factory()->create();
+  $user = User::factory()->create();
 
-    $response = $this->post('/api/login', [
-      'email' => 'invalid-email',
-      'password' => 'password',
-    ]);
+  $response = $this->post('/api/login', [
+    'email' => 'invalid-email',
+    'password' => 'password',
+  ]);
 
-    $response->assertStatus(422)
-      ->assertJsonValidationErrors(['email']);
+  $response->assertStatus(422)
+    ->assertJsonValidationErrors(['email']);
 });
 
 test('users can not authenticate with empty email', function () {
-    $user = User::factory()->create();
+  $user = User::factory()->create();
 
-    $response = $this->post('/api/login', [
-      'email' => '',
-      'password' => 'password',
-    ]);
+  $response = $this->post('/api/login', [
+    'email' => '',
+    'password' => 'password',
+  ]);
 
-    $response->assertStatus(422)
-      ->assertJsonValidationErrors(['email']);
+  $response->assertStatus(422)
+    ->assertJsonValidationErrors(['email']);
 });
 
 test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+  $user = User::factory()->create();
 
-    $response = $this->post('/api/login', [
-      'email' => $user->email,
-      'password' => 'wrong-password',
-    ]);
+  $response = $this->post('/api/login', [
+    'email' => $user->email,
+    'password' => 'wrong-password',
+  ]);
 
-    $response->assertStatus(401);
+  $response->assertStatus(401);
+});
+
+test('users can not authenticate with empty password', function () {
+  $user = User::factory()->create();
+
+  $response = $this->post('/api/login', [
+    'email' => $user->email,
+    'password' => '',
+  ]);
+
+  $response->assertStatus(422)
+    ->assertJsonValidationErrors(['password']);
 });
 
 // Bỏ qua test logout trong môi trường testing vì Sanctum sử dụng TransientToken
