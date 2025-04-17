@@ -1,0 +1,53 @@
+name: PHP-CS-Fixer
+
+on:
+  schedule:
+    # Chạy vào lúc 00:00 UTC mỗi ngày
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+  # Cho phép chạy thủ công từ tab Actions trên GitHub
+  workflow_dispatch:
+
+jobs:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, ctype, iconv, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHP-CS-Fixer
+        run: composer format
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Apply PHP-CS-Fixer changes"
+          commit_user_name: "PHP-CS-Fixer Bot"
+          commit_user_email: "bot@noreply.github.com"
+          commit_author: "PHP-CS-Fixer Bot <bot@noreply.github.com>"
+          file_pattern: "*.php"
