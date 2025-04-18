@@ -4,34 +4,31 @@ namespace App\DTOs\Publisher;
 
 class PublisherDTO extends \App\DTOs\BaseDTO
 {
-    public function __construct(
-        public readonly ?string $name,
-        public readonly ?string $biography,
-    ) {
+  public function __construct(
+    public readonly ?string $name,
+    public readonly ?string $biography,
+  ) {}
+
+  public static function fromRequest(array $validatedData): self
+  {
+    return new self(
+      name: $validatedData['name'] ?? null,
+      biography: $validatedData['biography'] ?? null,
+    );
+  }
+
+  public function toArray(): array
+  {
+    $data = [];
+
+    if ($this->name !== null) {
+      $data['name'] = $this->name;
     }
 
-    public static function fromRequest(array $validatedData): self
-    {
-        $attributes = $validatedData['data']['attributes'] ?? [];
-
-        return new self(
-            name: $attributes['name'] ?? null,
-            biography: $attributes['biography'] ?? null,
-        );
+    if ($this->biography !== null) {
+      $data['biography'] = $this->biography;
     }
 
-    public function toArray(): array
-    {
-        $data = [];
-
-        if ($this->name !== null) {
-            $data['name'] = $this->name;
-        }
-
-        if ($this->biography !== null) {
-            $data['biography'] = $this->biography;
-        }
-
-        return $data;
-    }
+    return $data;
+  }
 }
