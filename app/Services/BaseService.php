@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 abstract class BaseService
 {
@@ -19,28 +20,28 @@ abstract class BaseService
      *
      * @var Model
      */
-    protected $model;
+    protected Model $model;
 
     /**
      * Filter class name
      *
      * @var string
      */
-    protected $filterClass;
+    protected string $filterClass;
 
     /**
      * Sort class name
      *
      * @var string
      */
-    protected $sortClass;
+    protected string $sortClass;
 
     /**
      * Relations to eager load when retrieving a resource
      *
      * @var array
      */
-    protected $with = [];
+    protected array $with = [];
 
     /**
      * Get all resources with pagination, filtering, and sorting
@@ -77,11 +78,12 @@ abstract class BaseService
     /**
      * Create a new resource
      *
-     * @param BaseDTO $dto Data transfer object containing the resource data
+     * @param BaseDTO    $dto       Data transfer object containing the resource data
      * @param array|null $relations Optional relations to sync
+     *
      * @return Model The created resource
      * @throws ValidationException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function create(BaseDTO $dto, ?array $relations = null): Model
     {
@@ -145,10 +147,11 @@ abstract class BaseService
      * @param string|int $id
      * @param BaseDTO $dto
      * @param array|null $relations Optional relations to sync
+     *
      * @return Model The updated resource
      * @throws ModelNotFoundException
      * @throws ValidationException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function update(string|int $id, BaseDTO $dto, ?array $relations = null): Model
     {
@@ -180,9 +183,10 @@ abstract class BaseService
      * Delete a resource
      *
      * @param string|int $id
+     *
      * @return Model|void The deleted resource or void
      * @throws ModelNotFoundException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function delete(string|int $id)
     {
@@ -214,9 +218,11 @@ abstract class BaseService
      * Restore a soft-deleted resource
      *
      * @param string|int $id
+     *
      * @return Model The restored resource
      * @throws ModelNotFoundException
-     * @throws Exception
+     * @throws Exception*@throws Throwable
+     * @throws Throwable
      */
     public function restore(string|int $id): Model
     {

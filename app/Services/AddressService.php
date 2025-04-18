@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class AddressService extends BaseService
 {
@@ -56,6 +57,7 @@ class AddressService extends BaseService
      * Tạo địa chỉ mới cho người dùng
      *
      * @throws Exception
+     * @throws Throwable
      */
     public function createAddress(User $user, AddressDTO $addressDTO): Address
     {
@@ -95,6 +97,7 @@ class AddressService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
     public function updateAddress(User $user, string|int $addressId, AddressDTO $addressDTO): Address
     {
@@ -125,6 +128,7 @@ class AddressService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
     public function deleteAddress(User $user, string|int $addressId): Address
     {

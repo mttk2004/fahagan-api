@@ -9,6 +9,7 @@ use App\Filters\AuthorFilter;
 use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -94,9 +95,9 @@ class AuthorService extends BaseService
      * Find a trashed resource based on unique attributes
      *
      * @param BaseDTO $dto
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return Model|null
      */
-    protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+    protected function findTrashed(BaseDTO $dto): ?Model
     {
         // Đảm bảo DTO là kiểu AuthorDTO trước khi tiếp tục
         if (! ($dto instanceof AuthorDTO) || ! isset($dto->name)) {
