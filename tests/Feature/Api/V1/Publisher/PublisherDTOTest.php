@@ -7,69 +7,69 @@ use Tests\TestCase;
 
 class PublisherDTOTest extends TestCase
 {
-  public function test_it_creates_publisher_dto_from_request()
-  {
-    $validatedData = [
-      'name' => 'NXB Văn Học',
-      'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
-    ];
+    public function test_it_creates_publisher_dto_from_request()
+    {
+        $validatedData = [
+          'name' => 'NXB Văn Học',
+          'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
+        ];
 
-    $publisherDTO = PublisherDTO::fromRequest($validatedData);
+        $publisherDTO = PublisherDTO::fromRequest($validatedData);
 
-    $this->assertEquals('NXB Văn Học', $publisherDTO->name);
-    $this->assertEquals('Nhà xuất bản chuyên về sách văn học - nghệ thuật.', $publisherDTO->biography);
-  }
+        $this->assertEquals('NXB Văn Học', $publisherDTO->name);
+        $this->assertEquals('Nhà xuất bản chuyên về sách văn học - nghệ thuật.', $publisherDTO->biography);
+    }
 
-  public function test_it_creates_publisher_dto_with_nullable_properties()
-  {
-    $validatedData = [
-      'name' => 'NXB Văn Học',
-      // Không có trường biography
-    ];
+    public function test_it_creates_publisher_dto_with_nullable_properties()
+    {
+        $validatedData = [
+          'name' => 'NXB Văn Học',
+          // Không có trường biography
+        ];
 
-    $publisherDTO = PublisherDTO::fromRequest($validatedData);
+        $publisherDTO = PublisherDTO::fromRequest($validatedData);
 
-    $this->assertEquals('NXB Văn Học', $publisherDTO->name);
-    $this->assertNull($publisherDTO->biography);
-  }
+        $this->assertEquals('NXB Văn Học', $publisherDTO->name);
+        $this->assertNull($publisherDTO->biography);
+    }
 
-  public function test_it_handles_empty_attributes()
-  {
-    $validatedData = [
-      // Không có thuộc tính
-    ];
+    public function test_it_handles_empty_attributes()
+    {
+        $validatedData = [
+          // Không có thuộc tính
+        ];
 
-    $publisherDTO = PublisherDTO::fromRequest($validatedData);
+        $publisherDTO = PublisherDTO::fromRequest($validatedData);
 
-    $this->assertNull($publisherDTO->name);
-    $this->assertNull($publisherDTO->biography);
-  }
+        $this->assertNull($publisherDTO->name);
+        $this->assertNull($publisherDTO->biography);
+    }
 
-  public function test_it_converts_to_array()
-  {
-    $publisherDTO = new PublisherDTO(
-      name: 'NXB Văn Học',
-      biography: 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.'
-    );
+    public function test_it_converts_to_array()
+    {
+        $publisherDTO = new PublisherDTO(
+            name: 'NXB Văn Học',
+            biography: 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.'
+        );
 
-    $array = $publisherDTO->toArray();
+        $array = $publisherDTO->toArray();
 
-    $this->assertIsArray($array);
-    $this->assertEquals('NXB Văn Học', $array['name']);
-    $this->assertEquals('Nhà xuất bản chuyên về sách văn học - nghệ thuật.', $array['biography']);
-  }
+        $this->assertIsArray($array);
+        $this->assertEquals('NXB Văn Học', $array['name']);
+        $this->assertEquals('Nhà xuất bản chuyên về sách văn học - nghệ thuật.', $array['biography']);
+    }
 
-  public function test_it_omits_null_properties_in_array()
-  {
-    $publisherDTO = new PublisherDTO(
-      name: 'NXB Văn Học',
-      biography: null
-    );
+    public function test_it_omits_null_properties_in_array()
+    {
+        $publisherDTO = new PublisherDTO(
+            name: 'NXB Văn Học',
+            biography: null
+        );
 
-    $array = $publisherDTO->toArray();
+        $array = $publisherDTO->toArray();
 
-    $this->assertIsArray($array);
-    $this->assertArrayHasKey('name', $array);
-    $this->assertArrayNotHasKey('biography', $array);
-  }
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('name', $array);
+        $this->assertArrayNotHasKey('biography', $array);
+    }
 }
