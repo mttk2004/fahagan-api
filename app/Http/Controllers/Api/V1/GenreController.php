@@ -21,203 +21,206 @@ use Illuminate\Http\Request;
 
 class GenreController extends Controller
 {
-  use HandlePagination, HandleExceptions, HandleValidation;
+    use HandlePagination;
+    use HandleExceptions;
+    use HandleValidation;
 
-  public function __construct(
-    private readonly GenreService $genreService,
-    private string $entityName = 'genre'
-  ) {}
-
-  /**
-   * Get all genres
-   *
-   * @param Request $request
-   *
-   * @return GenreCollection|JsonResponse
-   * @group Genres
-   */
-  public function index(Request $request)
-  {
-    if (! AuthUtils::userCan('view_genres')) {
-      return ResponseUtils::forbidden();
+    public function __construct(
+        private readonly GenreService $genreService,
+        private string $entityName = 'genre'
+    ) {
     }
 
-    $genres = $this->genreService->getAllGenres($request, $this->getPerPage($request));
+    /**
+     * Get all genres
+     *
+     * @param Request $request
+     *
+     * @return GenreCollection|JsonResponse
+     * @group Genres
+     */
+    public function index(Request $request)
+    {
+        if (! AuthUtils::userCan('view_genres')) {
+            return ResponseUtils::forbidden();
+        }
 
-    return new GenreCollection($genres);
-  }
+        $genres = $this->genreService->getAllGenres($request, $this->getPerPage($request));
 
-  /**
-   * Create a new genre
-   *
-   * @param GenreStoreRequest $request
-   *
-   * @return JsonResponse
-   * @group Genres
-   */
-  public function store(GenreStoreRequest $request)
-  {
-    if (! AuthUtils::userCan('create_genres')) {
-      return ResponseUtils::forbidden();
+        return new GenreCollection($genres);
     }
 
-    try {
-      $genre = $this->genreService->createGenre(
-        GenreDTO::fromRequest($request->validated())
-      );
+    /**
+     * Create a new genre
+     *
+     * @param GenreStoreRequest $request
+     *
+     * @return JsonResponse
+     * @group Genres
+     */
+    public function store(GenreStoreRequest $request)
+    {
+        if (! AuthUtils::userCan('create_genres')) {
+            return ResponseUtils::forbidden();
+        }
 
-      return ResponseUtils::created([
-        'genre' => new GenreResource($genre),
-      ], ResponseMessage::CREATED_GENRE->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => $request->validated()
-      ]);
-    }
-  }
+        try {
+            $genre = $this->genreService->createGenre(
+                GenreDTO::fromRequest($request->validated())
+            );
 
-  /**
-   * Get a genre
-   *
-   * @param $genre_id
-   *
-   * @return JsonResponse
-   * @group Genres
-   */
-  public function show($genre_id)
-  {
-    try {
-      $genre = $this->genreService->getGenreById($genre_id);
-
-      return ResponseUtils::success([
-        'genre' => new GenreResource($genre),
-      ]);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'genre_id' => $genre_id
-      ]);
-    }
-  }
-
-  /**
-   * Get a genre by slug
-   *
-   * Phương thức này cho phép tìm kiếm thể loại sách theo slug thay vì ID.
-   * Slug thường được sử dụng trong URL thân thiện (user-friendly URLs),
-   * ví dụ: example.com/genres/science-fiction thay vì example.com/genres/123
-   *
-   * Được dùng trong các trường hợp:
-   * 1. Routing trong trang web: Hiển thị trang chi tiết thể loại với URL thân thiện
-   * 2. Truy vấn API: Khi client muốn tìm kiếm thể loại dựa trên tên thay vì ID
-   * 3. SEO: URL có chứa slug dễ đọc giúp cải thiện SEO
-   *
-   * @param $slug
-   *
-   * @return JsonResponse
-   * @group Genres
-   */
-  public function showBySlug($slug)
-  {
-    try {
-      $genre = $this->genreService->getGenreBySlug($slug);
-
-      return ResponseUtils::success([
-        'genre' => new GenreResource($genre),
-      ]);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'slug' => $slug
-      ]);
-    }
-  }
-
-  /**
-   * Update a genre
-   *
-   * @param GenreUpdateRequest $request
-   * @param                   $genre_id
-   *
-   * @return JsonResponse
-   * @group Genres
-   */
-  public function update(GenreUpdateRequest $request, $genre_id)
-  {
-    if (! AuthUtils::userCan('edit_genres')) {
-      return ResponseUtils::forbidden();
+            return ResponseUtils::created([
+              'genre' => new GenreResource($genre),
+            ], ResponseMessage::CREATED_GENRE->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => $request->validated(),
+            ]);
+        }
     }
 
-    try {
-      $validatedData = $request->validated();
+    /**
+     * Get a genre
+     *
+     * @param $genre_id
+     *
+     * @return JsonResponse
+     * @group Genres
+     */
+    public function show($genre_id)
+    {
+        try {
+            $genre = $this->genreService->getGenreById($genre_id);
 
-      $emptyCheckResponse = $this->validateUpdateData($validatedData);
-      if ($emptyCheckResponse) {
-        return $emptyCheckResponse;
-      }
-
-      $genre = $this->genreService->updateGenre(
-        $genre_id,
-        GenreDTO::fromRequest($validatedData)
-      );
-
-      return ResponseUtils::success([
-        'genre' => new GenreResource($genre),
-      ], ResponseMessage::UPDATED_GENRE->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => $request->validated()
-      ]);
-    }
-  }
-
-  /**
-   * Delete a genre
-   *
-   * @param $genre_id
-   *
-   * @return JsonResponse
-   * @group Genres
-   */
-  public function destroy($genre_id)
-  {
-    if (! AuthUtils::userCan('delete_genres')) {
-      return ResponseUtils::forbidden();
+            return ResponseUtils::success([
+              'genre' => new GenreResource($genre),
+            ]);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'genre_id' => $genre_id,
+            ]);
+        }
     }
 
-    try {
-      $this->genreService->deleteGenre($genre_id);
+    /**
+     * Get a genre by slug
+     *
+     * Phương thức này cho phép tìm kiếm thể loại sách theo slug thay vì ID.
+     * Slug thường được sử dụng trong URL thân thiện (user-friendly URLs),
+     * ví dụ: example.com/genres/science-fiction thay vì example.com/genres/123
+     *
+     * Được dùng trong các trường hợp:
+     * 1. Routing trong trang web: Hiển thị trang chi tiết thể loại với URL thân thiện
+     * 2. Truy vấn API: Khi client muốn tìm kiếm thể loại dựa trên tên thay vì ID
+     * 3. SEO: URL có chứa slug dễ đọc giúp cải thiện SEO
+     *
+     * @param $slug
+     *
+     * @return JsonResponse
+     * @group Genres
+     */
+    public function showBySlug($slug)
+    {
+        try {
+            $genre = $this->genreService->getGenreBySlug($slug);
 
-      return ResponseUtils::noContent(ResponseMessage::DELETED_GENRE->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'genre_id' => $genre_id
-      ]);
+            return ResponseUtils::success([
+              'genre' => new GenreResource($genre),
+            ]);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'slug' => $slug,
+            ]);
+        }
     }
-  }
 
-  /**
-   * Restore a soft deleted genre
-   *
-   * @param $genre_id
-   *
-   * @return JsonResponse
-   * @group Genres
-   */
-  public function restore($genre_id)
-  {
-    if (! AuthUtils::userCan('create_genres')) {
-      return ResponseUtils::forbidden();
+    /**
+     * Update a genre
+     *
+     * @param GenreUpdateRequest $request
+     * @param                   $genre_id
+     *
+     * @return JsonResponse
+     * @group Genres
+     */
+    public function update(GenreUpdateRequest $request, $genre_id)
+    {
+        if (! AuthUtils::userCan('edit_genres')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $validatedData = $request->validated();
+
+            $emptyCheckResponse = $this->validateUpdateData($validatedData);
+            if ($emptyCheckResponse) {
+                return $emptyCheckResponse;
+            }
+
+            $genre = $this->genreService->updateGenre(
+                $genre_id,
+                GenreDTO::fromRequest($validatedData)
+            );
+
+            return ResponseUtils::success([
+              'genre' => new GenreResource($genre),
+            ], ResponseMessage::UPDATED_GENRE->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => $request->validated(),
+            ]);
+        }
     }
 
-    try {
-      $genre = $this->genreService->restoreGenre($genre_id);
+    /**
+     * Delete a genre
+     *
+     * @param $genre_id
+     *
+     * @return JsonResponse
+     * @group Genres
+     */
+    public function destroy($genre_id)
+    {
+        if (! AuthUtils::userCan('delete_genres')) {
+            return ResponseUtils::forbidden();
+        }
 
-      return ResponseUtils::success([
-        'genre' => new GenreResource($genre),
-      ], ResponseMessage::RESTORED_GENRE->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'genre_id' => $genre_id
-      ]);
+        try {
+            $this->genreService->deleteGenre($genre_id);
+
+            return ResponseUtils::noContent(ResponseMessage::DELETED_GENRE->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'genre_id' => $genre_id,
+            ]);
+        }
     }
-  }
+
+    /**
+     * Restore a soft deleted genre
+     *
+     * @param $genre_id
+     *
+     * @return JsonResponse
+     * @group Genres
+     */
+    public function restore($genre_id)
+    {
+        if (! AuthUtils::userCan('create_genres')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $genre = $this->genreService->restoreGenre($genre_id);
+
+            return ResponseUtils::success([
+              'genre' => new GenreResource($genre),
+            ], ResponseMessage::RESTORED_GENRE->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'genre_id' => $genre_id,
+            ]);
+        }
+    }
 }

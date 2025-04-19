@@ -23,141 +23,145 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-  use HandlePagination, HandleBookExceptions, HandleExceptions, HandleValidation;
+    use HandlePagination;
+    use HandleBookExceptions;
+    use HandleExceptions;
+    use HandleValidation;
 
-  public function __construct(
-    private readonly BookService $bookService,
-    private readonly string $entityName = 'book'
-  ) {}
-
-  /**
-   * Get all books
-   *
-   * @param Request $request
-   *
-   * @return BookCollection
-   * @group Books
-   * @unauthenticated
-   */
-  public function index(Request $request)
-  {
-    $books = $this->bookService->getAllBooks($request, $this->getPerPage($request));
-
-    return new BookCollection($books);
-  }
-
-  /**
-   * Create a new book
-   *
-   * @param BookStoreRequest $request
-   *
-   * @return JsonResponse
-   * @group Books
-   */
-  public function store(BookStoreRequest $request)
-  {
-    if (! AuthUtils::userCan('create_books')) {
-      return ResponseUtils::forbidden();
+    public function __construct(
+        private readonly BookService $bookService,
+        private readonly string $entityName = 'book'
+    ) {
     }
 
-    try {
-      $book = $this->bookService->createBook(
-        BookDTO::fromRequest($request->validated())
-      );
+    /**
+     * Get all books
+     *
+     * @param Request $request
+     *
+     * @return BookCollection
+     * @group Books
+     * @unauthenticated
+     */
+    public function index(Request $request)
+    {
+        $books = $this->bookService->getAllBooks($request, $this->getPerPage($request));
 
-      return ResponseUtils::created([
-        'book' => new BookResource($book),
-      ], ResponseMessage::CREATED_BOOK->value);
-    } catch (Exception $e) {
-      return $this->handleBookException($e, $request->validated(), null, 'tạo');
-    }
-  }
-
-  /**
-   * Get a book
-   *
-   * @param $book_id
-   *
-   * @return JsonResponse
-   * @group Books
-   * @unauthenticated
-   */
-  public function show($book_id)
-  {
-    try {
-      $book = $this->bookService->getBookById($book_id);
-
-      return ResponseUtils::success([
-        'book' => new BookResource($book),
-      ]);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'book_id' => $book_id,
-      ]);
-    }
-  }
-
-  /**
-   * Update a book
-   *
-   * @param BookUpdateRequest $request
-   * @param                   $book_id
-   *
-   * @return JsonResponse
-   * @group Books
-   */
-  public function update(BookUpdateRequest $request, $book_id)
-  {
-    if (! AuthUtils::userCan('create_books')) {
-      return ResponseUtils::forbidden();
+        return new BookCollection($books);
     }
 
-    try {
-      $validatedData = $request->validated();
+    /**
+     * Create a new book
+     *
+     * @param BookStoreRequest $request
+     *
+     * @return JsonResponse
+     * @group Books
+     */
+    public function store(BookStoreRequest $request)
+    {
+        if (! AuthUtils::userCan('create_books')) {
+            return ResponseUtils::forbidden();
+        }
 
-      $emptyCheckResponse = $this->validateUpdateData($validatedData);
-      if ($emptyCheckResponse) {
-        return $emptyCheckResponse;
-      }
+        try {
+            $book = $this->bookService->createBook(
+                BookDTO::fromRequest($request->validated())
+            );
 
-      $bookDTO = BookDTO::fromRequest($validatedData);
-      $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
-
-      return ResponseUtils::success([
-        'book' => new BookResource($book),
-      ], ResponseMessage::UPDATED_BOOK->value);
-    } catch (ModelNotFoundException) {
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
-    } catch (Exception $e) {
-      return $this->handleBookException($e, $request->validated(), $book_id, 'cập nhật');
-    }
-  }
-
-  /**
-   * Delete a book
-   *
-   * @param         $bookId
-   *
-   * @return JsonResponse
-   * @group Books
-   */
-  public function destroy($bookId)
-  {
-    // Kiểm tra quyền truy cập (bỏ qua trong môi trường testing)
-    if (! app()->environment('testing') && ! AuthUtils::userCan('delete_books')) {
-      return ResponseUtils::forbidden();
+            return ResponseUtils::created([
+              'book' => new BookResource($book),
+            ], ResponseMessage::CREATED_BOOK->value);
+        } catch (Exception $e) {
+            return $this->handleBookException($e, $request->validated(), null, 'tạo');
+        }
     }
 
-    try {
-      $this->bookService->deleteBook($bookId);
+    /**
+     * Get a book
+     *
+     * @param $book_id
+     *
+     * @return JsonResponse
+     * @group Books
+     * @unauthenticated
+     */
+    public function show($book_id)
+    {
+        try {
+            $book = $this->bookService->getBookById($book_id);
 
-      return ResponseUtils::success([
-        'message' => ResponseMessage::DELETED_BOOK->value,
-      ], ResponseMessage::DELETED_BOOK->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'book_id' => $bookId,
-      ]);
+            return ResponseUtils::success([
+              'book' => new BookResource($book),
+            ]);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'book_id' => $book_id,
+            ]);
+        }
     }
-  }
+
+    /**
+     * Update a book
+     *
+     * @param BookUpdateRequest $request
+     * @param                   $book_id
+     *
+     * @return JsonResponse
+     * @group Books
+     */
+    public function update(BookUpdateRequest $request, $book_id)
+    {
+        if (! AuthUtils::userCan('create_books')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $validatedData = $request->validated();
+
+            $emptyCheckResponse = $this->validateUpdateData($validatedData);
+            if ($emptyCheckResponse) {
+                return $emptyCheckResponse;
+            }
+
+            $bookDTO = BookDTO::fromRequest($validatedData);
+            $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
+
+            return ResponseUtils::success([
+              'book' => new BookResource($book),
+            ], ResponseMessage::UPDATED_BOOK->value);
+        } catch (ModelNotFoundException) {
+            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
+        } catch (Exception $e) {
+            return $this->handleBookException($e, $request->validated(), $book_id, 'cập nhật');
+        }
+    }
+
+    /**
+     * Delete a book
+     *
+     * @param         $bookId
+     *
+     * @return JsonResponse
+     * @group Books
+     */
+    public function destroy($bookId)
+    {
+        // Kiểm tra quyền truy cập (bỏ qua trong môi trường testing)
+        if (! app()->environment('testing') && ! AuthUtils::userCan('delete_books')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $this->bookService->deleteBook($bookId);
+
+            return ResponseUtils::success([
+              'message' => ResponseMessage::DELETED_BOOK->value,
+            ], ResponseMessage::DELETED_BOOK->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'book_id' => $bookId,
+            ]);
+        }
+    }
 }

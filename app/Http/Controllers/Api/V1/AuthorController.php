@@ -21,140 +21,143 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-  use HandlePagination, HandleExceptions, HandleValidation;
+    use HandlePagination;
+    use HandleExceptions;
+    use HandleValidation;
 
-  public function __construct(
-    private readonly AuthorService $authorService,
-    private readonly string $entityName = 'author'
-  ) {}
-
-  /**
-   * Get all authors
-   *
-   * @return AuthorCollection
-   * @group Authors
-   * @unauthenticated
-   */
-  public function index(Request $request)
-  {
-    $authors = $this->authorService->getAllAuthors($request, $this->getPerPage($request));
-
-    return new AuthorCollection($authors);
-  }
-
-  /**
-   * Create a new author
-   *
-   * @param AuthorStoreRequest $request
-   *
-   * @return JsonResponse
-   * @group Authors
-   */
-  public function store(AuthorStoreRequest $request)
-  {
-    if (! AuthUtils::userCan('create_authors')) {
-      return ResponseUtils::forbidden();
+    public function __construct(
+        private readonly AuthorService $authorService,
+        private readonly string $entityName = 'author'
+    ) {
     }
 
-    try {
-      $author = $this->authorService->createAuthor(
-        AuthorDTO::fromRequest($request->validated())
-      );
+    /**
+     * Get all authors
+     *
+     * @return AuthorCollection
+     * @group Authors
+     * @unauthenticated
+     */
+    public function index(Request $request)
+    {
+        $authors = $this->authorService->getAllAuthors($request, $this->getPerPage($request));
 
-      return ResponseUtils::created([
-        'author' => new AuthorResource($author),
-      ], ResponseMessage::CREATED_AUTHOR->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => $request->validated()
-      ]);
-    }
-  }
-
-  /**
-   * Get an author
-   *
-   * @param $author_id
-   *
-   * @return JsonResponse
-   * @group Authors
-   * @unauthenticated
-   */
-  public function show($author_id)
-  {
-    try {
-      $author = $this->authorService->getAuthorById($author_id);
-
-      return ResponseUtils::success([
-        'author' => new AuthorResource($author),
-      ]);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'author_id' => $author_id,
-      ]);
-    }
-  }
-
-  /**
-   * Update an author
-   *
-   * @param AuthorUpdateRequest $request
-   * @param                     $author_id
-   *
-   * @return JsonResponse
-   * @group Authors
-   */
-  public function update(AuthorUpdateRequest $request, $author_id)
-  {
-    if (! AuthUtils::userCan('edit_authors')) {
-      return ResponseUtils::forbidden();
+        return new AuthorCollection($authors);
     }
 
-    try {
-      $validatedData = $request->validated();
+    /**
+     * Create a new author
+     *
+     * @param AuthorStoreRequest $request
+     *
+     * @return JsonResponse
+     * @group Authors
+     */
+    public function store(AuthorStoreRequest $request)
+    {
+        if (! AuthUtils::userCan('create_authors')) {
+            return ResponseUtils::forbidden();
+        }
 
-      $emptyCheckResponse = $this->validateUpdateData($validatedData);
-      if ($emptyCheckResponse) {
-        return $emptyCheckResponse;
-      }
+        try {
+            $author = $this->authorService->createAuthor(
+                AuthorDTO::fromRequest($request->validated())
+            );
 
-      $author = $this->authorService->updateAuthor(
-        $author_id,
-        AuthorDTO::fromRequest($validatedData)
-      );
-
-      return ResponseUtils::success([
-        'author' => new AuthorResource($author),
-      ], ResponseMessage::UPDATED_AUTHOR->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => $request->validated()
-      ]);
-    }
-  }
-
-  /**
-   * Delete an author
-   *
-   * @param         $author_id
-   *
-   * @return JsonResponse
-   * @group Authors
-   */
-  public function destroy($author_id)
-  {
-    if (! AuthUtils::userCan('delete_authors')) {
-      return ResponseUtils::forbidden();
+            return ResponseUtils::created([
+              'author' => new AuthorResource($author),
+            ], ResponseMessage::CREATED_AUTHOR->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => $request->validated(),
+            ]);
+        }
     }
 
-    try {
-      $this->authorService->deleteAuthor($author_id);
+    /**
+     * Get an author
+     *
+     * @param $author_id
+     *
+     * @return JsonResponse
+     * @group Authors
+     * @unauthenticated
+     */
+    public function show($author_id)
+    {
+        try {
+            $author = $this->authorService->getAuthorById($author_id);
 
-      return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'author_id' => $author_id,
-      ]);
+            return ResponseUtils::success([
+              'author' => new AuthorResource($author),
+            ]);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'author_id' => $author_id,
+            ]);
+        }
     }
-  }
+
+    /**
+     * Update an author
+     *
+     * @param AuthorUpdateRequest $request
+     * @param                     $author_id
+     *
+     * @return JsonResponse
+     * @group Authors
+     */
+    public function update(AuthorUpdateRequest $request, $author_id)
+    {
+        if (! AuthUtils::userCan('edit_authors')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $validatedData = $request->validated();
+
+            $emptyCheckResponse = $this->validateUpdateData($validatedData);
+            if ($emptyCheckResponse) {
+                return $emptyCheckResponse;
+            }
+
+            $author = $this->authorService->updateAuthor(
+                $author_id,
+                AuthorDTO::fromRequest($validatedData)
+            );
+
+            return ResponseUtils::success([
+              'author' => new AuthorResource($author),
+            ], ResponseMessage::UPDATED_AUTHOR->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => $request->validated(),
+            ]);
+        }
+    }
+
+    /**
+     * Delete an author
+     *
+     * @param         $author_id
+     *
+     * @return JsonResponse
+     * @group Authors
+     */
+    public function destroy($author_id)
+    {
+        if (! AuthUtils::userCan('delete_authors')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $this->authorService->deleteAuthor($author_id);
+
+            return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'author_id' => $author_id,
+            ]);
+        }
+    }
 }
