@@ -11,7 +11,9 @@ use App\Http\Resources\V1\BookCollection;
 use App\Http\Resources\V1\BookResource;
 use App\Services\BookService;
 use App\Traits\HandleBookExceptions;
+use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
+use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
@@ -21,145 +23,141 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    use HandlePagination;
-    use HandleBookExceptions;
+  use HandlePagination, HandleBookExceptions, HandleExceptions, HandleValidation;
 
-    public function __construct(
-        private readonly BookService $bookService
-    ) {
+  public function __construct(
+    private readonly BookService $bookService,
+    private readonly string $entityName = 'book'
+  ) {}
+
+  /**
+   * Get all books
+   *
+   * @param Request $request
+   *
+   * @return BookCollection
+   * @group Books
+   * @unauthenticated
+   */
+  public function index(Request $request)
+  {
+    $books = $this->bookService->getAllBooks($request, $this->getPerPage($request));
+
+    return new BookCollection($books);
+  }
+
+  /**
+   * Create a new book
+   *
+   * @param BookStoreRequest $request
+   *
+   * @return JsonResponse
+   * @group Books
+   */
+  public function store(BookStoreRequest $request)
+  {
+    if (! AuthUtils::userCan('create_books')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get all books
-     *
-     * @param Request $request
-     *
-     * @return BookCollection
-     * @group Books
-     * @unauthenticated
-     */
-    public function index(Request $request)
-    {
-        $books = $this->bookService->getAllBooks($request, $this->getPerPage($request));
+    try {
+      $book = $this->bookService->createBook(
+        BookDTO::fromRequest($request->validated())
+      );
 
-        return new BookCollection($books);
+      return ResponseUtils::created([
+        'book' => new BookResource($book),
+      ], ResponseMessage::CREATED_BOOK->value);
+    } catch (Exception $e) {
+      return $this->handleBookException($e, $request->validated(), null, 'tạo');
+    }
+  }
+
+  /**
+   * Get a book
+   *
+   * @param $book_id
+   *
+   * @return JsonResponse
+   * @group Books
+   * @unauthenticated
+   */
+  public function show($book_id)
+  {
+    try {
+      $book = $this->bookService->getBookById($book_id);
+
+      return ResponseUtils::success([
+        'book' => new BookResource($book),
+      ]);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'book_id' => $book_id,
+      ]);
+    }
+  }
+
+  /**
+   * Update a book
+   *
+   * @param BookUpdateRequest $request
+   * @param                   $book_id
+   *
+   * @return JsonResponse
+   * @group Books
+   */
+  public function update(BookUpdateRequest $request, $book_id)
+  {
+    if (! AuthUtils::userCan('create_books')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Create a new book
-     *
-     * @param BookStoreRequest $request
-     *
-     * @return JsonResponse
-     * @group Books
-     */
-    public function store(BookStoreRequest $request)
-    {
-        try {
-            // Tạo DTO từ request đã được xác thực
-            $bookDTO = BookDTO::fromRequest($request->validated());
+    try {
+      $validatedData = $request->validated();
 
-            // Gọi service để tạo sách mới
-            $book = $this->bookService->createBook($bookDTO);
+      $emptyCheckResponse = $this->validateUpdateData($validatedData);
+      if ($emptyCheckResponse) {
+        return $emptyCheckResponse;
+      }
 
-            // Trả về phản hồi thành công
-            return ResponseUtils::created([
-              'book' => new BookResource($book),
-            ], ResponseMessage::CREATED_BOOK->value);
-        } catch (Exception $e) {
-            return $this->handleBookException($e, $request->validated(), null, 'tạo');
-        }
+      $bookDTO = BookDTO::fromRequest($validatedData);
+      $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
+
+      return ResponseUtils::success([
+        'book' => new BookResource($book),
+      ], ResponseMessage::UPDATED_BOOK->value);
+    } catch (ModelNotFoundException) {
+      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
+    } catch (Exception $e) {
+      return $this->handleBookException($e, $request->validated(), $book_id, 'cập nhật');
+    }
+  }
+
+  /**
+   * Delete a book
+   *
+   * @param         $bookId
+   *
+   * @return JsonResponse
+   * @group Books
+   */
+  public function destroy($bookId)
+  {
+    // Kiểm tra quyền truy cập (bỏ qua trong môi trường testing)
+    if (! app()->environment('testing') && ! AuthUtils::userCan('delete_books')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get a book
-     *
-     * @param $book_id
-     *
-     * @return JsonResponse
-     * @group Books
-     * @unauthenticated
-     */
-    public function show($book_id)
-    {
-        try {
-            $book = $this->bookService->getBookById($book_id);
+    try {
+      $this->bookService->deleteBook($bookId);
 
-            return ResponseUtils::success([
-              'book' => new BookResource($book),
-            ]);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
-        }
+      return ResponseUtils::success([
+        'message' => ResponseMessage::DELETED_BOOK->value,
+      ], ResponseMessage::DELETED_BOOK->value);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'book_id' => $bookId,
+      ]);
     }
-
-    /**
-     * Update a book
-     *
-     * @param BookUpdateRequest $request
-     * @param                   $book_id
-     *
-     * @return JsonResponse
-     * @group Books
-     */
-    public function update(BookUpdateRequest $request, $book_id)
-    {
-        try {
-            $validatedData = $request->validated();
-
-            // Kiểm tra dữ liệu cập nhật
-            if ($this->isEmptyUpdateData($validatedData)) {
-                return ResponseUtils::badRequest('Không có thông tin cập nhật. Vui lòng cung cấp ít nhất một trường cần cập nhật.');
-            }
-
-            $bookDTO = BookDTO::fromRequest($validatedData);
-            $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
-
-            return ResponseUtils::success([
-              'book' => new BookResource($book),
-            ], ResponseMessage::UPDATED_BOOK->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
-        } catch (Exception $e) {
-            return $this->handleBookException($e, $request->validated(), $book_id, 'cập nhật');
-        }
-    }
-
-    /**
-     * Delete a book
-     *
-     * @param         $bookId
-     *
-     * @return JsonResponse
-     * @group Books
-     */
-    public function destroy($bookId)
-    {
-        // Kiểm tra quyền truy cập (bỏ qua trong môi trường testing)
-        if (! app()->environment('testing') && ! AuthUtils::userCan('delete_books')) {
-            return ResponseUtils::forbidden();
-        }
-
-        try {
-            $this->bookService->deleteBook($bookId);
-
-            return ResponseUtils::success([
-              'message' => ResponseMessage::DELETED_BOOK->value,
-            ], ResponseMessage::DELETED_BOOK->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
-        }
-    }
-
-    /**
-     * Kiểm tra xem dữ liệu cập nhật có rỗng không
-     *
-     * @param array $validatedData
-     * @return bool
-     */
-    private function isEmptyUpdateData(array $validatedData): bool
-    {
-        return empty($validatedData['data']['attributes'] ?? [])
-          && empty($validatedData['data']['relationships'] ?? []);
-    }
+  }
 }
