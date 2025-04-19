@@ -23,13 +23,10 @@ class PublisherController extends Controller
 {
   use HandlePagination, HandleExceptions, HandleValidation;
 
-  protected PublisherService $publisherService;
-  protected string $entityName = 'publisher';
-
-  public function __construct(PublisherService $publisherService)
-  {
-    $this->publisherService = $publisherService;
-  }
+  public function __construct(
+    private readonly PublisherService $publisherService,
+    private readonly string $entityName = 'publisher'
+  ) {}
 
   /**
    * Get all publishers

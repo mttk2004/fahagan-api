@@ -16,23 +16,17 @@ use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-  use HandlePagination;
-  use HandleExceptions;
-  use HandleValidation;
+  use HandlePagination, HandleExceptions, HandleValidation;
 
-  protected AuthorService $authorService;
-  protected string $entityName = 'author';
-
-  public function __construct(AuthorService $authorService)
-  {
-    $this->authorService = $authorService;
-  }
+  public function __construct(
+    private readonly AuthorService $authorService,
+    private readonly string $entityName = 'author'
+  ) {}
 
   /**
    * Get all authors
