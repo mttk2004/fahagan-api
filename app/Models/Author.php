@@ -13,20 +13,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Author extends Model
 {
-  use HasFactory;
-  use SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
-  public $timestamps = false;
+    public $timestamps = false;
 
-  protected $fillable
-  = [
-    'name',
-    'biography',
-    'image_url',
-  ];
+    protected $fillable
+        = [
+          'name',
+          'biography',
+          'image_url',
+        ];
 
-  public function writtenBooks(): BelongsToMany
-  {
-    return $this->belongsToMany(Book::class, 'author_book');
-  }
+    public function writtenBooks(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'author_book');
+    }
 }

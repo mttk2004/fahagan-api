@@ -13,20 +13,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Genre extends Model
 {
-  use HasFactory;
-  use SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
-  public $timestamps = true;
+    public $timestamps = true;
 
-  protected $fillable
-  = [
-    'name',
-    'slug',
-    'description',
-  ];
+    protected $fillable
+        = [
+          'name',
+          'slug',
+          'description',
+        ];
 
-  public function books(): BelongsToMany
-  {
-    return $this->belongsToMany(Book::class, 'book_genre');
-  }
+    public function books(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'book_genre');
+    }
 }
