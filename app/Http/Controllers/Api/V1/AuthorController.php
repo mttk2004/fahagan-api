@@ -10,8 +10,9 @@ use App\Http\Requests\V1\AuthorUpdateRequest;
 use App\Http\Resources\V1\AuthorCollection;
 use App\Http\Resources\V1\AuthorResource;
 use App\Services\AuthorService;
-use App\Traits\HandleAuthorExceptions;
+use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
+use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
@@ -22,11 +23,16 @@ use Illuminate\Http\Request;
 class AuthorController extends Controller
 {
   use HandlePagination;
-  use HandleAuthorExceptions;
+  use HandleExceptions;
+  use HandleValidation;
 
-  public function __construct(
-    private readonly AuthorService $authorService
-  ) {}
+  protected AuthorService $authorService;
+  protected string $entityName = 'author';
+
+  public function __construct(AuthorService $authorService)
+  {
+    $this->authorService = $authorService;
+  }
 
   /**
    * Get all authors
@@ -52,11 +58,11 @@ class AuthorController extends Controller
    */
   public function store(AuthorStoreRequest $request)
   {
-    try {
-      if (! AuthUtils::userCan('create_authors')) {
-        return ResponseUtils::forbidden();
-      }
+    if (! AuthUtils::userCan('create_authors')) {
+      return ResponseUtils::forbidden();
+    }
 
+    try {
       $author = $this->authorService->createAuthor(
         AuthorDTO::fromRequest($request->validated())
       );
@@ -65,7 +71,9 @@ class AuthorController extends Controller
         'author' => new AuthorResource($author),
       ], ResponseMessage::CREATED_AUTHOR->value);
     } catch (Exception $e) {
-      return $this->handleAuthorException($e, $request->validated(), null, 'tạo');
+      return $this->handleException($e, $this->entityName, [
+        'request_data' => $request->validated()
+      ]);
     }
   }
 
@@ -102,27 +110,30 @@ class AuthorController extends Controller
    */
   public function update(AuthorUpdateRequest $request, $author_id)
   {
-    try {
-      if (! AuthUtils::userCan('edit_authors')) {
-        return ResponseUtils::forbidden();
-      }
+    if (! AuthUtils::userCan('edit_authors')) {
+      return ResponseUtils::forbidden();
+    }
 
-      if ($this->isEmptyUpdateData($request->validated())) {
-        return ResponseUtils::badRequest('Không có dữ liệu nào để cập nhật.');
+    try {
+      $validatedData = $request->validated();
+
+      $emptyCheckResponse = $this->validateUpdateData($validatedData);
+      if ($emptyCheckResponse) {
+        return $emptyCheckResponse;
       }
 
       $author = $this->authorService->updateAuthor(
         $author_id,
-        AuthorDTO::fromRequest($request->validated())
+        AuthorDTO::fromRequest($validatedData)
       );
 
       return ResponseUtils::success([
         'author' => new AuthorResource($author),
       ], ResponseMessage::UPDATED_AUTHOR->value);
-    } catch (ModelNotFoundException) {
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
     } catch (Exception $e) {
-      return $this->handleAuthorException($e, $request->validated(), $author_id, 'cập nhật');
+      return $this->handleException($e, $this->entityName, [
+        'request_data' => $request->validated()
+      ]);
     }
   }
 
@@ -144,21 +155,10 @@ class AuthorController extends Controller
       $this->authorService->deleteAuthor($author_id);
 
       return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
-    } catch (ModelNotFoundException) {
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
     } catch (Exception $e) {
-      return $this->handleAuthorException($e, [], $author_id, 'xóa');
+      return $this->handleException($e, $this->entityName, [
+        'author_id' => $author_id,
+      ]);
     }
-  }
-
-  /**
-   * Kiểm tra xem dữ liệu cập nhật có rỗng không
-   *
-   * @param array $validatedData
-   * @return bool
-   */
-  private function isEmptyUpdateData(array $validatedData): bool
-  {
-    return empty($validatedData ?? []);
   }
 }
