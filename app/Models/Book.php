@@ -108,7 +108,7 @@ class Book extends Model implements HasBookRelations
   public function getBestDiscount(): ?Discount
   {
     return $this->getActiveDiscounts()->sortByDesc(function ($discount) {
-      if ($discount->discount_type === 'percent') {
+      if ($discount->discount_type === 'percentage') {
         return $discount->discount_value;
       } else { // fixed
         return $discount->discount_value / $this->price * 100; // Chuyển thành tương đương %
@@ -130,7 +130,7 @@ class Book extends Model implements HasBookRelations
 
     if ($bestDiscount->discount_type === 'fixed') {
       return max(0, $originalPrice - $bestDiscount->discount_value);
-    } else { // percent
+    } else { // percentage
       $discountAmount = ($originalPrice * $bestDiscount->discount_value) / 100;
       return max(0, $originalPrice - $discountAmount);
     }

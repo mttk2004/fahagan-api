@@ -15,7 +15,6 @@ return new class extends Migration {
         ->onDelete('cascade')
         ->onUpdate('cascade');
 
-      // Thay đổi từ morphs thành trực tiếp liên kết với book hoặc order
       $table->unsignedBigInteger('target_id');
 
       // Thêm index

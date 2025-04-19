@@ -12,7 +12,7 @@ class DiscountUpdateRequest extends BaseRequest implements HasValidationMessages
   {
     return [
       'data.attributes.name' => ['sometimes', 'string', 'max:255', 'unique:discounts,name'],
-      'data.attributes.discount_type' => ['sometimes', 'string', 'in:percent,fixed'],
+      'data.attributes.discount_type' => ['sometimes', 'string', 'in:percentage,fixed'],
       'data.attributes.discount_value' => ['sometimes', 'decimal:', 'min:0'],
       'data.attributes.target_type' => ['sometimes', 'string', 'in:book,order'],
       'data.attributes.start_date' => ['sometimes', 'date', 'after_or_equal:today'],

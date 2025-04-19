@@ -12,7 +12,7 @@ class DiscountDTOTest extends TestCase
     // Tạo DiscountDTO với tất cả thuộc tính
     $discountDTO = new DiscountDTO(
       'Giảm giá mùa hè',
-      'percent',
+      'percentage',
       10.5,
       'book',
       '2023-06-01',
@@ -24,7 +24,7 @@ class DiscountDTOTest extends TestCase
 
     // Kiểm tra các thuộc tính
     $this->assertEquals('Giảm giá mùa hè', $discountDTO->name);
-    $this->assertEquals('percent', $discountDTO->discount_type);
+    $this->assertEquals('percentage', $discountDTO->discount_type);
     $this->assertEquals(10.5, $discountDTO->discount_value);
     $this->assertEquals('book', $discountDTO->target_type);
     $this->assertEquals('2023-06-01', $discountDTO->start_date);
@@ -65,7 +65,7 @@ class DiscountDTOTest extends TestCase
       'data' => [
         'attributes' => [
           'name' => 'Giảm giá mùa hè',
-          'discount_type' => 'percent',
+          'discount_type' => 'percentage',
           'discount_value' => 10.5,
           'target_type' => 'book',
           'start_date' => '2023-06-01',
@@ -89,7 +89,7 @@ class DiscountDTOTest extends TestCase
 
     // Kiểm tra các thuộc tính
     $this->assertEquals('Giảm giá mùa hè', $discountDTO->name);
-    $this->assertEquals('percent', $discountDTO->discount_type);
+    $this->assertEquals('percentage', $discountDTO->discount_type);
     $this->assertEquals(10.5, $discountDTO->discount_value);
     $this->assertEquals('book', $discountDTO->target_type);
     $this->assertEquals('2023-06-01', $discountDTO->start_date);
@@ -138,7 +138,7 @@ class DiscountDTOTest extends TestCase
     // Tạo DiscountDTO
     $discountDTO = new DiscountDTO(
       'Giảm giá mùa hè',
-      'percent',
+      'percentage',
       10.5,
       'book',
       '2023-06-01',
@@ -153,7 +153,7 @@ class DiscountDTOTest extends TestCase
     // Kiểm tra array
     $this->assertIsArray($array);
     $this->assertEquals('Giảm giá mùa hè', $array['name']);
-    $this->assertEquals('percent', $array['discount_type']);
+    $this->assertEquals('percentage', $array['discount_type']);
     $this->assertEquals(10.5, $array['discount_value']);
     $this->assertEquals('book', $array['target_type']);
     $this->assertEquals('2023-06-01', $array['start_date']);

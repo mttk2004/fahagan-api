@@ -5,34 +5,52 @@ namespace Database\Seeders;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Discount;
-use App\Models\Publisher;
 use Illuminate\Database\Seeder;
 
 class DiscountsSeeder extends Seeder
 {
-    public function run(): void
-    {
-        // Tạo chương trình giảm giá
-        $discount = Discount::create([
-            'name' => 'Giảm giá Tết 2025',
-            'discount_type' => 'percent',
-            'discount_value' => 15,
-            'start_date' => now(),
-            'end_date' => now()->addDays(10),
-        ]);
+  public function run(): void
+  {
+    $discounts = [
+      [
+        'name' => 'Giảm 10% cho sách của một tác giả ngẫu nhiên',
+        'discount_type' => 'percentage',
+        'discount_value' => 10,
+        'target_type' => 'book',
+        'start_date' => now(),
+        'end_date' => now()->addDays(15),
+        'description' => 'Giảm 10% cho sách của một tác giả ngẫu nhiên',
+      ],
+      [
+        'name' => 'Giảm 20% cho tất cả các đơn hàng',
+        'discount_type' => 'percentage',
+        'discount_value' => 20,
+        'target_type' => 'order',
+        'start_date' => now(),
+        'end_date' => now()->addDays(10),
+        'description' => 'Giảm 20% cho tất cả các đơn hàng',
+      ],
+    ];
 
-        // Gán giảm giá cho một số sách
-        $books = Book::take(3)->get();
-        foreach ($books as $book) {
-            $discount->targets()->create(['target_id' => $book->id, 'target_type' => Book::class]);
+    foreach ($discounts as $discount) {
+      $discount = Discount::create($discount);
+
+      // Lấy tất cả sách của môt tác giả ngẫu nhiên
+      if ($discount->target_type === 'book') {
+        $author = Author::inRandomOrder()->first();
+
+        $bookIds = Book::whereHas('authors', function ($query) use ($author) {
+          $query->where('author_id', $author->id);
+        })->pluck('id')->toArray();
+
+        // Nếu không có sách nào của tác giả đó thì bỏ qua
+        if (empty($bookIds)) {
+          continue;
         }
 
-        // Gán giảm giá cho một tác giả
-        $author = Author::first();
-        $discount->targets()->create(['target_id' => $author->id, 'target_type' => Author::class]);
-
-        // Gán giảm giá cho một nhà xuất bản
-        $publisher = Publisher::first();
-        $discount->targets()->create(['target_id' => $publisher->id, 'target_type' => Publisher::class]);
+        // Gán discount cho tất cả sách của tác giả đó
+        $discount->books()->sync($bookIds);
+      }
     }
+  }
 }

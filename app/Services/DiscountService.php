@@ -190,7 +190,7 @@ class DiscountService extends BaseService
       if ($discount->discount_type === 'fixed') {
         return $discount->discount_value;
       } else {
-        return $discount->discount_value; // Percent
+        return $discount->discount_value; // percentage
       }
     })->first();
 

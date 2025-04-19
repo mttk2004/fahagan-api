@@ -48,7 +48,7 @@ class DiscountServiceTest extends TestCase
     // Tạo một mã giảm giá
     $discount = Discount::factory()->create([
       'name' => 'Giảm giá mùa hè',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
     ]);
@@ -59,7 +59,7 @@ class DiscountServiceTest extends TestCase
     // Kiểm tra kết quả
     $this->assertEquals($discount->id, $result->id);
     $this->assertEquals('Giảm giá mùa hè', $result->name);
-    $this->assertEquals('percent', $result->discount_type);
+    $this->assertEquals('percentage', $result->discount_type);
     $this->assertEquals(10, $result->discount_value);
     $this->assertEquals('book', $result->target_type);
   }
@@ -81,7 +81,7 @@ class DiscountServiceTest extends TestCase
     // Tạo DiscountDTO
     $discountData = [
       'name' => 'Giảm giá mùa hè',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
       'start_date' => '2023-06-01',
@@ -107,7 +107,7 @@ class DiscountServiceTest extends TestCase
     // Kiểm tra kết quả
     $this->assertNotNull($result->id);
     $this->assertEquals('Giảm giá mùa hè', $result->name);
-    $this->assertEquals('percent', $result->discount_type);
+    $this->assertEquals('percentage', $result->discount_type);
     $this->assertEquals(10, $result->discount_value);
     $this->assertEquals('book', $result->target_type);
     $this->assertEquals($result->start_date->format('Y-m-d'), '2023-06-01');
@@ -116,7 +116,7 @@ class DiscountServiceTest extends TestCase
     // Kiểm tra database
     $this->assertDatabaseHas('discounts', [
       'name' => 'Giảm giá mùa hè',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
     ]);
@@ -185,7 +185,7 @@ class DiscountServiceTest extends TestCase
     // Tạo một mã giảm giá và soft delete nó
     $discount = Discount::factory()->create([
       'name' => 'Giảm giá mùa hè',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
     ]);
@@ -238,7 +238,7 @@ class DiscountServiceTest extends TestCase
     // Tạo một mã giảm giá
     $discount = Discount::factory()->create([
       'name' => 'Giảm giá ban đầu',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
       'start_date' => '2023-01-01',
@@ -336,7 +336,7 @@ class DiscountServiceTest extends TestCase
     // Tạo một mã giảm giá phần trăm cho sách
     $percentDiscount = Discount::factory()->create([
       'name' => 'Giảm giá 10%',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
       'start_date' => now()->subDay(),
@@ -364,7 +364,7 @@ class DiscountServiceTest extends TestCase
     // Tạo hai mã giảm giá với giá trị khác nhau
     $discount1 = Discount::factory()->create([
       'name' => 'Giảm giá 10%',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
       'start_date' => now()->subDay(),
@@ -374,7 +374,7 @@ class DiscountServiceTest extends TestCase
 
     $discount2 = Discount::factory()->create([
       'name' => 'Giảm giá 20%',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 20,
       'target_type' => 'book',
       'start_date' => now()->subDay(),

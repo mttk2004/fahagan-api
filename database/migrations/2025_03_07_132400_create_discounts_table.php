@@ -10,9 +10,9 @@ return new class extends Migration {
     Schema::create('discounts', function (Blueprint $table) {
       $table->unsignedBigInteger('id')->primary();
       $table->string('name');
-      $table->enum('discount_type', ['percent', 'fixed'])->default('percent');
+      $table->enum('discount_type', ['percentage', 'fixed'])->default('percentage');
       $table->decimal('discount_value', 9, 1)->unsigned();
-      $table->enum('target_type', ['book', 'order'])->default('book');
+      $table->enum('target_type', ['book', 'order'])->default('order');
       $table->dateTime('start_date');
       $table->dateTime('end_date');
       $table->text('description')->nullable();

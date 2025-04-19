@@ -12,7 +12,7 @@ class DiscountStoreRequest extends BaseRequest implements HasValidationMessages
   {
     return [
       'data.attributes.name' => ['required', 'string', 'max:255', 'unique:discounts,name'],
-      'data.attributes.discount_type' => ['required', 'string', 'in:percent,fixed'],
+      'data.attributes.discount_type' => ['required', 'string', 'in:percentage,fixed'],
       'data.attributes.discount_value' => ['required', 'decimal:', 'min:0'],
       'data.attributes.target_type' => ['required', 'string', 'in:book,order'],
       'data.attributes.start_date' => ['required', 'date', 'after_or_equal:today'],

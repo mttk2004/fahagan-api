@@ -56,7 +56,7 @@ class DiscountControllerTest extends TestCase
     // Tạo một mã giảm giá mới
     $discount = Discount::factory()->create([
       'name' => 'Giảm giá mùa hè',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
     ]);
@@ -68,7 +68,7 @@ class DiscountControllerTest extends TestCase
     $response->assertStatus(200)
       ->assertJsonPath('status', 200)
       ->assertJsonPath('data.discount.attributes.name', 'Giảm giá mùa hè')
-      ->assertJsonPath('data.discount.attributes.discount_type', 'percent')
+      ->assertJsonPath('data.discount.attributes.discount_type', 'percentage')
       ->assertJsonPath('data.discount.attributes.discount_value', '10.0')
       ->assertJsonPath('data.discount.attributes.target_type', 'book');
   }
@@ -95,7 +95,7 @@ class DiscountControllerTest extends TestCase
     // Tạo DiscountDTO từ constructor thay vì yêu cầu API
     $discountDTO = new \App\DTOs\Discount\DiscountDTO(
       'Test Discount',
-      'percent',
+      'percentage',
       10,
       'book',
       '2023-06-01',
@@ -112,7 +112,7 @@ class DiscountControllerTest extends TestCase
     // Kiểm tra kết quả
     $this->assertNotNull($result->id);
     $this->assertEquals('Test Discount', $result->name);
-    $this->assertEquals('percent', $result->discount_type);
+    $this->assertEquals('percentage', $result->discount_type);
     $this->assertEquals(10, $result->discount_value);
     $this->assertEquals('book', $result->target_type);
     $this->assertEquals($result->start_date->format('Y-m-d'), '2023-06-01');
@@ -123,7 +123,7 @@ class DiscountControllerTest extends TestCase
     // Kiểm tra trong database
     $this->assertDatabaseHas('discounts', [
       'name' => 'Test Discount',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
     ]);
@@ -142,7 +142,7 @@ class DiscountControllerTest extends TestCase
       'data' => [
         'attributes' => [
           // missing name
-          'discount_type' => 'percent',
+          'discount_type' => 'percentage',
           // missing discount_value
           // missing target_type
         ],
@@ -168,7 +168,7 @@ class DiscountControllerTest extends TestCase
       'data' => [
         'attributes' => [
           'name' => 'Test Discount',
-          'discount_type' => 'percent',
+          'discount_type' => 'percentage',
           'discount_value' => 10,
           'target_type' => 'book',
           'start_date' => '2023-06-01',
@@ -193,7 +193,7 @@ class DiscountControllerTest extends TestCase
     // Tạo một mã giảm giá mới
     $discount = Discount::factory()->create([
       'name' => 'Giảm giá ban đầu',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
     ]);
@@ -313,7 +313,7 @@ class DiscountControllerTest extends TestCase
       'data' => [
         'attributes' => [
           'name' => 'Test API Discount',
-          'discount_type' => 'percent',
+          'discount_type' => 'percentage',
           'discount_value' => 10,
           'target_type' => 'book',
           'start_date' => '2023-06-01',
@@ -356,7 +356,7 @@ class DiscountControllerTest extends TestCase
     // Kiểm tra database
     $this->assertDatabaseHas('discounts', [
       'name' => 'Test API Discount',
-      'discount_type' => 'percent',
+      'discount_type' => 'percentage',
       'discount_value' => 10,
       'target_type' => 'book',
     ]);

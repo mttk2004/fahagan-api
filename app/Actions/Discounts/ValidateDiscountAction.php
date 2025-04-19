@@ -50,9 +50,9 @@ class ValidateDiscountAction extends BaseAction
     }
 
     // Xác thực loại giảm giá
-    if (isset($discountDTO->discount_type) && ! in_array($discountDTO->discount_type, ['percent', 'fixed'])) {
+    if (isset($discountDTO->discount_type) && ! in_array($discountDTO->discount_type, ['percentage', 'fixed'])) {
       throw ValidationException::withMessages([
-        'data.attributes.discount_type' => ['Loại giảm giá không hợp lệ. Các giá trị hợp lệ: percent, fixed.'],
+        'data.attributes.discount_type' => ['Loại giảm giá không hợp lệ. Các giá trị hợp lệ: percentage, fixed.'],
       ]);
     }
 
@@ -71,7 +71,7 @@ class ValidateDiscountAction extends BaseAction
         ]);
       }
 
-      if (isset($discountDTO->discount_type) && $discountDTO->discount_type === 'percent' && $discountDTO->discount_value > 100) {
+      if (isset($discountDTO->discount_type) && $discountDTO->discount_type === 'percentage' && $discountDTO->discount_value > 100) {
         throw ValidationException::withMessages([
           'data.attributes.discount_value' => ['Giá trị giảm giá theo phần trăm không được vượt quá 100%.'],
         ]);
