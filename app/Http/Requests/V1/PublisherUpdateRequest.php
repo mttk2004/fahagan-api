@@ -11,7 +11,7 @@ class PublisherUpdateRequest extends BaseRequest implements HasValidationMessage
   public function rules(): array
   {
     return [
-      'name' => ['sometimes', 'string', 'max:255', $this->uniqueRule('publishers', 'name')],
+      'name' => ['sometimes', 'string', 'max:255', 'unique:publishers,name'],
       'biography' => ['sometimes', 'string'],
     ];
   }

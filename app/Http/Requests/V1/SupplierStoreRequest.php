@@ -11,7 +11,7 @@ class SupplierStoreRequest extends BaseRequest implements HasValidationMessages
   public function rules(): array
   {
     return [
-      'data.attributes.name' => ['required', 'string', $this->uniqueRule('suppliers', 'name')],
+      'data.attributes.name' => ['required', 'string', 'unique:suppliers,name'],
       'data.attributes.phone' => [
         'required',
         'string',
