@@ -9,29 +9,30 @@ use Illuminate\Support\Facades\DB;
 
 class DeleteDiscountAction extends BaseAction
 {
-  /**
-   * Xóa mã giảm giá (soft delete)
-   *
-   * @param Discount $discount Mã giảm giá cần xóa
-   * @return Discount Mã giảm giá đã xóa
-   * @throws Exception
-   */
-  public function execute(...$args): Discount
-  {
-    [$discount] = $args;
+    /**
+     * Xóa mã giảm giá (soft delete)
+     *
+     * @param Discount $discount Mã giảm giá cần xóa
+     * @return Discount Mã giảm giá đã xóa
+     * @throws Exception
+     */
+    public function execute(...$args): Discount
+    {
+        [$discount] = $args;
 
-    DB::beginTransaction();
+        DB::beginTransaction();
 
-    try {
-      // Soft delete discount
-      $discount->delete();
+        try {
+            // Soft delete discount
+            $discount->delete();
 
-      DB::commit();
+            DB::commit();
 
-      return $discount;
-    } catch (Exception $e) {
-      DB::rollBack();
-      throw $e;
+            return $discount;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
-  }
 }
