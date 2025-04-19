@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-
+use App\Interfaces\HasBookRelations;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\App;
  * @method static findOrFail($book_id)
  * @method static create(mixed $bookData)
  */
-class Book extends Model
+class Book extends Model implements HasBookRelations
 {
   use HasFactory;
   use SoftDeletes;

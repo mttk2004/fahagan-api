@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 interface HasBookRelations
 {
-    public function authors(): BelongsToMany;
+  public function authors(): BelongsToMany;
 
-    public function publisher(): BelongsTo;
+  public function publisher(): BelongsTo;
 
-    public function genres(): BelongsToMany;
+  public function genres(): BelongsToMany;
 
-    public function discounts(): MorphMany;
+  public function discounts(): BelongsToMany;
 
-    public function suppliers(): BelongsToMany;
+  public function suppliers(): BelongsToMany;
 }
