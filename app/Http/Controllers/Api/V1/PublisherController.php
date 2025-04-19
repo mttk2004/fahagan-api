@@ -12,6 +12,7 @@ use App\Http\Resources\V1\PublisherResource;
 use App\Services\PublisherService;
 use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
+use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
@@ -20,7 +21,7 @@ use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
-  use HandlePagination, HandleExceptions;
+  use HandlePagination, HandleExceptions, HandleValidation;
 
   protected PublisherService $publisherService;
   protected string $entityName = 'publisher';
@@ -118,9 +119,16 @@ class PublisherController extends Controller
     }
 
     try {
+      $validatedData = $request->validated();
+
+      $emptyCheckResponse = $this->validateUpdateData($validatedData);
+      if ($emptyCheckResponse) {
+        return $emptyCheckResponse;
+      }
+
       $publisher = $this->publisherService->updatePublisher(
         $publisherId,
-        PublisherDTO::fromRequest($request->validated())
+        PublisherDTO::fromRequest($validatedData)
       );
 
       return ResponseUtils::success([

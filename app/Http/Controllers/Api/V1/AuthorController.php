@@ -94,8 +94,10 @@ class AuthorController extends Controller
       return ResponseUtils::success([
         'author' => new AuthorResource($author),
       ]);
-    } catch (ModelNotFoundException) {
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'author_id' => $author_id,
+      ]);
     }
   }
 
