@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -14,25 +13,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Author extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+  use HasFactory;
+  use SoftDeletes;
 
-    public $timestamps = false;
+  public $timestamps = false;
 
-    protected $fillable
-        = [
-            'name',
-            'biography',
-            'image_url',
-        ];
+  protected $fillable
+  = [
+    'name',
+    'biography',
+    'image_url',
+  ];
 
-    public function writtenBooks(): BelongsToMany
-    {
-        return $this->belongsToMany(Book::class, 'author_book');
-    }
-
-    public function discounts(): MorphMany
-    {
-        return $this->morphMany(DiscountTarget::class, 'target');
-    }
+  public function writtenBooks(): BelongsToMany
+  {
+    return $this->belongsToMany(Book::class, 'author_book');
+  }
 }
