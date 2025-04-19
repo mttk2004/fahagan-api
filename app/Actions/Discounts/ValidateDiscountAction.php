@@ -1,0 +1,107 @@
+<?php
+
+namespace App\Actions\Discounts;
+
+use App\Actions\BaseAction;
+use App\DTOs\Discount\DiscountDTO;
+use App\Models\Discount;
+use Illuminate\Validation\ValidationException;
+
+class ValidateDiscountAction extends BaseAction
+{
+  /**
+   * Xác thực dữ liệu mã giảm giá
+   *
+   * @param DiscountDTO $discountDTO
+   * @param bool $forUpdate Xác thực cho cập nhật hay tạo mới
+   * @param Discount|null $discount Đối tượng Discount hiện tại (chỉ khi $forUpdate = true)
+   * @return bool
+   * @throws ValidationException
+   */
+  public function execute(...$args): bool
+  {
+    if (count($args) === 1) {
+      [$discountDTO] = $args;
+      $forUpdate = false;
+      $discount = null;
+    } else {
+      [$discountDTO, $forUpdate, $discount] = $args;
+    }
+
+    // Xác thực các trường bắt buộc
+    if (!$forUpdate) {
+      if (empty($discountDTO->name)) {
+        throw ValidationException::withMessages([
+          'name' => 'Tên mã giảm giá là bắt buộc.'
+        ]);
+      }
+
+      if (!isset($discountDTO->discount_type)) {
+        throw ValidationException::withMessages([
+          'discount_type' => 'Loại giảm giá là bắt buộc.'
+        ]);
+      }
+
+      if (!isset($discountDTO->discount_value)) {
+        throw ValidationException::withMessages([
+          'discount_value' => 'Giá trị giảm giá là bắt buộc.'
+        ]);
+      }
+    }
+
+    // Xác thực loại giảm giá
+    if (isset($discountDTO->discount_type) && !in_array($discountDTO->discount_type, ['percent', 'fixed'])) {
+      throw ValidationException::withMessages([
+        'discount_type' => 'Loại giảm giá không hợp lệ. Các giá trị hợp lệ: percent, fixed.'
+      ]);
+    }
+
+    // Xác thực giá trị giảm giá
+    if (isset($discountDTO->discount_value)) {
+      if ($discountDTO->discount_value < 0) {
+        throw ValidationException::withMessages([
+          'discount_value' => 'Giá trị giảm giá không được âm.'
+        ]);
+      }
+
+      if (isset($discountDTO->discount_type) && $discountDTO->discount_type === 'percent' && $discountDTO->discount_value > 100) {
+        throw ValidationException::withMessages([
+          'discount_value' => 'Giá trị giảm giá theo phần trăm không được vượt quá 100%.'
+        ]);
+      }
+    }
+
+    // Xác thực ngày bắt đầu và kết thúc
+    if (isset($discountDTO->start_date) && isset($discountDTO->end_date) && $discountDTO->start_date > $discountDTO->end_date) {
+      throw ValidationException::withMessages([
+        'end_date' => 'Ngày kết thúc phải sau ngày bắt đầu.'
+      ]);
+    }
+
+    // Xác thực trùng lặp nếu đang tạo mới hoặc thay đổi tên khi cập nhật
+    if (!$forUpdate) {
+      $this->validateDiscountNameDoesNotExist($discountDTO->name);
+    } elseif ($discount && isset($discountDTO->name) && $discountDTO->name !== $discount->name) {
+      $this->validateDiscountNameDoesNotExist($discountDTO->name);
+    }
+
+    return true;
+  }
+
+  /**
+   * Xác thực tên mã giảm giá không tồn tại
+   *
+   * @param string $name
+   * @throws ValidationException
+   */
+  private function validateDiscountNameDoesNotExist(string $name): void
+  {
+    $existingDiscount = Discount::where('name', $name)->first();
+
+    if ($existingDiscount) {
+      throw ValidationException::withMessages([
+        'name' => 'Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'
+      ]);
+    }
+  }
+}
