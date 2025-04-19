@@ -21,149 +21,144 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-    use HandlePagination;
-    use HandleAuthorExceptions;
+  use HandlePagination;
+  use HandleAuthorExceptions;
 
-    public function __construct(
-        private readonly AuthorService $authorService
-    ) {
+  public function __construct(
+    private readonly AuthorService $authorService
+  ) {}
+
+  /**
+   * Get all authors
+   *
+   * @return AuthorCollection
+   * @group Authors
+   * @unauthenticated
+   */
+  public function index(Request $request)
+  {
+    $authors = $this->authorService->getAllAuthors($request, $this->getPerPage($request));
+
+    return new AuthorCollection($authors);
+  }
+
+  /**
+   * Create a new author
+   *
+   * @param AuthorStoreRequest $request
+   *
+   * @return JsonResponse
+   * @group Authors
+   */
+  public function store(AuthorStoreRequest $request)
+  {
+    try {
+      if (! AuthUtils::userCan('create_authors')) {
+        return ResponseUtils::forbidden();
+      }
+
+      $author = $this->authorService->createAuthor(
+        AuthorDTO::fromRequest($request->validated())
+      );
+
+      return ResponseUtils::created([
+        'author' => new AuthorResource($author),
+      ], ResponseMessage::CREATED_AUTHOR->value);
+    } catch (Exception $e) {
+      return $this->handleAuthorException($e, $request->validated(), null, 'tạo');
+    }
+  }
+
+  /**
+   * Get an author
+   *
+   * @param $author_id
+   *
+   * @return JsonResponse
+   * @group Authors
+   * @unauthenticated
+   */
+  public function show($author_id)
+  {
+    try {
+      $author = $this->authorService->getAuthorById($author_id);
+
+      return ResponseUtils::success([
+        'author' => new AuthorResource($author),
+      ]);
+    } catch (ModelNotFoundException) {
+      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+    }
+  }
+
+  /**
+   * Update an author
+   *
+   * @param AuthorUpdateRequest $request
+   * @param                     $author_id
+   *
+   * @return JsonResponse
+   * @group Authors
+   */
+  public function update(AuthorUpdateRequest $request, $author_id)
+  {
+    try {
+      if (! AuthUtils::userCan('edit_authors')) {
+        return ResponseUtils::forbidden();
+      }
+
+      if ($this->isEmptyUpdateData($request->validated())) {
+        return ResponseUtils::badRequest('Không có dữ liệu nào để cập nhật.');
+      }
+
+      $author = $this->authorService->updateAuthor(
+        $author_id,
+        AuthorDTO::fromRequest($request->validated())
+      );
+
+      return ResponseUtils::success([
+        'author' => new AuthorResource($author),
+      ], ResponseMessage::UPDATED_AUTHOR->value);
+    } catch (ModelNotFoundException) {
+      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+    } catch (Exception $e) {
+      return $this->handleAuthorException($e, $request->validated(), $author_id, 'cập nhật');
+    }
+  }
+
+  /**
+   * Delete an author
+   *
+   * @param         $author_id
+   *
+   * @return JsonResponse
+   * @group Authors
+   */
+  public function destroy($author_id)
+  {
+    if (! AuthUtils::userCan('delete_authors')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get all authors
-     *
-     * @return AuthorCollection
-     * @group Authors
-     * @unauthenticated
-     */
-    public function index(Request $request)
-    {
-        $authors = $this->authorService->getAllAuthors($request, $this->getPerPage($request));
+    try {
+      $this->authorService->deleteAuthor($author_id);
 
-        return new AuthorCollection($authors);
+      return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
+    } catch (ModelNotFoundException) {
+      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
+    } catch (Exception $e) {
+      return $this->handleAuthorException($e, [], $author_id, 'xóa');
     }
+  }
 
-    /**
-     * Create a new author
-     *
-     * @param AuthorStoreRequest $request
-     *
-     * @return JsonResponse
-     * @group Authors
-     */
-    public function store(AuthorStoreRequest $request)
-    {
-        try {
-            $authorDTO = $this->createAuthorDTOFromRequest($request);
-            $author = $this->authorService->createAuthor($authorDTO);
-
-            return ResponseUtils::created([
-                'author' => new AuthorResource($author),
-            ], ResponseMessage::CREATED_AUTHOR->value);
-        } catch (Exception $e) {
-            return $this->handleAuthorException($e, $request->validated(), null, 'tạo');
-        }
-    }
-
-    /**
-     * Get an author
-     *
-     * @param $author_id
-     *
-     * @return JsonResponse
-     * @group Authors
-     * @unauthenticated
-     */
-    public function show($author_id)
-    {
-        try {
-            $author = $this->authorService->getAuthorById($author_id);
-
-            return ResponseUtils::success([
-                'author' => new AuthorResource($author),
-            ]);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
-        }
-    }
-
-    /**
-     * Update an author
-     *
-     * @param AuthorUpdateRequest $request
-     * @param                     $author_id
-     *
-     * @return JsonResponse
-     * @group Authors
-     */
-    public function update(AuthorUpdateRequest $request, $author_id)
-    {
-        try {
-            $authorDTO = $this->createAuthorDTOFromRequest($request);
-
-            if ($this->isEmptyUpdateData($request->validated())) {
-                return ResponseUtils::badRequest('Không có dữ liệu nào để cập nhật.');
-            }
-
-            $author = $this->authorService->updateAuthor($author_id, $authorDTO);
-
-            return ResponseUtils::success([
-                'author' => new AuthorResource($author),
-            ], ResponseMessage::UPDATED_AUTHOR->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
-        } catch (Exception $e) {
-            return $this->handleAuthorException($e, $request->validated(), $author_id, 'cập nhật');
-        }
-    }
-
-    /**
-     * Delete an author
-     *
-     * @param         $author_id
-     *
-     * @return JsonResponse
-     * @group Authors
-     */
-    public function destroy($author_id)
-    {
-        if (! AuthUtils::userCan('delete_authors')) {
-            return ResponseUtils::forbidden();
-        }
-
-        try {
-            $this->authorService->deleteAuthor($author_id);
-
-            return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_AUTHOR->value);
-        } catch (Exception $e) {
-            return $this->handleAuthorException($e, [], $author_id, 'xóa');
-        }
-    }
-
-    /**
-     * Tạo AuthorDTO từ request đã validate
-     *
-     * @param AuthorStoreRequest|AuthorUpdateRequest $request
-     * @return AuthorDTO
-     */
-    private function createAuthorDTOFromRequest(AuthorStoreRequest|AuthorUpdateRequest $request): AuthorDTO
-    {
-        $validatedData = $request->validated();
-
-        return AuthorDTO::fromRequest($validatedData);
-    }
-
-    /**
-     * Kiểm tra xem dữ liệu cập nhật có rỗng không
-     *
-     * @param array $validatedData
-     * @return bool
-     */
-    private function isEmptyUpdateData(array $validatedData): bool
-    {
-        return empty($validatedData['data']['attributes'] ?? [])
-            && empty($validatedData['data']['relationships'] ?? []);
-    }
+  /**
+   * Kiểm tra xem dữ liệu cập nhật có rỗng không
+   *
+   * @param array $validatedData
+   * @return bool
+   */
+  private function isEmptyUpdateData(array $validatedData): bool
+  {
+    return empty($validatedData ?? []);
+  }
 }
