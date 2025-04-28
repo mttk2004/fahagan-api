@@ -28,7 +28,8 @@ class GenreController extends Controller
     public function __construct(
         private readonly GenreService $genreService,
         private string $entityName = 'genre'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all genres
