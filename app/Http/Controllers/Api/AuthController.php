@@ -29,7 +29,8 @@ class AuthController extends Controller
     public function __construct(
         private readonly UserService $userService,
         private readonly string $entityName = 'user'
-    ) {}
+    ) {
+    }
 
     /**
      * Register a new user
