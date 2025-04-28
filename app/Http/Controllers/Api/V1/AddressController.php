@@ -26,10 +26,9 @@ class AddressController extends Controller
     public function __construct(
         private readonly AddressService $addressService,
         private string $entityName = 'address'
-    ) {
-    }
+    ) {}
 
-    /*
+    /**
      * Show all addresses of the authenticated user.
      *
      * @return AddressCollection
@@ -51,7 +50,7 @@ class AddressController extends Controller
         return new AddressCollection($addresses);
     }
 
-    /*
+    /**
      * Store a new address for the authenticated user.
      *
      * @param AddressStoreRequest $request
@@ -80,7 +79,7 @@ class AddressController extends Controller
         }
     }
 
-    /*
+    /**
      * Update an address of the authenticated user.
      *
      * @param AddressUpdateRequest $request
@@ -119,7 +118,7 @@ class AddressController extends Controller
         }
     }
 
-    /*
+    /**
      * Delete an address of the authenticated user.
      *
      * @param $address_id
