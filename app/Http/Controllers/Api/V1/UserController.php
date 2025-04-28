@@ -9,24 +9,25 @@ use App\Http\Requests\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Services\UserService;
+use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
-use App\Traits\HandleUserExceptions;
+use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     use HandlePagination;
-    use HandleUserExceptions;
+    use HandleExceptions;
+    use HandleValidation;
 
     public function __construct(
-        private readonly UserService $userService
-    ) {
-    }
+        private readonly UserService $userService,
+        private readonly string $entityName = 'user'
+    ) {}
 
     /**
      * Get all users
@@ -35,6 +36,7 @@ class UserController extends Controller
      *
      * @return UserCollection|JsonResponse
      * @group Users
+     * @authenticated
      */
     public function index(Request $request)
     {
@@ -61,6 +63,7 @@ class UserController extends Controller
      *
      * @return JsonResponse
      * @group Users
+     * @authenticated
      */
     public function show($user_id)
     {
@@ -70,7 +73,7 @@ class UserController extends Controller
                 $user = $this->userService->getUserById($user_id);
 
                 return ResponseUtils::success([
-                  'user' => new UserResource($user),
+                    'user' => new UserResource($user),
                 ]);
             }
 
@@ -84,10 +87,16 @@ class UserController extends Controller
             $user = $this->userService->getUserById($user_id);
 
             return ResponseUtils::success([
-              'user' => new UserResource($user),
+                'user' => new UserResource($user),
             ]);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
+        } catch (Exception $e) {
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'user_id' => $user_id,
+                ]
+            );
         }
     }
 
@@ -99,25 +108,32 @@ class UserController extends Controller
      *
      * @return JsonResponse
      * @group Users
+     * @authenticated
      */
     public function update(UserUpdateRequest $request, $user_id)
     {
         try {
-            $userDTO = $this->createUserDTOFromRequest($request);
+            $validatedData = $request->validated();
 
-            if ($this->isEmptyUpdateData($request->validated())) {
-                return ResponseUtils::badRequest('Không có dữ liệu nào để cập nhật.');
+            $emptyCheckResponse = $this->validateUpdateData($validatedData);
+            if ($emptyCheckResponse) {
+                return $emptyCheckResponse;
             }
 
-            $user = $this->userService->updateUser($user_id, $userDTO);
+            $user = $this->userService->updateUser($user_id, UserDTO::fromRequest($validatedData));
 
             return ResponseUtils::success([
-              'user' => new UserResource($user),
+                'user' => new UserResource($user),
             ], ResponseMessage::UPDATED_USER->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
         } catch (Exception $e) {
-            return $this->handleUserException($e, $request->validated(), $user_id, 'cập nhật');
+            $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'user_id' => $user_id,
+                    'request_data' => $request->validated(),
+                ]
+            );
         }
     }
 
@@ -128,6 +144,7 @@ class UserController extends Controller
      *
      * @return JsonResponse
      * @group Users
+     * @authenticated
      */
     public function destroy($user_id)
     {
@@ -137,10 +154,14 @@ class UserController extends Controller
                 $this->userService->deleteUser($user_id);
 
                 return ResponseUtils::noContent(ResponseMessage::DELETED_USER->value);
-            } catch (ModelNotFoundException) {
-                return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
             } catch (Exception $e) {
-                return $this->handleUserException($e, [], $user_id, 'xóa');
+                return $this->handleException(
+                    $e,
+                    $this->entityName,
+                    [
+                        'user_id' => $user_id,
+                    ]
+                );
             }
         }
 
@@ -155,34 +176,14 @@ class UserController extends Controller
             $this->userService->deleteUser($user_id);
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_USER->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_USER->value);
         } catch (Exception $e) {
-            return $this->handleUserException($e, [], $user_id, 'xóa');
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'user_id' => $user_id,
+                ]
+            );
         }
-    }
-
-    /**
-     * Tạo UserDTO từ request đã validate
-     *
-     * @param UserUpdateRequest $request
-     * @return UserDTO
-     */
-    private function createUserDTOFromRequest(UserUpdateRequest $request): UserDTO
-    {
-        $validatedData = $request->validated();
-
-        return UserDTO::fromRequest($validatedData);
-    }
-
-    /**
-     * Kiểm tra xem dữ liệu cập nhật có rỗng không
-     *
-     * @param array $validatedData
-     * @return bool
-     */
-    private function isEmptyUpdateData(array $validatedData): bool
-    {
-        return empty($validatedData);
     }
 }
