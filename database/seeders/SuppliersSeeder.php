@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Supplier;
 use App\Models\Book;
+use App\Models\Supplier;
 use Illuminate\Database\Seeder;
 
 class SuppliersSeeder extends Seeder

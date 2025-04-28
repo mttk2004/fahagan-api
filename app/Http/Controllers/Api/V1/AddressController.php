@@ -26,7 +26,8 @@ class AddressController extends Controller
     public function __construct(
         private readonly AddressService $addressService,
         private string $entityName = 'address'
-    ) {}
+    ) {
+    }
 
     /*
      * Show all addresses of the authenticated user.

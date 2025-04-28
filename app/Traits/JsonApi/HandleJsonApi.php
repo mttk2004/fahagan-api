@@ -15,7 +15,7 @@ trait HandleJsonApi
      */
     protected function validateJsonApiFormat(array $validatedData): ?JsonResponse
     {
-        if (!isset($validatedData['data']) || !isset($validatedData['data']['attributes'])) {
+        if (! isset($validatedData['data']) || ! isset($validatedData['data']['attributes'])) {
             return ResponseUtils::badRequest('Yêu cầu phải theo định dạng JSON:API');
         }
 
@@ -32,7 +32,7 @@ trait HandleJsonApi
      */
     protected function extractRelationshipIds(array $validatedData, string $relationshipName, bool $allowEmpty = true): ?array
     {
-        if (!isset($validatedData['data']['relationships'][$relationshipName]['data'])) {
+        if (! isset($validatedData['data']['relationships'][$relationshipName]['data'])) {
             return $allowEmpty ? [] : null;
         }
 
