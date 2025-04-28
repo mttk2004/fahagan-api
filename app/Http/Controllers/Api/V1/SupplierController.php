@@ -9,26 +9,28 @@ use App\Http\Requests\V1\SupplierStoreRequest;
 use App\Http\Requests\V1\SupplierUpdateRequest;
 use App\Http\Resources\V1\SupplierCollection;
 use App\Http\Resources\V1\SupplierResource;
-use App\Models\Supplier;
 use App\Services\SupplierService;
+use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
-use App\Traits\HandleSupplierExceptions;
+use App\Traits\HandleValidation;
+use App\Traits\JsonApi\HandleJsonApi;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
     use HandlePagination;
-    use HandleSupplierExceptions;
+    use HandleExceptions;
+    use HandleValidation;
+    use HandleJsonApi;
 
     public function __construct(
-        private readonly SupplierService $supplierService
-    ) {
-    }
+        private readonly SupplierService $supplierService,
+        private readonly string $entityName = 'supplier'
+    ) {}
 
     /**
      * Get all suppliers
@@ -59,21 +61,38 @@ class SupplierController extends Controller
      */
     public function store(SupplierStoreRequest $request)
     {
+        if (! AuthUtils::userCan('create_suppliers')) {
+            return ResponseUtils::forbidden();
+        }
+
         try {
             $validatedData = $request->validated();
-            $supplierDTO = SupplierDTO::fromRequest($validatedData);
 
-            // Lấy book IDs nếu có
-            $bookIds = $validatedData['data']['relationships']['books']['data'] ?? [];
-            $bookIds = collect($bookIds)->pluck('id')->toArray();
+            // Validate JSON:API format
+            $formatError = $this->validateJsonApiFormat($validatedData);
+            if ($formatError) {
+                return $formatError;
+            }
 
-            $supplier = $this->supplierService->createSupplier($supplierDTO, $bookIds);
+            // Extract book IDs from relationships
+            $bookIds = $this->extractRelationshipIds($validatedData, 'books');
+
+            $supplier = $this->supplierService->createSupplier(
+                SupplierDTO::fromRequest($validatedData),
+                $bookIds
+            );
 
             return ResponseUtils::created([
                 'supplier' => new SupplierResource($supplier),
             ], ResponseMessage::CREATED_SUPPLIER->value);
         } catch (Exception $e) {
-            return $this->handleSupplierException($e, $request->validated(), null, 'tạo');
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'request_data' => $request->validated(),
+                ]
+            );
         }
     }
 
@@ -87,14 +106,24 @@ class SupplierController extends Controller
      */
     public function show($supplier_id)
     {
+        if (! AuthUtils::userCan('view_suppliers')) {
+            return ResponseUtils::forbidden();
+        }
+
         try {
             $supplier = $this->supplierService->getSupplierById($supplier_id);
 
             return ResponseUtils::success([
                 'supplier' => new SupplierResource($supplier),
             ]);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_SUPPLIER->value);
+        } catch (Exception $e) {
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'supplier_id' => $supplier_id,
+                ]
+            );
         }
     }
 
@@ -106,34 +135,49 @@ class SupplierController extends Controller
      *
      * @return JsonResponse
      * @group Supplier
+     * @unauthenticated
      */
     public function update(SupplierUpdateRequest $request, $supplier_id)
     {
+        if (! AuthUtils::userCan('edit_suppliers')) {
+            return ResponseUtils::forbidden();
+        }
+
         try {
             $validatedData = $request->validated();
-            $supplierDTO = SupplierDTO::fromRequest($validatedData);
 
-            // Lấy book IDs nếu có
-            $bookIds = null;
-
-            // Handle direct format
-            if (isset($validatedData['books'])) {
-                $bookIds = $validatedData['books'];
-            }
-            // Handle JSON:API format
-            elseif (isset($validatedData['data']['relationships']['books']['data'])) {
-                $bookIds = collect($validatedData['data']['relationships']['books']['data'])
-                    ->pluck('id')
-                    ->toArray();
+            // Validate JSON:API format
+            $formatError = $this->validateJsonApiFormat($validatedData);
+            if ($formatError) {
+                return $formatError;
             }
 
-            $supplier = $this->supplierService->updateSupplier($supplier_id, $supplierDTO, $bookIds);
+            $emptyCheckResponse = $this->validateUpdateData($validatedData);
+            if ($emptyCheckResponse) {
+                return $emptyCheckResponse;
+            }
+
+            // Extract book IDs from relationships - null if relationship not included
+            $bookIds = $this->extractRelationshipIds($validatedData, 'books', false);
+
+            $supplier = $this->supplierService->updateSupplier(
+                $supplier_id,
+                SupplierDTO::fromRequest($validatedData),
+                $bookIds
+            );
 
             return ResponseUtils::success([
                 'supplier' => new SupplierResource($supplier),
             ], ResponseMessage::UPDATED_SUPPLIER->value);
         } catch (Exception $e) {
-            return $this->handleSupplierException($e, $request->validated(), $supplier_id, 'cập nhật');
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'supplier_id' => $supplier_id,
+                    'request_data' => $request->validated(),
+                ]
+            );
         }
     }
 
@@ -144,6 +188,7 @@ class SupplierController extends Controller
      *
      * @return JsonResponse
      * @group Supplier
+     * @authenticated
      */
     public function destroy($supplier_id)
     {
@@ -156,7 +201,13 @@ class SupplierController extends Controller
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_SUPPLIER->value);
         } catch (Exception $e) {
-            return $this->handleSupplierException($e, [], $supplier_id, 'xóa');
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'supplier_id' => $supplier_id,
+                ]
+            );
         }
     }
 
@@ -167,6 +218,7 @@ class SupplierController extends Controller
      *
      * @return JsonResponse
      * @group Supplier
+     * @authenticated
      */
     public function restore($supplier_id)
     {
@@ -181,7 +233,13 @@ class SupplierController extends Controller
                 'supplier' => new SupplierResource($supplier),
             ], ResponseMessage::RESTORED_SUPPLIER->value);
         } catch (Exception $e) {
-            return $this->handleSupplierException($e, [], $supplier_id, 'khôi phục');
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'supplier_id' => $supplier_id,
+                ]
+            );
         }
     }
 }

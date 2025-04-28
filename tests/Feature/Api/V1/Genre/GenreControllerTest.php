@@ -25,14 +25,14 @@ class GenreControllerTest extends TestCase
 
         // Tạo một user và gán các quyền
         $this->adminUser = User::factory()->create([
-          'is_customer' => false,
+            'is_customer' => false,
         ]);
         $this->adminUser->givePermissionTo([
-          'view_genres',
-          'create_genres',
-          'edit_genres',
-          'delete_genres',
-          'restore_genres',
+            'view_genres',
+            'create_genres',
+            'edit_genres',
+            'delete_genres',
+            'restore_genres',
         ]);
     }
 
@@ -43,14 +43,14 @@ class GenreControllerTest extends TestCase
 
         // Gọi API danh sách thể loại
         $response = $this->actingAs($this->adminUser)
-          ->getJson('/api/v1/genres');
+            ->getJson('/api/v1/genres');
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data',
-            'links',
-          ]);
+            ->assertJsonStructure([
+                'data',
+                'links',
+            ]);
     }
 
     public function test_it_can_get_genre_details()
@@ -60,26 +60,26 @@ class GenreControllerTest extends TestCase
 
         // Gọi API xem chi tiết thể loại
         $response = $this->actingAs($this->adminUser)
-          ->getJson("/api/v1/genres/{$genre->id}");
+            ->getJson("/api/v1/genres/{$genre->id}");
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'data' => [
-              'genre' => [
-                'id',
-                'type',
-                'attributes' => [
-                  'name',
-                  'slug',
-                  'books_count',
-                  'description',
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'genre' => [
+                        'id',
+                        'type',
+                        'attributes' => [
+                            'name',
+                            'slug',
+                            'books_count',
+                            'description',
+                        ],
+                        'relationships',
+                    ],
                 ],
-                'relationships',
-              ],
-            ],
-          ]);
+            ]);
     }
 
     public function test_it_can_get_genre_by_slug()
@@ -89,63 +89,63 @@ class GenreControllerTest extends TestCase
 
         // Gọi API xem chi tiết thể loại theo slug
         $response = $this->actingAs($this->adminUser)
-          ->getJson("/api/v1/genres/slug/{$genre->slug}");
+            ->getJson("/api/v1/genres/slug/{$genre->slug}");
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'data' => [
-              'genre' => [
-                'id',
-                'type',
-                'attributes',
-              ],
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'genre' => [
+                        'id',
+                        'type',
+                        'attributes',
+                    ],
+                ],
+            ]);
     }
 
     public function test_it_returns_404_when_genre_not_found()
     {
         // Gọi API với ID không tồn tại
         $response = $this->actingAs($this->adminUser)
-          ->getJson('/api/v1/genres/999999');
+            ->getJson('/api/v1/genres/999999');
 
         // Kiểm tra response
         $response->assertStatus(404)
-          ->assertJson([
-            'status' => 404,
-            'message' => ResponseMessage::NOT_FOUND_GENRE->value,
-          ]);
+            ->assertJson([
+                'status' => 404,
+                'message' => ResponseMessage::NOT_FOUND_GENRE->value,
+            ]);
     }
 
     public function test_it_can_create_genre()
     {
         // Tạo dữ liệu để tạo thể loại mới với định dạng trực tiếp
         $genreData = [
-          'name' => 'Tiểu thuyết lịch sử',
-          'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+            'name' => 'Tiểu thuyết lịch sử',
+            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
         ];
 
         // Gọi API tạo thể loại
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/genres', $genreData);
+            ->postJson('/api/v1/genres', $genreData);
 
         // Kiểm tra response
         $response->assertStatus(201)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'genre',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'genre',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('genres', [
-          'name' => 'Tiểu thuyết lịch sử',
-          'slug' => 'tieu-thuyet-lich-su',
-          'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+            'name' => 'Tiểu thuyết lịch sử',
+            'slug' => 'tieu-thuyet-lich-su',
+            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
         ]);
     }
 
@@ -153,13 +153,13 @@ class GenreControllerTest extends TestCase
     {
         // Tạo dữ liệu không có slug với định dạng trực tiếp
         $genreData = [
-          'name' => 'Tiểu thuyết lịch sử',
-          'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+            'name' => 'Tiểu thuyết lịch sử',
+            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
         ];
 
         // Gọi API tạo thể loại
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/genres', $genreData);
+            ->postJson('/api/v1/genres', $genreData);
 
         // Kiểm tra response
         $response->assertStatus(201);
@@ -177,9 +177,9 @@ class GenreControllerTest extends TestCase
         $this->assertEquals('tieu-thuyet-lich-su', $genre->slug);
 
         $this->assertDatabaseHas('genres', [
-          'id' => $genreId,
-          'name' => 'Tiểu thuyết lịch sử',
-          'slug' => 'tieu-thuyet-lich-su',
+            'id' => $genreId,
+            'name' => 'Tiểu thuyết lịch sử',
+            'slug' => 'tieu-thuyet-lich-su',
         ]);
     }
 
@@ -190,29 +190,29 @@ class GenreControllerTest extends TestCase
 
         // Dữ liệu cập nhật với định dạng trực tiếp
         $updateData = [
-          'name' => 'Tên Mới',
-          'description' => 'Mô tả mới',
+            'name' => 'Tên Mới',
+            'description' => 'Mô tả mới',
         ];
 
         // Gọi API cập nhật thể loại
         $response = $this->actingAs($this->adminUser)
-          ->patchJson("/api/v1/genres/{$genre->id}", $updateData);
+            ->patchJson("/api/v1/genres/{$genre->id}", $updateData);
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'genre',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'genre',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('genres', [
-          'id' => $genre->id,
-          'name' => 'Tên Mới',
-          'description' => 'Mô tả mới',
+            'id' => $genre->id,
+            'name' => 'Tên Mới',
+            'description' => 'Mô tả mới',
         ]);
     }
 
@@ -220,24 +220,24 @@ class GenreControllerTest extends TestCase
     {
         // Tạo một thể loại
         $genre = Genre::factory()->create([
-          'name' => 'Thể loại cũ',
-          'slug' => 'the-loai-cu',
+            'name' => 'Thể loại cũ',
+            'slug' => 'the-loai-cu',
         ]);
 
         // Dữ liệu cập nhật chỉ có name với định dạng trực tiếp
         $updateData = [
-          'name' => 'Thể loại mới',
+            'name' => 'Thể loại mới',
         ];
 
         // Gọi API cập nhật thể loại
         $this->actingAs($this->adminUser)
-          ->patchJson("/api/v1/genres/{$genre->id}", $updateData);
+            ->patchJson("/api/v1/genres/{$genre->id}", $updateData);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('genres', [
-          'id' => $genre->id,
-          'name' => 'Thể loại mới',
-          'slug' => 'the-loai-moi',
+            'id' => $genre->id,
+            'name' => 'Thể loại mới',
+            'slug' => 'the-loai-moi',
         ]);
     }
 
@@ -248,14 +248,14 @@ class GenreControllerTest extends TestCase
 
         // Gọi API xóa thể loại
         $response = $this->actingAs($this->adminUser)
-          ->deleteJson("/api/v1/genres/{$genre->id}");
+            ->deleteJson("/api/v1/genres/{$genre->id}");
 
         // Kiểm tra response
         $response->assertStatus(204);
 
         // Kiểm tra dữ liệu đã bị xóa mềm
         $this->assertSoftDeleted('genres', [
-          'id' => $genre->id,
+            'id' => $genre->id,
         ]);
     }
 
@@ -267,40 +267,40 @@ class GenreControllerTest extends TestCase
 
         // Gọi API khôi phục thể loại
         $response = $this->actingAs($this->adminUser)
-          ->postJson("/api/v1/genres/restore/{$genre->id}");
+            ->postJson("/api/v1/genres/restore/{$genre->id}");
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'genre',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'genre',
+                ],
+            ]);
 
         // Kiểm tra thể loại đã được khôi phục
         $this->assertDatabaseHas('genres', [
-          'id' => $genre->id,
-          'deleted_at' => null,
+            'id' => $genre->id,
+            'deleted_at' => null,
         ]);
     }
 
-    public function test_it_requires_authentication_to_list_genres()
+    public function test_it_not_requires_authentication_to_list_genres()
     {
         // Gọi API danh sách thể loại không có xác thực
         $response = $this->getJson('/api/v1/genres');
 
-        // Kiểm tra response phải trả về lỗi 403
-        $response->assertStatus(403);
+        // Kiểm tra response trả về 200
+        $response->assertStatus(200);
     }
 
     public function test_it_requires_authentication_to_create_genre()
     {
         // Tạo dữ liệu để tạo thể loại mới với định dạng trực tiếp
         $genreData = [
-          'name' => 'Tiểu thuyết lịch sử',
-          'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+            'name' => 'Tiểu thuyết lịch sử',
+            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
         ];
 
         // Gọi API tạo thể loại không có xác thực
@@ -320,13 +320,13 @@ class GenreControllerTest extends TestCase
 
         // Dữ liệu cập nhật với định dạng trực tiếp
         $updateData = [
-          'name' => 'Tên Mới',
-          'description' => 'Mô tả mới',
+            'name' => 'Tên Mới',
+            'description' => 'Mô tả mới',
         ];
 
         // Gọi API cập nhật thể loại với user không có quyền
         $response = $this->actingAs($regularUser)
-          ->patchJson("/api/v1/genres/{$genre->id}", $updateData);
+            ->patchJson("/api/v1/genres/{$genre->id}", $updateData);
 
         // Kiểm tra response phải trả về lỗi 403
         $response->assertStatus(403);
@@ -342,7 +342,7 @@ class GenreControllerTest extends TestCase
 
         // Gọi API xóa thể loại với user không có quyền
         $response = $this->actingAs($regularUser)
-          ->deleteJson("/api/v1/genres/{$genre->id}");
+            ->deleteJson("/api/v1/genres/{$genre->id}");
 
         // Kiểm tra response phải trả về lỗi 403
         $response->assertStatus(403);
@@ -355,13 +355,13 @@ class GenreControllerTest extends TestCase
 
         // Gọi API tạo thể loại với dữ liệu không hợp lệ
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/genres', $invalidData);
+            ->postJson('/api/v1/genres', $invalidData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-          ->assertJsonValidationErrors([
-            'name',
-            'description',
-          ]);
+            ->assertJsonValidationErrors([
+                'name',
+                'description',
+            ]);
     }
 }

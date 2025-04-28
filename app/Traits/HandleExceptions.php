@@ -62,6 +62,8 @@ trait HandleExceptions
             'supplier' => ResponseMessage::NOT_FOUND_SUPPLIER->value,
             'user' => ResponseMessage::NOT_FOUND_USER->value,
             'discount' => ResponseMessage::NOT_FOUND_DISCOUNT->value,
+            'address' => ResponseMessage::NOT_FOUND_ADDRESS->value,
+            'cart_item' => ResponseMessage::NOT_FOUND_CART_ITEM->value,
             default => "Không tìm thấy {$entityName}.",
         };
     }

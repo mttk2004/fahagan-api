@@ -17,8 +17,7 @@ class BookDTO extends \App\DTOs\BaseDTO
         public array $genre_ids = [],
         public ?int $sold_count = 0,
         public ?int $available_count = 0,
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(array $validatedData): self
     {
