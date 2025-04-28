@@ -12,7 +12,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Services\UserService;
-use App\Traits\HandleUserExceptions;
+use App\Traits\HandleExceptions;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
@@ -24,12 +24,12 @@ use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
-    use HandleUserExceptions;
+    use HandleExceptions;
 
     public function __construct(
-        private readonly UserService $userService
-    ) {
-    }
+        private readonly UserService $userService,
+        private readonly string $entityName = 'user'
+    ) {}
 
     /**
      * Register a new user
@@ -57,10 +57,16 @@ class AuthController extends Controller
             $user = $this->userService->createUser($userDTO);
 
             return ResponseUtils::created([
-              'user' => new UserResource($user),
+                'user' => new UserResource($user),
             ], ResponseMessage::REGISTER_SUCCESS->value);
         } catch (Exception $e) {
-            return $this->handleUserException($e, $request->validated(), null, 'đăng ký');
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'request' => $request->all(),
+                ]
+            );
         }
     }
 
@@ -91,8 +97,8 @@ class AuthController extends Controller
         )->plainTextToken;
 
         return ResponseUtils::success([
-          'token' => $token,
-          'user' => new UserResource($user),
+            'token' => $token,
+            'user' => new UserResource($user),
         ], ResponseMessage::LOGIN_SUCCESS->value);
     }
 
@@ -148,7 +154,13 @@ class AuthController extends Controller
 
             return ResponseUtils::noContent(ResponseMessage::CHANGE_PASSWORD_SUCCESS->value);
         } catch (Exception $e) {
-            return $this->handleUserException($e, $request->validated(), $user->id, 'đổi mật khẩu');
+            return $this->handleException(
+                $e,
+                $this->entityName,
+                [
+                    'request' => $request->all(),
+                ]
+            );
         }
     }
 
@@ -167,8 +179,8 @@ class AuthController extends Controller
         $status = Password::sendResetLink(['email' => $validated['email']]);
 
         return $status === Password::RESET_LINK_SENT
-          ? ResponseUtils::success([], 'Email đặt lại mật khẩu đã được gửi.')
-          : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
+            ? ResponseUtils::success([], 'Email đặt lại mật khẩu đã được gửi.')
+            : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
     }
 
     /**
@@ -184,9 +196,9 @@ class AuthController extends Controller
         $data = $request->all();
 
         $validator = validator($data, [
-          'token' => 'required',
-          'email' => 'required|string|email',
-          'password' => 'required|string|confirmed|min:8',
+            'token' => 'required',
+            'email' => 'required|string|email',
+            'password' => 'required|string|confirmed|min:8',
         ]);
 
         if ($validator->fails()) {
@@ -202,7 +214,7 @@ class AuthController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-          ? ResponseUtils::success([], 'Mật khẩu đã được đặt lại thành công.')
-          : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
+            ? ResponseUtils::success([], 'Mật khẩu đã được đặt lại thành công.')
+            : ResponseUtils::badRequest('Có lỗi xảy ra, vui lòng thử lại.');
     }
 }

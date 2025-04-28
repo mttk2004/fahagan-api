@@ -126,7 +126,7 @@ class UserController extends Controller
                 'user' => new UserResource($user),
             ], ResponseMessage::UPDATED_USER->value);
         } catch (Exception $e) {
-            $this->handleException(
+            return $this->handleException(
                 $e,
                 $this->entityName,
                 [
