@@ -28,8 +28,7 @@ class GenreController extends Controller
     public function __construct(
         private readonly GenreService $genreService,
         private string $entityName = 'genre'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all genres
@@ -41,10 +40,6 @@ class GenreController extends Controller
      */
     public function index(Request $request)
     {
-        if (! AuthUtils::userCan('view_genres')) {
-            return ResponseUtils::forbidden();
-        }
-
         $genres = $this->genreService->getAllGenres($request, $this->getPerPage($request));
 
         return new GenreCollection($genres);
@@ -70,11 +65,11 @@ class GenreController extends Controller
             );
 
             return ResponseUtils::created([
-              'genre' => new GenreResource($genre),
+                'genre' => new GenreResource($genre),
             ], ResponseMessage::CREATED_GENRE->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => $request->validated(),
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -93,11 +88,11 @@ class GenreController extends Controller
             $genre = $this->genreService->getGenreById($genre_id);
 
             return ResponseUtils::success([
-              'genre' => new GenreResource($genre),
+                'genre' => new GenreResource($genre),
             ]);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'genre_id' => $genre_id,
+                'genre_id' => $genre_id,
             ]);
         }
     }
@@ -125,11 +120,11 @@ class GenreController extends Controller
             $genre = $this->genreService->getGenreBySlug($slug);
 
             return ResponseUtils::success([
-              'genre' => new GenreResource($genre),
+                'genre' => new GenreResource($genre),
             ]);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'slug' => $slug,
+                'slug' => $slug,
             ]);
         }
     }
@@ -163,11 +158,11 @@ class GenreController extends Controller
             );
 
             return ResponseUtils::success([
-              'genre' => new GenreResource($genre),
+                'genre' => new GenreResource($genre),
             ], ResponseMessage::UPDATED_GENRE->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => $request->validated(),
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -192,7 +187,7 @@ class GenreController extends Controller
             return ResponseUtils::noContent(ResponseMessage::DELETED_GENRE->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'genre_id' => $genre_id,
+                'genre_id' => $genre_id,
             ]);
         }
     }
@@ -215,11 +210,11 @@ class GenreController extends Controller
             $genre = $this->genreService->restoreGenre($genre_id);
 
             return ResponseUtils::success([
-              'genre' => new GenreResource($genre),
+                'genre' => new GenreResource($genre),
             ], ResponseMessage::RESTORED_GENRE->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'genre_id' => $genre_id,
+                'genre_id' => $genre_id,
             ]);
         }
     }
