@@ -10,25 +10,30 @@ use App\Http\Requests\V1\AddressUpdateRequest;
 use App\Http\Resources\V1\AddressCollection;
 use App\Http\Resources\V1\AddressResource;
 use App\Services\AddressService;
+use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
+use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 
 class AddressController extends Controller
 {
     use HandlePagination;
+    use HandleExceptions;
+    use HandleValidation;
 
     public function __construct(
-        private readonly AddressService $addressService
-    ) {
-    }
+        private readonly AddressService $addressService,
+        private string $entityName = 'address'
+    ) {}
 
     /*
      * Show all addresses of the authenticated user.
      *
      * @return AddressCollection
      * @group Address
+     * @authenticated
      */
     public function index()
     {
@@ -51,6 +56,7 @@ class AddressController extends Controller
      * @param AddressStoreRequest $request
      * @return \Illuminate\Http\JsonResponse
      * @group Address
+     * @authenticated
      */
     public function store(AddressStoreRequest $request)
     {
@@ -58,12 +64,19 @@ class AddressController extends Controller
             return ResponseUtils::unauthorized();
         }
 
-        $addressDTO = AddressDTO::fromRequest($request->validated());
-        $address = $this->addressService->createAddress(AuthUtils::user(), $addressDTO);
+        try {
 
-        return ResponseUtils::created([
-            'address' => new AddressResource($address),
-        ], ResponseMessage::CREATED_ADDRESS->value);
+            $addressDTO = AddressDTO::fromRequest($request->validated());
+            $address = $this->addressService->createAddress(AuthUtils::user(), $addressDTO);
+
+            return ResponseUtils::created([
+                'address' => new AddressResource($address),
+            ], ResponseMessage::CREATED_ADDRESS->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+                'request_data' => $request->validated(),
+            ]);
+        }
     }
 
     /*
@@ -73,6 +86,7 @@ class AddressController extends Controller
      * @param $address_id
      * @return \Illuminate\Http\JsonResponse
      * @group Address
+     * @authenticated
      */
     public function update(AddressUpdateRequest $request, $address_id)
     {
@@ -81,14 +95,26 @@ class AddressController extends Controller
         }
 
         try {
-            $addressDTO = AddressDTO::fromRequest($request->validated());
-            $address = $this->addressService->updateAddress(AuthUtils::user(), $address_id, $addressDTO);
+            $validatedData = $request->validated();
+
+            $emptyCheckResponse = $this->validateUpdateData($validatedData);
+            if ($emptyCheckResponse) {
+                return $emptyCheckResponse;
+            }
+
+            $address = $this->addressService->updateAddress(
+                AuthUtils::user(),
+                $address_id,
+                AddressDTO::fromRequest($validatedData)
+            );
 
             return ResponseUtils::success([
                 'address' => new AddressResource($address),
             ], ResponseMessage::UPDATED_ADDRESS->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_ADDRESS->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+                'request_data' => $request->validated(),
+            ]);
         }
     }
 
@@ -98,6 +124,7 @@ class AddressController extends Controller
      * @param $address_id
      * @return \Illuminate\Http\JsonResponse
      * @group Address
+     * @authenticated
      */
     public function destroy($address_id)
     {
@@ -109,8 +136,12 @@ class AddressController extends Controller
             $this->addressService->deleteAddress(AuthUtils::user(), $address_id);
 
             return ResponseUtils::noContent(ResponseMessage::DELETED_ADDRESS->value);
-        } catch (ModelNotFoundException) {
-            return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_ADDRESS->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+                'request_data' => [
+                    'address_id' => $address_id,
+                ],
+            ]);
         }
     }
 }

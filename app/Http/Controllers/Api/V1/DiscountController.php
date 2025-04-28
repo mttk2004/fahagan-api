@@ -9,7 +9,6 @@ use App\Http\Requests\V1\DiscountStoreRequest;
 use App\Http\Requests\V1\DiscountUpdateRequest;
 use App\Http\Resources\V1\DiscountCollection;
 use App\Http\Resources\V1\DiscountResource;
-use App\Models\Discount;
 use App\Services\DiscountService;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
@@ -66,7 +65,7 @@ class DiscountController extends Controller
             $discount = $this->discountService->createDiscount($discountDTO);
 
             return ResponseUtils::created([
-              'discount' => new DiscountResource($discount),
+                'discount' => new DiscountResource($discount),
             ], ResponseMessage::CREATED_DISCOUNT->value);
         } catch (ValidationException $e) {
             return ResponseUtils::validationError($e->validator->errors());
@@ -93,7 +92,7 @@ class DiscountController extends Controller
             $discount = $this->discountService->getDiscountById($discount_id);
 
             return ResponseUtils::success([
-              'discount' => new DiscountResource($discount),
+                'discount' => new DiscountResource($discount),
             ]);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
@@ -118,7 +117,7 @@ class DiscountController extends Controller
             $discount = $this->discountService->updateDiscount($discount_id, $discountDTO, $validatedData);
 
             return ResponseUtils::success([
-              'discount' => new DiscountResource($discount),
+                'discount' => new DiscountResource($discount),
             ], ResponseMessage::UPDATED_DISCOUNT->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
