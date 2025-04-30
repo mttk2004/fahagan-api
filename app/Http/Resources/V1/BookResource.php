@@ -2,9 +2,11 @@
 
 namespace App\Http\Resources\V1;
 
+
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+
 
 /** @mixin Book
  * @property mixed $id
@@ -29,35 +31,35 @@ class BookResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-          'type' => 'book',
-          'id' => $this->id,
-          'attributes' => [
-            'title' => $this->title,
-            'price' => $this->price,
-            'edition' => $this->edition,
-            'image_url' => $this->image_url,
-            'publication_date' => $this->publication_date,
-            'sold_count' => $this->sold_count,
-            'available_count' => $this->available_count,
-            'description' => $this->description, // Thêm mô tả vào response cho mọi route
-            $this->mergeWhen($request->routeIs('books.show', 'books.store'), [
-              'pages' => $this->pages,
-              'created_at' => $this->created_at,
-              'updated_at' => $this->updated_at,
-              'deleted_at' => $this->deleted_at,
-            ]),
-          ],
-          'relationships' => $this->when(
-              $request->routeIs('books.*'),
-              [
-              'authors' => new AuthorCollection($this->authors),
-              'genres' => new GenreCollection($this->genres),
-              'publisher' => new PublisherResource($this->publisher),
-        ]
-          ),
-          'links' => [
-            'self' => route('books.show', ['book' => $this->id]),
-          ],
+            'type' => 'book',
+            'id' => $this->id,
+            'attributes' => [
+                'title' => $this->title,
+                'price' => $this->price,
+                'edition' => $this->edition,
+                'image_url' => $this->image_url,
+                'publication_date' => $this->publication_date,
+                'sold_count' => $this->sold_count,
+                'available_count' => $this->available_count,
+                $this->mergeWhen($request->routeIs('books.*'), [
+                    'description' => $this->description,
+                    'pages' => $this->pages,
+                    'created_at' => $this->created_at,
+                    'updated_at' => $this->updated_at,
+                    'deleted_at' => $this->deleted_at,
+                ]),
+            ],
+            'relationships' => $this->when(
+                $request->routeIs(['books.show', 'books.store']),
+                [
+                    'authors' => new AuthorCollection($this->authors),
+                    'genres' => new GenreCollection($this->genres),
+                    'publisher' => new PublisherResource($this->publisher),
+                ]
+            ),
+            'links' => [
+                'self' => route('books.show', ['book' => $this->id]),
+            ],
         ];
     }
 }

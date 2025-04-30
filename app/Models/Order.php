@@ -10,59 +10,59 @@ use Illuminate\Support\Facades\App;
 
 class Order extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
+  public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
-    protected $keyType = 'string'; // Kiểu khóa chính là string
+  protected $keyType = 'string'; // Kiểu khóa chính là string
 
-    protected static function boot(): void
-    {
-        parent::boot();
+  protected static function boot(): void
+  {
+    parent::boot();
 
-        static::creating(function ($model) {
-            $model->{$model->getKeyName()} = App::make('snowflake')->id();
-        });
-    }
+    static::creating(function ($model) {
+      $model->{$model->getKeyName()} = App::make('snowflake')->id();
+    });
+  }
 
-    protected $fillable
-        = [
-            'user_id',
-            'status',
-            'total_amount',
-            'shopping_name',
-            'shopping_phone',
-            'shopping_city',
-            'shopping_district',
-            'shopping_ward',
-            'shopping_address_line',
-            'ordered_at',
-            'approved_at',
-            'canceled_at',
-            'delivered_at',
-            'returned_at',
-        ];
+  protected $fillable
+  = [
+    'user_id',
+    'status',
+    'total_amount',
+    'shopping_name',
+    'shopping_phone',
+    'shopping_city',
+    'shopping_district',
+    'shopping_ward',
+    'shopping_address_line',
+    'ordered_at',
+    'approved_at',
+    'canceled_at',
+    'delivered_at',
+    'returned_at',
+  ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+  public function customer(): BelongsTo
+  {
+    return $this->belongsTo(User::class, 'user_id');
+  }
 
-    protected function casts(): array
-    {
-        return [
-            'ordered_at' => 'datetime',
-            'approved_at' => 'datetime',
-            'canceled_at' => 'datetime',
-            'delivered_at' => 'datetime',
-            'returned_at' => 'datetime',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
-    }
+  protected function casts(): array
+  {
+    return [
+      'ordered_at' => 'datetime',
+      'approved_at' => 'datetime',
+      'canceled_at' => 'datetime',
+      'delivered_at' => 'datetime',
+      'returned_at' => 'datetime',
+      'created_at' => 'datetime',
+      'updated_at' => 'datetime',
+    ];
+  }
 
-    public function orderItems(): HasMany
-    {
-        return $this->hasMany(OrderItem::class);
-    }
+  public function orderItems(): HasMany
+  {
+    return $this->hasMany(OrderItem::class);
+  }
 }

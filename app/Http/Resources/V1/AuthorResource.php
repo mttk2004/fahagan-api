@@ -20,16 +20,16 @@ class AuthorResource extends JsonResource
         return [
             'type' => 'author',
             'id' => $this->id,
-            'image_url' => $this->image_url,
             'attributes' => [
                 'name' => $this->name,
+                 'image_url' => $this->image_url,
                 'biography' => $this->when(
                     $request->routeIs('authors.*'),
                     $this->biography
                 ),
             ],
            'relationships' => $this->when(
-               $request->routeIs('authors.*'),
+               $request->routeIs('authors.show', 'authors.store'),
                [
                    'books' => new BookCollection($this->writtenBooks),
                ]

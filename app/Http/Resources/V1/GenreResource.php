@@ -30,7 +30,7 @@ class GenreResource extends JsonResource
                 ),
             ],
             'relationships' => $this->when(
-                $request->routeIs('genres.show'),
+                $request->routeIs('genres.show', 'genres.store'),
                 [
                     'books' => new BookCollection($this->books),
                 ]

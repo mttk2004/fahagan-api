@@ -27,7 +27,7 @@ class PublisherResource extends JsonResource
                 ),
             ],
             'relationships' => $this->when(
-                $request->routeIs('publishers.*'),
+                $request->routeIs('publishers.show', 'publishers.store'),
                 [
                     'books' => new BookCollection($this->publishedBooks),
                 ]

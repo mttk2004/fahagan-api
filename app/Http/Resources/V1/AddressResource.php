@@ -12,22 +12,26 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $name
  * @property mixed $address_line
  * @property mixed $ward
+ * @property mixed $district
  */
 class AddressResource extends JsonResource
 {
-    public function toArray(Request $request): array
-    {
-        return [
-            'type' => 'address',
-            'id' => $this->id,
-            'attributes' => [
-                'name' => $this->name,
-                'phone' => $this->phone,
-                'city' => $this->city,
-                'district' => $this->district,
-                'ward' => $this->ward,
-                'address_line' => $this->address_line,
-            ],
-        ];
-    }
+  public function toArray(Request $request): array
+  {
+    return [
+      'type' => 'address',
+      'id' => $this->id,
+      'attributes' => [
+        'name' => $this->name,
+        'phone' => $this->phone,
+        'city' => $this->city,
+        'district' => $this->district,
+        'ward' => $this->ward,
+        'address_line' => $this->address_line,
+      ],
+      'links' => [
+        'self' => route('customer.addresses.index'),
+      ],
+    ];
+  }
 }

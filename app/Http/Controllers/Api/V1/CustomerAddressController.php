@@ -16,8 +16,11 @@ use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Throwable;
 
-class AddressController extends Controller
+
+class CustomerAddressController extends Controller
 {
     use HandlePagination;
     use HandleExceptions;
@@ -25,14 +28,14 @@ class AddressController extends Controller
 
     public function __construct(
         private readonly AddressService $addressService,
-        private string $entityName = 'address'
+        private readonly string $entityName = 'address'
     ) {
     }
 
     /**
      * Show all addresses of the authenticated user.
      *
-     * @return AddressCollection
+     * @return AddressCollection|JsonResponse
      * @group Address
      * @authenticated
      */
@@ -55,9 +58,11 @@ class AddressController extends Controller
      * Store a new address for the authenticated user.
      *
      * @param AddressStoreRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     *
+     * @return JsonResponse
      * @group Address
      * @authenticated
+     * @throws Throwable
      */
     public function store(AddressStoreRequest $request)
     {
@@ -84,10 +89,12 @@ class AddressController extends Controller
      * Update an address of the authenticated user.
      *
      * @param AddressUpdateRequest $request
-     * @param $address_id
-     * @return \Illuminate\Http\JsonResponse
+     * @param                      $address_id
+     *
+     * @return JsonResponse
      * @group Address
      * @authenticated
+     * @throws Throwable
      */
     public function update(AddressUpdateRequest $request, $address_id)
     {
@@ -123,9 +130,11 @@ class AddressController extends Controller
      * Delete an address of the authenticated user.
      *
      * @param $address_id
-     * @return \Illuminate\Http\JsonResponse
+     *
+     * @return JsonResponse
      * @group Address
      * @authenticated
+     * @throws Throwable
      */
     public function destroy($address_id)
     {

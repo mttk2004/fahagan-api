@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $phone
  * @property mixed $email
  * @property mixed $city
+ * @property mixed $district
  * @property mixed $ward
  * @property mixed $address_line
  * @property mixed $created_at
@@ -19,38 +20,36 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class SupplierResource extends JsonResource
 {
-    public function toArray(Request $request): array
-    {
-        return [
-            'type' => 'supplier',
-            'id' => $this->id,
-            'attributes' => [
-                'name' => $this->name,
-                'phone' => $this->phone,
-                'email' => $this->email,
-                'books_count' => $this->whenLoaded('books', function () {
-                    return $this->books->count();
-                }, 0),
-                $this->mergeWhen($request->routeIs(['suppliers.show', 'suppliers.store']), [
-                    'city' => $this->city,
-                    'district' => $this->district,
-                    'ward' => $this->ward,
-                    'address_line' => $this->address_line,
-                    'created_at' => $this->created_at,
-                    'updated_at' => $this->updated_at,
-                ]),
-            ],
-            'relationships' => $this->when(
-                $request->routeIs(['suppliers.show', 'suppliers.store']) && $this->relationLoaded('books'),
-                function () {
-                    return [
-                        'books' => new BookCollection($this->books),
-                    ];
-                }
-            ),
-            'links' => [
-                'self' => route('suppliers.show', ['supplier' => $this->id]),
-            ],
-        ];
-    }
+  public function toArray(Request $request): array
+  {
+    return [
+      'type' => 'supplier',
+      'id' => $this->id,
+      'attributes' => [
+        'name' => $this->name,
+        'phone' => $this->phone,
+        'email' => $this->email,
+        'books_count' => $this->whenLoaded('books', function () {
+          return $this->books->count();
+        }, 0),
+        $this->mergeWhen($request->routeIs('suppliers.*'), [
+          'city' => $this->city,
+          'district' => $this->district,
+          'ward' => $this->ward,
+          'address_line' => $this->address_line,
+          'created_at' => $this->created_at,
+          'updated_at' => $this->updated_at,
+        ]),
+      ],
+      'relationships' => $this->when(
+        $request->routeIs('suppliers.show', 'suppliers.store'),
+        [
+          'books' => new BookCollection($this->suppliedBooks),
+        ]
+      ),
+      'links' => [
+        'self' => route('suppliers.show', ['supplier' => $this->id]),
+      ],
+    ];
+  }
 }

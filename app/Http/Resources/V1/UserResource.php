@@ -45,7 +45,7 @@ class UserResource extends JsonResource
                 ]),
             ],
             'relationships' => $this->when(
-                $request->routeIs('users.*'),
+                $request->routeIs('users.show') && $this->is_customer,
                 [
                     'cart_items' => '',
                 ]

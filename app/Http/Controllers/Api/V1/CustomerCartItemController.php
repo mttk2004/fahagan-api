@@ -14,7 +14,7 @@ use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-class CartItemController extends Controller
+class CustomerCartItemController extends Controller
 {
     public function __construct(
         private readonly CartItemService $cartItemService

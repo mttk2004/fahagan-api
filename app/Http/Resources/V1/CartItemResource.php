@@ -9,19 +9,22 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin CartItem */
 class CartItemResource extends JsonResource
 {
-    public function toArray(Request $request): array
-    {
-        return [
-            'type' => 'cart_item',
-            'attributes' => [
-                'quantity' => $this->quantity,
-            ],
-            'relationships' => $this->when(
-                $request->routeIs('cart.*'),
-                [
-                    'book' => new BookResource($this->book),
-                ]
-            ),
-        ];
-    }
+  public function toArray(Request $request): array
+  {
+    return [
+      'type' => 'cart_item',
+      'id' => null,
+      'attributes' => [
+        'quantity' => $this->quantity,
+      ],
+      'relationships' => [
+        'book' => [
+          'data' => new BookResource($this->book),
+        ],
+      ],
+      'links' => [
+        'self' => route('customer.cart.index'),
+      ],
+    ];
+  }
 }
