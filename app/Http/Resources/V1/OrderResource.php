@@ -27,42 +27,42 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class OrderResource extends JsonResource
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'type' => 'order',
-      'id' => $this->id,
-      'attributes' => [
-        'user_id' => $this->user_id,
-        'status' => $this->status,
-        'total_amount' => $this->total_amount,
-        $this->mergeWhen($request->routeIs('orders.*'), [
-          'shopping_name' => $this->shopping_name,
-          'shopping_phone' => $this->shopping_phone,
-          'shopping_city' => $this->shopping_city,
-          'shopping_district' => $this->shopping_district,
-          'shopping_ward' => $this->shopping_ward,
-          'shopping_address_line' => $this->shopping_address_line,
-          'ordered_at' => $this->ordered_at,
-          'approved_at' => $this->approved_at,
-          'canceled_at' => $this->canceled_at,
-          'delivered_at' => $this->delivered_at,
-          'returned_at' => $this->returned_at,
-          'created_at' => $this->created_at,
-          'updated_at' => $this->updated_at,
-        ]),
-      ],
-      'relationships' => $this->when(
-        $request->routeIs('orders.show', 'orders.store'),
-        [
-          'customer' => $this->whenLoaded('customer', function () {
-            return new UserResource($this->customer);
-          }),
+    public function toArray(Request $request): array
+    {
+        return [
+          'type' => 'order',
+          'id' => $this->id,
+          'attributes' => [
+            'user_id' => $this->user_id,
+            'status' => $this->status,
+            'total_amount' => $this->total_amount,
+            $this->mergeWhen($request->routeIs('orders.*'), [
+              'shopping_name' => $this->shopping_name,
+              'shopping_phone' => $this->shopping_phone,
+              'shopping_city' => $this->shopping_city,
+              'shopping_district' => $this->shopping_district,
+              'shopping_ward' => $this->shopping_ward,
+              'shopping_address_line' => $this->shopping_address_line,
+              'ordered_at' => $this->ordered_at,
+              'approved_at' => $this->approved_at,
+              'canceled_at' => $this->canceled_at,
+              'delivered_at' => $this->delivered_at,
+              'returned_at' => $this->returned_at,
+              'created_at' => $this->created_at,
+              'updated_at' => $this->updated_at,
+            ]),
+          ],
+          'relationships' => $this->when(
+              $request->routeIs('orders.show', 'orders.store'),
+              [
+              'customer' => $this->whenLoaded('customer', function () {
+                  return new UserResource($this->customer);
+              }),
         ]
-      ),
-      'links' => [
-        'self' => route('orders.show', ['order' => $this->id]),
-      ],
-    ];
-  }
+          ),
+          'links' => [
+            'self' => route('orders.show', ['order' => $this->id]),
+          ],
+        ];
+    }
 }

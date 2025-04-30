@@ -2,11 +2,9 @@
 
 namespace App\Http\Resources\V1;
 
-
 use App\Models\Discount;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 
 /** @mixin Discount
  * @property mixed $id
@@ -48,9 +46,9 @@ class DiscountResource extends JsonResource
             'relationships' => $this->when(
                 $request->routeIs('discounts.show') && $this->target_type === 'book',
                 [
-                    'targets' => $this->whenLoaded('targets', function() {
+                    'targets' => $this->whenLoaded('targets', function () {
                         return BookResource::collection(
-                            $this->targets->map(function($target) {
+                            $this->targets->map(function ($target) {
                                 return $target->book;
                             })
                         );

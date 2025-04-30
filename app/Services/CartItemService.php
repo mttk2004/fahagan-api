@@ -11,152 +11,152 @@ use Illuminate\Support\Facades\DB;
 
 class CartItemService
 {
-  /**
-   * Lấy tất cả các sản phẩm trong giỏ hàng của người dùng
-   */
-  public function getCartItems(User $user): Collection
-  {
-    return $user->cartItems()
-      ->with('book')
-      ->get();
-  }
-
-  /**
-   * Tìm sản phẩm trong giỏ hàng
-   *
-   * @param User $user
-   * @param int $bookId
-   * @return CartItem|null
-   */
-  public function findCartItem(User $user, int $bookId): ?CartItem
-  {
-    if (! $user->isBookInCart($bookId)) {
-      return null;
+    /**
+     * Lấy tất cả các sản phẩm trong giỏ hàng của người dùng
+     */
+    public function getCartItems(User $user): Collection
+    {
+        return $user->cartItems()
+          ->with('book')
+          ->get();
     }
 
-    return $user->getCartItemByBook($bookId);
-  }
+    /**
+     * Tìm sản phẩm trong giỏ hàng
+     *
+     * @param User $user
+     * @param int $bookId
+     * @return CartItem|null
+     */
+    public function findCartItem(User $user, int $bookId): ?CartItem
+    {
+        if (! $user->isBookInCart($bookId)) {
+            return null;
+        }
 
-  /**
-   * Thêm sản phẩm vào giỏ hàng không cần kiểm tra tồn tại
-   *
-   * @param User $user
-   * @param CartItemDTO $cartItemDTO
-   * @return CartItem
-   * @throws Exception
-   */
-  public function addToCartNoChecking(User $user, CartItemDTO $cartItemDTO): CartItem
-  {
-    try {
-      DB::beginTransaction();
-
-      $user->booksInCart()->attach($cartItemDTO->book_id, [
-        'quantity' => $cartItemDTO->quantity,
-      ]);
-
-      $cartItem = $user->getCartItemByBook($cartItemDTO->book_id);
-
-      DB::commit();
-
-      return $cartItem;
-    } catch (Exception $e) {
-      DB::rollBack();
-
-      throw $e;
-    }
-  }
-
-  /**
-   * Thêm sản phẩm vào giỏ hàng
-   *
-   * @throws Exception
-   */
-  public function addToCart(User $user, CartItemDTO $cartItemDTO): CartItem
-  {
-    if ($user->isBookInCart($cartItemDTO->book_id)) {
-      throw new Exception('Sách đã tồn tại trong giỏ hàng.');
+        return $user->getCartItemByBook($bookId);
     }
 
-    return $this->addToCartNoChecking($user, $cartItemDTO);
-  }
+    /**
+     * Thêm sản phẩm vào giỏ hàng không cần kiểm tra tồn tại
+     *
+     * @param User $user
+     * @param CartItemDTO $cartItemDTO
+     * @return CartItem
+     * @throws Exception
+     */
+    public function addToCartNoChecking(User $user, CartItemDTO $cartItemDTO): CartItem
+    {
+        try {
+            DB::beginTransaction();
 
-  /**
-   * Cập nhật số lượng sản phẩm trong giỏ hàng
-   *
-   * @throws Exception
-   */
-  public function updateCartItemQuantity(User $user, CartItemDTO $cartItemDTO): CartItem
-  {
-    if (! $user->isBookInCart($cartItemDTO->book_id)) {
-      return $this->addToCartNoChecking($user, $cartItemDTO);
+            $user->booksInCart()->attach($cartItemDTO->book_id, [
+              'quantity' => $cartItemDTO->quantity,
+            ]);
+
+            $cartItem = $user->getCartItemByBook($cartItemDTO->book_id);
+
+            DB::commit();
+
+            return $cartItem;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 
-    try {
-      DB::beginTransaction();
+    /**
+     * Thêm sản phẩm vào giỏ hàng
+     *
+     * @throws Exception
+     */
+    public function addToCart(User $user, CartItemDTO $cartItemDTO): CartItem
+    {
+        if ($user->isBookInCart($cartItemDTO->book_id)) {
+            throw new Exception('Sách đã tồn tại trong giỏ hàng.');
+        }
 
-      $user->booksInCart()->updateExistingPivot($cartItemDTO->book_id, [
-        'quantity' => $cartItemDTO->quantity,
-      ]);
-
-      $cartItem = $user->getCartItemByBook($cartItemDTO->book_id);
-
-      DB::commit();
-
-      return $cartItem;
-    } catch (Exception $e) {
-      DB::rollBack();
-
-      throw $e;
-    }
-  }
-
-  /**
-   * Xóa sản phẩm khỏi giỏ hàng
-   *
-   * @throws Exception
-   */
-  public function removeFromCart(User $user, int $bookId): bool
-  {
-    if (! $user->isBookInCart($bookId)) {
-      throw new Exception('Sách không tồn tại trong giỏ hàng.');
+        return $this->addToCartNoChecking($user, $cartItemDTO);
     }
 
-    try {
-      DB::beginTransaction();
+    /**
+     * Cập nhật số lượng sản phẩm trong giỏ hàng
+     *
+     * @throws Exception
+     */
+    public function updateCartItemQuantity(User $user, CartItemDTO $cartItemDTO): CartItem
+    {
+        if (! $user->isBookInCart($cartItemDTO->book_id)) {
+            return $this->addToCartNoChecking($user, $cartItemDTO);
+        }
 
-      $user->booksInCart()->detach($bookId);
+        try {
+            DB::beginTransaction();
 
-      DB::commit();
+            $user->booksInCart()->updateExistingPivot($cartItemDTO->book_id, [
+              'quantity' => $cartItemDTO->quantity,
+            ]);
 
-      return true;
-    } catch (Exception $e) {
-      DB::rollBack();
+            $cartItem = $user->getCartItemByBook($cartItemDTO->book_id);
 
-      throw $e;
+            DB::commit();
+
+            return $cartItem;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
-  }
 
-  /**
-   * Xóa toàn bộ giỏ hàng của người dùng
-   *
-   * @param User $user
-   * @return bool
-   * @throws Exception
-   */
-  public function clearCart(User $user): bool
-  {
-    try {
-      DB::beginTransaction();
+    /**
+     * Xóa sản phẩm khỏi giỏ hàng
+     *
+     * @throws Exception
+     */
+    public function removeFromCart(User $user, int $bookId): bool
+    {
+        if (! $user->isBookInCart($bookId)) {
+            throw new Exception('Sách không tồn tại trong giỏ hàng.');
+        }
 
-      $user->booksInCart()->detach();
+        try {
+            DB::beginTransaction();
 
-      DB::commit();
+            $user->booksInCart()->detach($bookId);
 
-      return true;
-    } catch (Exception $e) {
-      DB::rollBack();
+            DB::commit();
 
-      throw $e;
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
-  }
+
+    /**
+     * Xóa toàn bộ giỏ hàng của người dùng
+     *
+     * @param User $user
+     * @return bool
+     * @throws Exception
+     */
+    public function clearCart(User $user): bool
+    {
+        try {
+            DB::beginTransaction();
+
+            $user->booksInCart()->detach();
+
+            DB::commit();
+
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
 }

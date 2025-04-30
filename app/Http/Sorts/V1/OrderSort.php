@@ -2,7 +2,6 @@
 
 namespace App\Http\Sorts\V1;
 
-
 class OrderSort extends Sort
 {
     protected array $sortableColumns
