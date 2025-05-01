@@ -21,135 +21,136 @@ use Throwable;
 
 class CustomerAddressController extends Controller
 {
-  use HandlePagination;
-  use HandleExceptions;
-  use HandleValidation;
+    use HandlePagination;
+    use HandleExceptions;
+    use HandleValidation;
 
-  public function __construct(
-    private readonly AddressService $addressService,
-    private readonly string $entityName = 'address'
-  ) {}
-
-  /**
-   * Show all addresses of the authenticated user.
-   *
-   * @return AddressCollection|JsonResponse
-   * @group Customer.Address
-   * @authenticated
-   */
-  public function index()
-  {
-    if (! AuthUtils::check()) {
-      return ResponseUtils::unauthorized();
+    public function __construct(
+        private readonly AddressService $addressService,
+        private readonly string $entityName = 'address'
+    ) {
     }
 
-    $addresses = $this->addressService->getAllAddresses(
-      AuthUtils::user(),
-      request(),
-      $this->getPerPage(request())
-    );
+    /**
+     * Show all addresses of the authenticated user.
+     *
+     * @return AddressCollection|JsonResponse
+     * @group Customer.Address
+     * @authenticated
+     */
+    public function index()
+    {
+        if (! AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
 
-    return new AddressCollection($addresses);
-  }
+        $addresses = $this->addressService->getAllAddresses(
+            AuthUtils::user(),
+            request(),
+            $this->getPerPage(request())
+        );
 
-  /**
-   * Store a new address for the authenticated user.
-   *
-   * @param AddressStoreRequest $request
-   *
-   * @return JsonResponse
-   * @group Customer.Address
-   * @authenticated
-   * @throws Throwable
-   */
-  public function store(AddressStoreRequest $request)
-  {
-    if (! AuthUtils::check()) {
-      return ResponseUtils::unauthorized();
+        return new AddressCollection($addresses);
     }
 
-    try {
+    /**
+     * Store a new address for the authenticated user.
+     *
+     * @param AddressStoreRequest $request
+     *
+     * @return JsonResponse
+     * @group Customer.Address
+     * @authenticated
+     * @throws Throwable
+     */
+    public function store(AddressStoreRequest $request)
+    {
+        if (! AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
 
-      $addressDTO = AddressDTO::fromRequest($request->validated());
-      $address = $this->addressService->createAddress(AuthUtils::user(), $addressDTO);
+        try {
 
-      return ResponseUtils::created([
-        'address' => new AddressResource($address),
-      ], ResponseMessage::CREATED_ADDRESS->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => $request->validated(),
-      ]);
-    }
-  }
+            $addressDTO = AddressDTO::fromRequest($request->validated());
+            $address = $this->addressService->createAddress(AuthUtils::user(), $addressDTO);
 
-  /**
-   * Update an address of the authenticated user.
-   *
-   * @param AddressUpdateRequest $request
-   * @param                      $address_id
-   *
-   * @return JsonResponse
-   * @group Customer.Address
-   * @authenticated
-   * @throws Throwable
-   */
-  public function update(AddressUpdateRequest $request, $address_id)
-  {
-    if (! AuthUtils::check()) {
-      return ResponseUtils::unauthorized();
-    }
-
-    try {
-      $validatedData = $request->validated();
-
-      $emptyCheckResponse = $this->validateUpdateData($validatedData);
-      if ($emptyCheckResponse) {
-        return $emptyCheckResponse;
-      }
-
-      $address = $this->addressService->updateAddress(
-        AuthUtils::user(),
-        $address_id,
-        AddressDTO::fromRequest($validatedData)
-      );
-
-      return ResponseUtils::success([
-        'address' => new AddressResource($address),
-      ], ResponseMessage::UPDATED_ADDRESS->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => $request->validated(),
-      ]);
-    }
-  }
-
-  /**
-   * Delete an address of the authenticated user.
-   *
-   * @param $address_id
-   *
-   * @return JsonResponse
-   * @group Customer.Address
-   * @authenticated
-   * @throws Throwable
-   */
-  public function destroy($address_id)
-  {
-    if (! AuthUtils::check()) {
-      return ResponseUtils::unauthorized();
+            return ResponseUtils::created([
+              'address' => new AddressResource($address),
+            ], ResponseMessage::CREATED_ADDRESS->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => $request->validated(),
+            ]);
+        }
     }
 
-    try {
-      $this->addressService->deleteAddress(AuthUtils::user(), $address_id);
+    /**
+     * Update an address of the authenticated user.
+     *
+     * @param AddressUpdateRequest $request
+     * @param                      $address_id
+     *
+     * @return JsonResponse
+     * @group Customer.Address
+     * @authenticated
+     * @throws Throwable
+     */
+    public function update(AddressUpdateRequest $request, $address_id)
+    {
+        if (! AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
 
-      return ResponseUtils::noContent(ResponseMessage::DELETED_ADDRESS->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => [
-          'address_id' => $address_id,
-        ],
-      ]);
+        try {
+            $validatedData = $request->validated();
+
+            $emptyCheckResponse = $this->validateUpdateData($validatedData);
+            if ($emptyCheckResponse) {
+                return $emptyCheckResponse;
+            }
+
+            $address = $this->addressService->updateAddress(
+                AuthUtils::user(),
+                $address_id,
+                AddressDTO::fromRequest($validatedData)
+            );
+
+            return ResponseUtils::success([
+              'address' => new AddressResource($address),
+            ], ResponseMessage::UPDATED_ADDRESS->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => $request->validated(),
+            ]);
+        }
     }
-  }
+
+    /**
+     * Delete an address of the authenticated user.
+     *
+     * @param $address_id
+     *
+     * @return JsonResponse
+     * @group Customer.Address
+     * @authenticated
+     * @throws Throwable
+     */
+    public function destroy($address_id)
+    {
+        if (! AuthUtils::check()) {
+            return ResponseUtils::unauthorized();
+        }
+
+        try {
+            $this->addressService->deleteAddress(AuthUtils::user(), $address_id);
+
+            return ResponseUtils::noContent(ResponseMessage::DELETED_ADDRESS->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => [
+                'address_id' => $address_id,
+              ],
+            ]);
+        }
+    }
 }
