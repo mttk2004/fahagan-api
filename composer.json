@@ -17,6 +17,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mailersend/laravel-driver": "^2.8",
+        "nunomaduro/termwind": "*",
         "spatie/laravel-permission": "^6.16"
     },
     "require-dev": {
@@ -68,7 +69,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/dusk"
+            ]
         }
     },
     "config": {
