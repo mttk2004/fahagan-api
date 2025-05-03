@@ -24,9 +24,11 @@ class OrderDTO extends \App\DTOs\BaseDTO
       $items
     );
 
+    $address_id = isset($relationships['address']['id']) ? $relationships['address']['id'] : null;
+
     return new self(
       method: $attributes['method'] ?? null,
-      address_id: $relationships['address_id'] ?? null,
+      address_id: $address_id,
       items: $items
     );
   }
