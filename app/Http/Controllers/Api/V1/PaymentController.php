@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Services\VNPayService;
 use App\Traits\HandleExceptions;
+use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -35,19 +36,19 @@ class PaymentController extends Controller
   public function createVNPayPayment(Order $order): JsonResponse
   {
     // Kiểm tra xem đơn hàng có phải của người dùng hiện tại không
-    if ($order->customer_id != auth()->id()) {
-      return ResponseUtils::forbidden('Bạn không có quyền thanh toán đơn hàng này.');
+    if ($order->customer_id != AuthUtils::user()->id) {
+      return ResponseUtils::forbidden(ResponseMessage::FORBIDDEN->value);
     }
 
     // Kiểm tra phương thức thanh toán
     $payment = $order->payment;
     if (!$payment || $payment->method !== 'vnpay') {
-      return ResponseUtils::badRequest('Đơn hàng không sử dụng phương thức thanh toán VNPay.');
+      return ResponseUtils::badRequest(ResponseMessage::INVALID_PAYMENT_METHOD->value);
     }
 
     // Kiểm tra trạng thái thanh toán
     if ($payment->status !== PaymentStatus::PENDING) {
-      return ResponseUtils::badRequest('Đơn hàng đã được thanh toán hoặc đang trong quá trình thanh toán.');
+      return ResponseUtils::badRequest(ResponseMessage::PAYMENT_PROCESSING->value);
     }
 
     try {
@@ -55,13 +56,13 @@ class PaymentController extends Controller
       $paymentUrl = $this->vnpayService->createPaymentUrl($order, $payment);
 
       // Cập nhật trạng thái thanh toán
-      $payment->status = PaymentStatus::PROCESSING;
+      $payment->status = PaymentStatus::PENDING;
       $payment->save();
 
       return ResponseUtils::success([
         'payment_url' => $paymentUrl,
         'order_id' => $order->id
-      ]);
+      ], ResponseMessage::PAYMENT_PENDING->value);
     } catch (Exception $e) {
       return $this->handleException(
         $e,
@@ -90,21 +91,21 @@ class PaymentController extends Controller
       $result = $this->vnpayService->processReturnUrl($vnpayData);
 
       if (!$result['isValidSignature']) {
-        return ResponseUtils::badRequest('Chữ ký không hợp lệ.');
+        return ResponseUtils::badRequest(ResponseMessage::INVALID_PAYMENT_SIGNATURE->value);
       }
 
       // Tìm payment dựa trên transaction_ref
       $payment = Payment::where('transaction_ref', $result['txnRef'])->first();
 
       if (!$payment) {
-        return ResponseUtils::notFound('Không tìm thấy thông tin thanh toán.');
+        return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_PAYMENT->value);
       }
 
       // Tìm order tương ứng
       $order = $payment->order;
 
       if (!$order) {
-        return ResponseUtils::notFound('Không tìm thấy đơn hàng.');
+        return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_ORDER->value);
       }
 
       // Cập nhật trạng thái payment
@@ -121,13 +122,13 @@ class PaymentController extends Controller
 
         return ResponseUtils::success([
           'order' => new OrderResource($order->fresh()),
-          'message' => 'Thanh toán thành công.'
+          'message' => ResponseMessage::PAYMENT_SUCCESS->value
         ], ResponseMessage::PAYMENT_SUCCESS->value);
       }
 
       return ResponseUtils::success([
         'order' => new OrderResource($order->fresh()),
-        'message' => 'Thanh toán thất bại.'
+        'message' => ResponseMessage::PAYMENT_FAILED->value
       ], ResponseMessage::PAYMENT_FAILED->value);
     } catch (Exception $e) {
       return $this->handleException(
