@@ -145,6 +145,21 @@ class OrderService extends BaseService
       $order->employee_id = AuthUtils::user()->id;
     }
 
+    // Nếu chuyển sang APPROVED, cập nhật approved_at
+    if ($newStatus === OrderStatus::APPROVED) {
+      $order->approved_at = now();
+    }
+
+    // Nếu chuyển sang CANCELED, cập nhật canceled_at
+    if ($newStatus === OrderStatus::CANCELED) {
+      $order->canceled_at = now();
+    }
+
+    // Nếu chuyển sang DELIVERED, cập nhật delivered_at
+    if ($newStatus === OrderStatus::DELIVERED) {
+      $order->delivered_at = now();
+    }
+
     $order->status = $status;
     $order->save();
 
