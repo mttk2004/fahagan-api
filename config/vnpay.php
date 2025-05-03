@@ -1,0 +1,12 @@
+<?php
+
+return [
+  'tmnCode' => env('VNP_TMNCODE', 'VAAJN51S'),
+  'hashSecret' => env('VNP_HASHSECRET', 'UNOBMR165GLWAXUC51RO1I89FWIBH6V8'),
+  'url' => env('VNP_URL', 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'),
+  'returnUrl' => env('VNP_RETURN_URL', 'http://localhost:8000/api/v1/payment/vnpay-return'),
+  'version' => '2.1.0',
+  'command' => 'pay',
+  'currCode' => 'VND',
+  'locale' => 'vn',
+];

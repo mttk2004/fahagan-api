@@ -8,6 +8,7 @@ use App\Models\Book;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Utils\AuthUtils;
+use App\Enums\PaymentStatus;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -80,10 +81,19 @@ class CreateOrderAction extends BaseAction
         $book->increment('sold_count', $quantity);
       }
 
+      // Xác định trạng thái thanh toán dựa trên phương thức
+      $paymentStatus = PaymentStatus::PENDING;
+
+      // Nếu là thanh toán tiền mặt, đánh dấu là đã thanh toán ngay
+      if ($orderDTO->method === 'cash') {
+        $paymentStatus = PaymentStatus::PAID;
+      }
+
       // Tạo payment cho order
       $order->payment()->create([
         'method' => $orderDTO->method,
         'total_amount' => $totalAmount,
+        'status' => $paymentStatus,
       ]);
 
       DB::commit();

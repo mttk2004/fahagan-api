@@ -11,7 +11,7 @@ class CustomerOrderStoreRequest extends BaseRequest implements HasValidationMess
   public function rules(): array
   {
     return [
-      'data.attributes.method' => ['required', 'string', 'in:cash,bank_transfer'],
+      'data.attributes.method' => ['required', 'string', 'in:cash,bank_transfer,vnpay,paypal'],
 
       'data.relationships.address.id' => [
         'required',
