@@ -15,8 +15,9 @@ use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * UNAUTHENTICATED AREA
+ * PUBLIC ROUTES - NO AUTHENTICATION REQUIRED
  */
+// Public resource routes with only index and show actions
 Route::apiResources([
   'books' => BookController::class,
   'authors' => AuthorController::class,
@@ -25,98 +26,81 @@ Route::apiResources([
 ], ['only' => ['index', 'show']]);
 
 /**
- * AUTHENTICATED AREA
+ * AUTHENTICATED ROUTES
  */
 Route::middleware('auth.*')->group(function () {
-    /**
-     * Both customer and employee can access
-     */
-    Route::apiResource('users', UserController::class)
-      ->except('store');
+  // Common authenticated routes for both customers and employees
+  Route::apiResource('users', UserController::class)->except('store');
 
-    /**
-     * Customer only area
-     */
-    Route::middleware('auth.customer')->group(function () {
-        // Customer profile
-        Route::prefix('customer')->group(function () {
-            // Cart
-            Route::prefix('cart')->group(function () {
-                Route::get('/', [CustomerCartItemController::class, 'index'])
-                  ->name('customer.cart.index');
-                Route::post('/add', [CustomerCartItemController::class, 'addToCart'])
-                  ->name('customer.cart.add');
-                Route::post('/update-quantity', [CustomerCartItemController::class, 'updateCartItemQuantity'])
-                  ->name('customer.cart.update-quantity');
-                Route::delete(
-                    '/remove/{book_id}',
-                    [CustomerCartItemController::class, 'removeFromCart']
-                )
-                  ->whereNumber('book_id')
-                  ->name('customer.cart.remove');
-            });
-
-            // Addresses
-            Route::prefix('addresses')->group(function () {
-                Route::get('/', [CustomerAddressController::class, 'index'])
-                  ->name('customer.addresses.index');
-                Route::post('/', [CustomerAddressController::class, 'store'])
-                  ->name('customer.addresses.store');
-                Route::patch('/{address}', [CustomerAddressController::class, 'update'])
-                  ->name('customer.addresses.update');
-                Route::delete('/{address}', [CustomerAddressController::class, 'destroy'])
-                  ->name('customer.addresses.destroy');
-            });
-
-            // Profile
-            Route::get('/profile', [CustomerProfileController::class, 'show'])
-              ->name('customer.profile.show');
-            Route::patch('/profile', [CustomerProfileController::class, 'update'])
-              ->name('customer.profile.update');
-            Route::delete('/profile', [CustomerProfileController::class, 'destroy'])
-              ->name('customer.profile.destroy');
-
-            // Orders
-            Route::prefix('orders')->group(function () {
-                Route::get('/', [CustomerOrderController::class, 'index'])
-                  ->name('customer.orders.index');
-                Route::get('/{order}', [CustomerOrderController::class, 'show'])
-                  ->name('customer.orders.show');
-                Route::post('/', [CustomerOrderController::class, 'store'])
-                  ->name('customer.orders.store');
-                Route::post('/{order}/cancel', [CustomerOrderController::class, 'cancel'])
-                  ->name('customer.orders.cancel');
-            });
-        });
+  /**
+   * CUSTOMER ROUTES
+   */
+  Route::middleware('auth.customer')->prefix('customer')->group(function () {
+    // Cart routes
+    Route::prefix('cart')->controller(CustomerCartItemController::class)->group(function () {
+      Route::get('/', 'index')->name('customer.cart.index');
+      Route::post('/add', 'addToCart')->name('customer.cart.add');
+      Route::post('/update-quantity', 'updateCartItemQuantity')->name('customer.cart.update-quantity');
+      Route::delete('/remove/{book_id}', 'removeFromCart')->whereNumber('book_id')->name('customer.cart.remove');
     });
 
-    /**
-     * Employee only area
-     */
-    Route::middleware('auth.employee')->group(function () {
-        Route::apiResources([
-          'books' => BookController::class,
-          'authors' => AuthorController::class,
-          'publishers' => PublisherController::class,
-          'genres' => GenreController::class,
-        ], ['except' => ['index', 'show']]);
-
-        Route::apiResources([
-          'discounts' => DiscountController::class,
-          'suppliers' => SupplierController::class,
-          'orders' => OrderController::class,
-        ]);
-
-        Route::prefix('genres')->group(function () {
-            Route::post('restore/{genre}', [GenreController::class, 'restore'])
-              ->name('genres.restore');
-            Route::get('slug/{slug}', [GenreController::class, 'showBySlug'])
-              ->name('genres.showBySlug');
-        });
-
-        Route::prefix('suppliers')->group(function () {
-            Route::post('restore/{supplier}', [SupplierController::class, 'restore'])
-              ->name('suppliers.restore');
-        });
+    // Address routes
+    Route::prefix('addresses')->controller(CustomerAddressController::class)->group(function () {
+      Route::get('/', 'index')->name('customer.addresses.index');
+      Route::post('/', 'store')->name('customer.addresses.store');
+      Route::patch('/{address}', 'update')->name('customer.addresses.update');
+      Route::delete('/{address}', 'destroy')->name('customer.addresses.destroy');
     });
+
+    // Profile routes
+    Route::controller(CustomerProfileController::class)->group(function () {
+      Route::get('/profile', 'show')->name('customer.profile.show');
+      Route::patch('/profile', 'update')->name('customer.profile.update');
+      Route::delete('/profile', 'destroy')->name('customer.profile.destroy');
+    });
+
+    // Customer orders routes
+    Route::prefix('orders')->controller(CustomerOrderController::class)->group(function () {
+      Route::get('/', 'index')->name('customer.orders.index');
+      Route::get('/{order}', 'show')->name('customer.orders.show');
+      Route::post('/', 'store')->name('customer.orders.store');
+      Route::post('/{order}/cancel', 'cancel')->name('customer.orders.cancel');
+    });
+  });
+
+  /**
+   * EMPLOYEE ROUTES
+   */
+  Route::middleware('auth.employee')->group(function () {
+    // CRUD resources except index and show (which are public)
+    Route::apiResources([
+      'books' => BookController::class,
+      'authors' => AuthorController::class,
+      'publishers' => PublisherController::class,
+      'genres' => GenreController::class,
+    ], ['except' => ['index', 'show']]);
+
+    // Full CRUD resources (employee only)
+    Route::apiResources([
+      'discounts' => DiscountController::class,
+      'suppliers' => SupplierController::class,
+    ]);
+
+    // Additional genre routes
+    Route::prefix('genres')->controller(GenreController::class)->group(function () {
+      Route::post('restore/{genre}', 'restore')->name('genres.restore');
+      Route::get('slug/{slug}', 'showBySlug')->name('genres.showBySlug');
+    });
+
+    // Additional supplier routes
+    Route::post('suppliers/restore/{supplier}', [SupplierController::class, 'restore'])
+      ->name('suppliers.restore');
+
+    // Full routes for orders
+    Route::prefix('orders')->controller(OrderController::class)->group(function () {
+      Route::get('/', 'index')->name('orders.index');
+      Route::get('/{order_id}', 'show')->name('orders.show');
+      Route::patch('/{order_id}/status', [OrderController::class, 'updateStatus']);
+    });
+  });
 });

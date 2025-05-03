@@ -26,7 +26,7 @@ class OrderService extends BaseService
     protected Model $model = new Order(),
     protected string $filterClass = OrderFilter::class,
     protected string $sortClass = OrderSort::class,
-    protected array $with = ['customer', 'employee']
+    protected array $with = ['customer', 'employee', 'payment']
   ) {}
 
   /**
@@ -98,24 +98,24 @@ class OrderService extends BaseService
   /**
    * Get order details including order items.
    *
-   * @param int $orderId
+   * @param int $order_id
    * @return Order
    */
-  public function getOrderDetails(int $orderId): Order
+  public function getOrderDetails(int $order_id): Order
   {
-    return $this->model->with(['items.book', 'address'])->findOrFail($orderId);
+    return $this->model->with(['items.book', 'address'])->findOrFail($order_id);
   }
 
   /**
    * Cancel an order.
    *
-   * @param int $orderId
+   * @param int $order_id
    * @return Order
    * @throws Exception
    */
-  public function cancelOrder(int $orderId): Order
+  public function cancelOrder(int $order_id): Order
   {
-    $order = $this->getOrderById($orderId);
+    $order = $this->getOrderById($order_id);
 
     // Kiểm tra trạng thái đơn hàng
     if (! in_array($order->status, [OrderStatus::PENDING->value])) {
@@ -123,6 +123,29 @@ class OrderService extends BaseService
     }
 
     $order->status = OrderStatus::CANCELED->value;
+    $order->save();
+
+    return $this->getOrderDetails($order->id);
+  }
+
+  public function updateOrderStatus(int $order_id, string $status): Order
+  {
+    $order = $this->getOrderById($order_id);
+
+    $currentStatus = OrderStatus::from($order->status);
+    $newStatus = OrderStatus::from($status);
+
+    // Kiểm tra xem có thể chuyển từ trạng thái hiện tại sang trạng thái mới không
+    if (!$currentStatus->canTransitionTo($newStatus)) {
+      throw new Exception('Không thể cập nhật từ trạng thái ' . $currentStatus->description() . ' sang ' . $newStatus->description());
+    }
+
+    // Nếu chuyển từ PENDING sang APPROVED hoặc CANCELED, thêm nhân viên xử lý
+    if ($currentStatus === OrderStatus::PENDING) {
+      $order->employee_id = AuthUtils::user()->id;
+    }
+
+    $order->status = $status;
     $order->save();
 
     return $this->getOrderDetails($order->id);

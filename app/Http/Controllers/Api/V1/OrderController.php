@@ -14,63 +14,99 @@ use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Enums\ResponseMessage;
+use App\Http\Requests\V1\OrderStatusUpdateRequest;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
-    use HandlePagination;
-    use HandleExceptions;
-    use HandleValidation;
+  use HandlePagination;
+  use HandleExceptions;
+  use HandleValidation;
 
-    public function __construct(
-        private readonly OrderService $orderService,
-        private readonly string $entityName = 'order'
-    ) {
+  public function __construct(
+    private readonly OrderService $orderService,
+    private readonly string $entityName = 'order'
+  ) {}
+
+  /**
+   * Get all orders
+   *
+   * @param Request $request
+   *
+   * @return OrderCollection|JsonResponse
+   * @group Orders
+   * @authenticated
+   */
+  public function index(Request $request)
+  {
+    if (! AuthUtils::userCan('view_orders')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get all orders
-     *
-     * @param Request $request
-     *
-     * @return OrderCollection|JsonResponse
-     * @group Orders
-     * @authenticated
-     */
-    public function index(Request $request)
-    {
-        if (! AuthUtils::userCan('view_orders')) {
-            return ResponseUtils::forbidden();
-        }
+    $orders = $this->orderService->getAllOrders($request, $this->getPerPage($request));
 
-        $orders = $this->orderService->getAllOrders($request, $this->getPerPage($request));
+    return new OrderCollection($orders);
+  }
 
-        return new OrderCollection($orders);
+  /**
+   * Get order by ID
+   * @param int $order_id
+   *
+   * @return JsonResponse
+   * @group Orders
+   * @unauthenticated
+   */
+  public function show(int $order_id): JsonResponse
+  {
+    if (! AuthUtils::userCan('view_orders')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get order by ID
-     * @param int $order_id
-     *
-     * @return JsonResponse
-     * @group Orders
-     * @unauthenticated
-     */
-    public function show(int $order_id): JsonResponse
-    {
-        if (! AuthUtils::userCan('view_orders')) {
-            return ResponseUtils::forbidden();
-        }
+    try {
+      $order = $this->orderService->getOrderById($order_id);
 
-        try {
-            $order = $this->orderService->getOrderById($order_id);
-
-            return ResponseUtils::success([
-                'order' => new OrderResource($order),
-            ]);
-        } catch (Exception $e) {
-            return $this->handleException($e, $this->entityName, [
-                'order_id' => $order_id,
-            ]);
-        }
+      return ResponseUtils::success([
+        'order' => new OrderResource($order),
+      ]);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'order_id' => $order_id,
+      ]);
     }
+  }
+
+  /**
+   * Update order status
+   * @param Request $request
+   * @param int $order_id
+   *
+   * @return JsonResponse
+   * @group Orders
+   * @authenticated
+   */
+  public function updateStatus(OrderStatusUpdateRequest $request, int $order_id): JsonResponse
+  {
+    if (! AuthUtils::userCan('edit_orders')) {
+      return ResponseUtils::forbidden();
+    }
+
+    try {
+      $validatedData = $request->validated();
+      Order::findOrFail($order_id);
+
+      $order = $this->orderService->updateOrderStatus(
+        $order_id,
+        $validatedData['status']
+      );
+
+      return ResponseUtils::success([
+        'order' => new OrderResource($order),
+      ], ResponseMessage::UPDATED_ORDER->value);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'order_id' => $order_id,
+      ]);
+    }
+  }
 }
