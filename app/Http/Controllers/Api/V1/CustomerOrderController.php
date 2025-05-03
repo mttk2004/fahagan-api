@@ -18,124 +18,128 @@ use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CustomerOrderController extends Controller
 {
-    use HandleExceptions;
-    use HandlePagination;
+  use HandleExceptions;
+  use HandlePagination;
 
-    public function __construct(
-        private readonly OrderService $orderService,
-        private readonly string $entityName = 'order'
-    ) {
+  public function __construct(
+    private readonly OrderService $orderService,
+    private readonly string $entityName = 'order'
+  ) {}
+
+  /**
+   * Get all orders of the authenticated customer.
+   *
+   * @param Request $request
+   * @return JsonResponse|OrderCollection
+   * @group Customer.Order
+   * @authenticated
+   */
+  public function index(Request $request)
+  {
+    $orders = $this->orderService->getCustomerOrders($request, $this->getPerPage($request));
+
+    return new OrderCollection($orders);
+  }
+
+  /**
+   * Get order of the authenticated customer by ID.
+   *
+   * @param Order $order
+   * @return JsonResponse
+   * @group Customer.Order
+   * @authenticated
+   */
+  public function show(Order $order)
+  {
+    $user = AuthUtils::user();
+
+    // Kiểm tra đơn hàng có thuộc về người dùng hiện tại không
+    if ($order->customer_id != $user->id) {
+      Log::error('loi forbidden', [
+        'user_id' => $user->id,
+        'order.customer_id' => $order->customer_id,
+      ]);
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get all orders of the authenticated customer.
-     *
-     * @param Request $request
-     * @return JsonResponse|OrderCollection
-     * @group Customer.Order
-     * @authenticated
-     */
-    public function index(Request $request)
-    {
-        $orders = $this->orderService->getCustomerOrders($request, $this->getPerPage($request));
+    $orderWithDetails = $this->orderService->getOrderDetails($order->id);
 
-        return new OrderCollection($orders);
-    }
+    return ResponseUtils::success([
+      'order' => new OrderResource($orderWithDetails),
+    ]);
+  }
 
-    /**
-     * Get order of the authenticated customer by ID.
-     *
-     * @param Order $order
-     * @return JsonResponse
-     * @group Customer.Order
-     * @authenticated
-     */
-    public function show(Order $order)
-    {
-        $user = AuthUtils::user();
+  /**
+   * Create a new order from the cart of the authenticated customer.
+   *
+   * @param CustomerOrderStoreRequest $request
+   * @return JsonResponse
+   * @group Customer.Order
+   * @authenticated
+   */
+  public function store(CustomerOrderStoreRequest $request)
+  {
+    try {
+      $order = $this->orderService->createOrder(
+        OrderDTO::fromRequest($request->validated())
+      );
 
-        // Kiểm tra đơn hàng có thuộc về người dùng hiện tại không
-        if ($order->customer_id !== $user->id) {
-            return ResponseUtils::forbidden();
-        }
-
-        $orderWithDetails = $this->orderService->getOrderDetails($order->id);
-
-        return ResponseUtils::success([
-          'order' => new OrderResource($orderWithDetails),
-        ]);
-    }
-
-    /**
-     * Create a new order from the cart of the authenticated customer.
-     *
-     * @param CustomerOrderStoreRequest $request
-     * @return JsonResponse
-     * @group Customer.Order
-     * @authenticated
-     */
-    public function store(CustomerOrderStoreRequest $request)
-    {
-        try {
-            $order = $this->orderService->createOrder(
-                OrderDTO::fromRequest($request->validated())
-            );
-
-            return ResponseUtils::created([
-              'order' => new OrderResource($order),
-            ], ResponseMessage::CREATED_ORDER->value);
-        } catch (Exception $e) {
-            return $this->handleException(
-                $e,
-                $this->entityName,
-                [
-                'order' => $request->validated(),
+      return ResponseUtils::created([
+        'order' => new OrderResource($order),
+      ], ResponseMessage::CREATED_ORDER->value);
+    } catch (Exception $e) {
+      return $this->handleException(
+        $e,
+        $this->entityName,
+        [
+          'order' => $request->validated(),
         ],
-            );
-        }
+      );
+    }
+  }
+
+  /**
+   * Cancel an order of the authenticated customer.
+   *
+   * @param Order $order
+   * @return JsonResponse
+   * @group Customer.Order
+   * @authenticated
+   */
+  public function cancel(Order $order)
+  {
+    $user = AuthUtils::user();
+
+    // Kiểm tra đơn hàng có thuộc về người dùng hiện tại không
+    if ($order->customer_id != $user->id) {
+      return ResponseUtils::forbidden('Bạn không có quyền hủy đơn hàng này.');
     }
 
-    /**
-     * Cancel an order of the authenticated customer.
-     *
-     * @param Order $order
-     * @return JsonResponse
-     * @group Customer.Order
-     * @authenticated
-     */
-    public function cancel(Order $order)
-    {
-        $user = AuthUtils::user();
+    // Chỉ cho phép hủy đơn hàng khi đơn hàng đang ở trạng thái chờ xác nhận
+    if (! in_array($order->status, [OrderStatus::PENDING->value])) {
+      return ResponseUtils::badRequest('Không thể hủy đơn hàng ở trạng thái hiện tại.');
+    }
 
-        // Kiểm tra đơn hàng có thuộc về người dùng hiện tại không
-        if ($order->user_id !== $user->id) {
-            return ResponseUtils::forbidden('Bạn không có quyền hủy đơn hàng này.');
-        }
+    try {
+      $cancelledOrder = $this->orderService->cancelOrder($order->id);
 
-        // Chỉ cho phép hủy đơn hàng khi đơn hàng đang ở trạng thái chờ xác nhận
-        if (! in_array($order->status, [OrderStatus::PENDING->value])) {
-            return ResponseUtils::badRequest('Không thể hủy đơn hàng ở trạng thái hiện tại.');
-        }
-
-        try {
-            $cancelledOrder = $this->orderService->cancelOrder($order->id);
-
-            return ResponseUtils::success([
-              'order' => new OrderResource($cancelledOrder),
-            ], 'Đơn hàng đã được hủy thành công.');
-        } catch (Exception $e) {
-            return $this->handleException(
-                $e,
-                $this->entityName,
-                [
-                'customer_id' => $user->id,
-                'order' => $order->id,
-                'status' => $order->status,
+      return ResponseUtils::success([
+        'order' => new OrderResource($cancelledOrder),
+      ], 'Đơn hàng đã được hủy thành công.');
+    } catch (Exception $e) {
+      return $this->handleException(
+        $e,
+        $this->entityName,
+        [
+          'customer_id' => $user->id,
+          'order' => $order->id,
+          'status' => $order->status,
         ],
-            );
-        }
+      );
     }
+  }
 }
