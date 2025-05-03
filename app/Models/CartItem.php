@@ -7,26 +7,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CartItem extends Model
 {
-    public $timestamps = false;
+  public $timestamps = false;
 
-    public $incrementing = false;
+  protected $fillable
+  = [
+    'user_id',
+    'book_id',
+    'quantity',
+  ];
 
-    protected $primaryKey = null;
+  public function user(): BelongsTo
+  {
+    return $this->belongsTo(User::class);
+  }
 
-    protected $fillable
-        = [
-            'user_id',
-            'book_id',
-            'quantity',
-        ];
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function book(): BelongsTo
-    {
-        return $this->belongsTo(Book::class);
-    }
+  public function book(): BelongsTo
+  {
+    return $this->belongsTo(Book::class);
+  }
 }
