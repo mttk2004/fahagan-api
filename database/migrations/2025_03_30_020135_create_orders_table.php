@@ -48,7 +48,7 @@ return new class extends Migration {
 
       $table->timestamps();
 
-      $table->index(['user_id', 'status', 'ordered_at'], 'orders_index');
+      $table->index(['customer_id', 'employee_id', 'status', 'ordered_at'], 'orders_index');
     });
 
     Schema::create('order_items', function (Blueprint $table) {

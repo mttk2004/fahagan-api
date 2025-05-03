@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Actions\Orders\CreateOrderAction;
 use App\Constants\ApplicationConstants;
+use App\DTOs\Order\OrderDTO;
 use App\Enums\OrderStatus;
 use App\Filters\OrderFilter;
 use App\Http\Sorts\V1\OrderSort;
@@ -20,13 +22,13 @@ class OrderService extends BaseService
    * OrderService constructor.
    */
   public function __construct(
-    private readonly CartItemService $cartItemService
-  ) {
-    $this->model = new Order();
-    $this->filterClass = OrderFilter::class;
-    $this->sortClass = OrderSort::class;
-    $this->with = ['customer'];
-  }
+    private readonly CartItemService $cartItemService,
+    private readonly CreateOrderAction $createOrderAction,
+    protected Model $model = new Order(),
+    protected string $filterClass = OrderFilter::class,
+    protected string $sortClass = OrderSort::class,
+    protected array $with = ['customer']
+  ) {}
 
   /**
    * Get all orders with pagination and filtering.
@@ -49,6 +51,18 @@ class OrderService extends BaseService
   public function getOrderById(int $id): Model
   {
     return $this->getById($id);
+  }
+
+  /**
+   * Create a new order.
+   *
+   * @param OrderDTO $orderDTO
+   * @return Order
+   * @throws Exception
+   */
+  public function createOrder(OrderDTO $orderDTO): Order
+  {
+    return $this->createOrderAction->execute($orderDTO, $this->with);
   }
 
   /**
@@ -96,71 +110,6 @@ class OrderService extends BaseService
     return $this->model->with(['items.book', 'address'])->findOrFail($orderId);
   }
 
-  /**
-   * Create order from cart.
-   *
-   * @param User $user
-   * @param array $orderData
-   * @return Order
-   * @throws Exception
-   */
-  public function createOrderFromCart(User $user, array $orderData): Order
-  {
-    // Kiểm tra giỏ hàng có trống không
-    $cartItems = $this->cartItemService->getCartItems($user);
-    if ($cartItems->isEmpty()) {
-      throw new Exception('Giỏ hàng của bạn đang trống.');
-    }
-
-    // Bắt đầu transaction
-    DB::beginTransaction();
-
-    try {
-      // Tạo đơn hàng
-      $order = new Order();
-      $order->user_id = $user->id;
-      $order->address_id = $orderData['shipping_address_id'];
-      $order->status = OrderStatus::PENDING->value;
-      $order->payment_method = $orderData['payment_method'];
-      $order->note = $orderData['note'] ?? null;
-
-      // TODO: Xử lý mã giảm giá nếu có
-      $order->coupon_code = $orderData['coupon_code'] ?? null;
-
-      // Tính tổng tiền
-      $total = 0;
-      foreach ($cartItems as $cartItem) {
-        $total += $cartItem->book->price * $cartItem->quantity;
-      }
-
-      $order->subtotal = $total;
-      $order->shipping_fee = 0; // TODO: Tính phí vận chuyển
-      $order->discount = 0; // TODO: Tính giảm giá
-      $order->total = $total + $order->shipping_fee - $order->discount;
-
-      $order->save();
-
-      // Tạo các order item
-      foreach ($cartItems as $cartItem) {
-        $order->items()->create([
-          'book_id' => $cartItem->book_id,
-          'quantity' => $cartItem->quantity,
-          'price' => $cartItem->book->price,
-        ]);
-      }
-
-      // Xóa giỏ hàng
-      $this->cartItemService->clearCart($user);
-
-      DB::commit();
-
-      return $this->getOrderDetails($order->id);
-    } catch (Exception $e) {
-      DB::rollBack();
-
-      throw $e;
-    }
-  }
 
   /**
    * Cancel an order.
@@ -174,7 +123,7 @@ class OrderService extends BaseService
     $order = $this->getOrderById($orderId);
 
     // Kiểm tra trạng thái đơn hàng
-    if (! in_array($order->status, [OrderStatus::PENDING->value, OrderStatus::CONFIRMED->value])) {
+    if (! in_array($order->status, [OrderStatus::PENDING->value, OrderStatus::PAID->value])) {
       throw new Exception('Không thể hủy đơn hàng ở trạng thái hiện tại.');
     }
 
