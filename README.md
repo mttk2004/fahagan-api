@@ -23,7 +23,7 @@ Chạy các lệnh sau:
   php artisan db:seed
 ```
 
-**Lưu ý** nếu đã có dữ liệu rồi thì chạy **`php artisan migrate:fresh`** thay cho `php artisan migrate`.
+**Lưu ý** nếu đã có dữ liệu rồi thì chạy **`php artisan db:fresh`** để có dữ liệu mới nhất.
 
 ### Chạy server:
 
@@ -41,20 +41,44 @@ Chạy lệnh sau để chạy server:
 
 Sau khi chạy lệnh trên, tài liệu sẽ được tạo trong thư mục `public/docs`, có thể mở bằng cách truy cập vào đường dẫn `http://localhost:8000/docs` (hoặc đường dẫn tương ứng với server của bạn).
 
-```typescript
-// Ví dụ khi gọi API lấy danh sách sách
-const getBooks = async (): Promise<ApiCollectionResponse<BookResource>> => {
-    const response = await fetch("/api/v1/books");
-    return response.json();
-};
 
-// Ví dụ khi gọi API lấy chi tiết một cuốn sách
-const getBook = async (
-    id: number
-): Promise<ApiResourceResponse<BookResource>> => {
-    const response = await fetch(`/api/v1/books/${id}`);
-    return response.json();
-};
-```
+## Quy trình thanh toán VNPay
 
-_Last updated: 2 April, 2025_
+### Luồng xử lý thanh toán VNPay
+
+1. **Khách hàng tạo đơn hàng với phương thức thanh toán VNPay**:
+   - Hệ thống tạo order với status = PENDING
+   - Payment được tạo với status = PENDING, method = 'vnpay'
+   - URL thanh toán VNPay được trả về cho khách hàng
+
+2. **Khách hàng thanh toán tại VNPay**:
+   - Khách hàng được chuyển hướng đến cổng thanh toán VNPay
+   - Sau khi thanh toán, VNPay gửi callback đến hệ thống
+
+3. **Hệ thống xử lý callback từ VNPay**:
+   - Kiểm tra tính hợp lệ của callback
+   - Cập nhật payment.status thành PAID hoặc FAILED
+   - **Lưu ý**: Order.status vẫn giữ là PENDING (chưa được duyệt)
+
+4. **Nhân viên duyệt đơn hàng**:
+   - Xem danh sách đơn hàng đang ở trạng thái PENDING
+   - Kiểm tra thông tin đơn hàng, bao gồm trạng thái thanh toán (payment.status)
+   - Nếu payment.status = PAID, nhân viên có thể duyệt đơn (cập nhật order.status thành APPROVED)
+   - Khi đơn được duyệt, hệ thống tự động ghi nhận employee_id và thời gian duyệt đơn
+
+### Hướng dẫn cho nhân viên duyệt đơn hàng
+
+1. Đăng nhập vào hệ thống với quyền nhân viên
+2. Vào phần quản lý đơn hàng, lọc đơn hàng theo trạng thái PENDING
+3. Kiểm tra các đơn hàng có phương thức thanh toán là VNPay
+4. Chỉ duyệt đơn hàng khi thấy payment.status = PAID
+5. Để duyệt đơn, sử dụng API:
+   ```
+   PATCH /api/v1/orders/{order_id}/status
+   {
+     "status": "approved"
+   }
+   ```
+6. Sau khi duyệt đơn, hệ thống sẽ tự động cập nhật trạng thái đơn hàng và lưu thông tin nhân viên duyệt đơn
+
+_Last updated: 4 May, 2025_
