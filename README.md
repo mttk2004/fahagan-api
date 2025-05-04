@@ -58,6 +58,7 @@ Sau khi chạy lệnh trên, tài liệu sẽ được tạo trong thư mục `p
 3. **Hệ thống xử lý callback từ VNPay**:
    - Kiểm tra tính hợp lệ của callback
    - Cập nhật payment.status thành PAID hoặc FAILED
+   - Chuyển hướng người dùng đến trang frontend tương ứng (thành công/thất bại)
    - **Lưu ý**: Order.status vẫn giữ là PENDING (chưa được duyệt)
 
 4. **Nhân viên duyệt đơn hàng**:
@@ -65,6 +66,19 @@ Sau khi chạy lệnh trên, tài liệu sẽ được tạo trong thư mục `p
    - Kiểm tra thông tin đơn hàng, bao gồm trạng thái thanh toán (payment.status)
    - Nếu payment.status = PAID, nhân viên có thể duyệt đơn (cập nhật order.status thành APPROVED)
    - Khi đơn được duyệt, hệ thống tự động ghi nhận employee_id và thời gian duyệt đơn
+
+### Cấu hình URL chuyển hướng sau thanh toán
+
+Sau khi thanh toán VNPay, người dùng sẽ được chuyển hướng về trang frontend. Các URL chuyển hướng được cấu hình trong `.env`:
+
+```
+VNP_CLIENT_SUCCESS_URL=http://localhost:3000/payment/success
+VNP_CLIENT_FAILED_URL=http://localhost:3000/payment/failed
+```
+
+Hệ thống chuyển hướng người dùng với các thông tin sau:
+- URL thành công: `{VNP_CLIENT_SUCCESS_URL}?orderId={order_id}`
+- URL thất bại: `{VNP_CLIENT_FAILED_URL}?orderId={order_id}` hoặc `{VNP_CLIENT_FAILED_URL}?message={error_message}`
 
 ### Hướng dẫn cho nhân viên duyệt đơn hàng
 
