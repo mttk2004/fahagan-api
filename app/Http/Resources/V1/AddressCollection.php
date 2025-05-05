@@ -7,18 +7,18 @@ use Illuminate\Http\Request;
 
 class AddressCollection extends BaseCollection
 {
-  public function toArray(Request $request): array
-  {
-    if ($this->getIsDirectResponse()) {
-      return [
-        'status' => 200,
-        'message' => ResponseMessage::LOAD_ADDRESSES_SUCCESS,
-        'data' => $this->collection,
-      ];
-    }
+    public function toArray(Request $request): array
+    {
+        if ($this->getIsDirectResponse()) {
+            return [
+              'status' => 200,
+              'message' => ResponseMessage::LOAD_ADDRESSES_SUCCESS,
+              'data' => $this->collection,
+            ];
+        }
 
-    return [
-      'data' => $this->collection,
-    ];
-  }
+        return [
+          'data' => $this->collection,
+        ];
+    }
 }
