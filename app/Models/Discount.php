@@ -14,67 +14,83 @@ use Illuminate\Support\Facades\App;
  */
 class Discount extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+  use HasFactory;
+  use SoftDeletes;
 
-    public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
-    protected $keyType = 'string'; // Kiểu khóa chính là string
+  public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
-    protected static function boot(): void
-    {
-        parent::boot();
+  protected $keyType = 'string'; // Kiểu khóa chính là string
 
-        static::creating(function ($model) {
-            $model->{$model->getKeyName()} = App::make('snowflake')->id();
-        });
-    }
+  protected static function boot(): void
+  {
+    parent::boot();
 
-    protected $fillable
-        = [
-          'name',
-          'discount_type',
-          'discount_value',
-          'target_type',
-          'start_date',
-          'end_date',
-          'description',
-          'is_active',
-        ];
+    static::creating(function ($model) {
+      $model->{$model->getKeyName()} = App::make('snowflake')->id();
+    });
+  }
 
-    protected function casts(): array
-    {
-        return [
-          'start_date' => 'datetime',
-          'end_date' => 'datetime',
-          'created_at' => 'datetime',
-          'updated_at' => 'datetime',
-          'deleted_at' => 'datetime',
-          'is_active' => 'boolean',
-        ];
-    }
+  protected $fillable
+  = [
+    'name',
+    'discount_type',
+    'discount_value',
+    'target_type',
+    'start_date',
+    'end_date',
+    'description',
+    'is_active',
+  ];
 
-    public function targets(): HasMany
-    {
-        return $this->hasMany(DiscountTarget::class);
-    }
+  protected function casts(): array
+  {
+    return [
+      'start_date' => 'datetime',
+      'end_date' => 'datetime',
+      'created_at' => 'datetime',
+      'updated_at' => 'datetime',
+      'deleted_at' => 'datetime',
+      'is_active' => 'boolean',
+    ];
+  }
 
-    /**
-     * Lấy các sách được áp dụng giảm giá
-     */
-    public function books()
-    {
-        return $this->belongsToMany(Book::class, 'discount_targets', 'discount_id', 'target_id')
-          ->where('target_type', 'book');
-    }
+  public function targets(): HasMany
+  {
+    return $this->hasMany(DiscountTarget::class);
+  }
 
-    /**
-     * Kiểm tra xem mã giảm giá có hợp lệ không
-     */
-    public function isValid(): bool
-    {
-        $now = now();
+  /**
+   * Lấy các sách được áp dụng giảm giá
+   */
+  public function books()
+  {
+    return $this->belongsToMany(Book::class, 'discount_targets', 'discount_id', 'target_id');
+  }
 
-        return $this->is_active && $now->between($this->start_date, $this->end_date);
-    }
+  /**
+   * Kiểm tra xem discount có áp dụng cho order không
+   */
+  public function isOrderDiscount(): bool
+  {
+    return $this->target_type === 'order';
+  }
+
+  /**
+   * Kiểm tra xem discount có áp dụng cho sách không
+   */
+  public function isBookDiscount(): bool
+  {
+    return $this->target_type === 'book';
+  }
+
+  /**
+   * Kiểm tra xem mã giảm giá có hợp lệ không
+   */
+  public function isValid(): bool
+  {
+    $now = now();
+
+    return $this->is_active && $now->between($this->start_date, $this->end_date);
+  }
 }

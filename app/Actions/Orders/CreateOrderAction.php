@@ -66,10 +66,13 @@ class CreateOrderAction extends BaseAction
         $quantity = $cartItem->quantity;
         $book = Book::find($book_id);
         $book_price = $book->price;
-        $discount_value = $book->getDiscountedPrice();
+
+        // Tính discount value cho sách
+        $discountedPrice = $book->getDiscountedPrice();
+        $discount_value = $book_price - $discountedPrice;
 
         // Cộng dồn vào tổng số tiền
-        $totalAmount += ($book_price - $discount_value) * $quantity;
+        $totalAmount += $discountedPrice * $quantity;
 
         // Xóa cart item
         $cartItem->delete();
@@ -87,18 +90,30 @@ class CreateOrderAction extends BaseAction
         $book->increment('sold_count', $quantity);
       }
 
+      // Tìm giảm giá tốt nhất cho đơn hàng
+      $bestOrderDiscount = $order->getBestDiscount();
+      $orderDiscountValue = 0;
+
+      if ($bestOrderDiscount) {
+        $orderDiscountValue = $order->getDiscountedValue();
+      }
+
+      // Tính tổng số tiền cuối cùng sau khi áp dụng giảm giá đơn hàng
+      $finalAmount = max(0, $totalAmount - $orderDiscountValue);
+
       // Xác định trạng thái thanh toán dựa trên phương thức
       $paymentStatus = PaymentStatus::PENDING;
 
       // Nếu là thanh toán tiền mặt, đánh dấu là đã thanh toán ngay
-      if ($orderDTO->method === 'cash') {
+      if ($orderDTO->method === 'cod') {
         $paymentStatus = PaymentStatus::PAID;
       }
 
       // Tạo payment cho order
       $order->payment()->create([
         'method' => $orderDTO->method,
-        'total_amount' => $totalAmount,
+        'total_amount' => $finalAmount,
+        'discount_value' => $orderDiscountValue,
         'status' => $paymentStatus,
       ]);
 
