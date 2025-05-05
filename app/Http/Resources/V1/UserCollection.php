@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\V1;
 
+use App\Enums\ResponseMessage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -12,10 +13,8 @@ class UserCollection extends ResourceCollection
   {
     return [
       'status' => 200,
-      'message' => 'Danh sách người dùng đã được tải thành công.',
-      'data' => [
-        'users' => $this->collection,
-      ],
+      'message' => ResponseMessage::LOAD_USERS_SUCCESS,
+      'data' => $this->collection,
     ];
   }
 }
