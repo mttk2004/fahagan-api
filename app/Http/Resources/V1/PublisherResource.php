@@ -14,24 +14,24 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PublisherResource extends JsonResource
 {
-    public function toArray(Request $request): array
-    {
-        return [
-          'type' => 'publisher',
-          'id' => $this->id,
-          'attributes' => [
-            'name' => $this->name,
-            'biography' => $this->when(
-                $request->routeIs('publishers.*'),
-                $this->biography
-            ),
-          ],
-          'relationships' => $this->when(
-              $request->routeIs('publishers.show', 'publishers.store'),
-              [
-              'books' => new BookCollection($this->publishedBooks),
+  public function toArray(Request $request): array
+  {
+    return [
+      'type' => 'publisher',
+      'id' => $this->id,
+      'attributes' => [
+        'name' => $this->name,
+        'biography' => $this->when(
+          $request->routeIs('publishers.show', 'publishers.store'),
+          $this->biography
+        ),
+      ],
+      'relationships' => $this->when(
+        $request->routeIs('publishers.show', 'publishers.store'),
+        [
+          'books' => new BookCollection($this->publishedBooks),
         ]
-          ),
-        ];
-    }
+      ),
+    ];
+  }
 }
