@@ -58,10 +58,7 @@ class OrderResource extends JsonResource
           'items' => CartItemResource::collection($this->items),
           'payment' => new PaymentResource($this->payment),
         ]
-      ),
-      'links' => $this->when($request->routeIs('orders.show', 'customer.orders.show'), [
-        'self' => route('orders.show', ['order_id' => $this->id]),
-      ]),
+      )
     ];
   }
 }
