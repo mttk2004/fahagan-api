@@ -13,155 +13,155 @@ use Illuminate\Support\Facades\App;
 
 class Order extends Model
 {
-  use HasFactory;
+    use HasFactory;
 
-  public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
+    public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
-  protected $keyType = 'string'; // Kiểu khóa chính là string
+    protected $keyType = 'string'; // Kiểu khóa chính là string
 
-  protected static function boot(): void
-  {
-    parent::boot();
+    protected static function boot(): void
+    {
+        parent::boot();
 
-    static::creating(function ($model) {
-      $model->{$model->getKeyName()} = App::make('snowflake')->id();
-    });
-  }
-
-  protected $fillable
-  = [
-    'customer_id',
-    'employee_id',
-    'status',
-    'shopping_name',
-    'shopping_phone',
-    'shopping_city',
-    'shopping_district',
-    'shopping_ward',
-    'shopping_address_line',
-    'ordered_at',
-    'approved_at',
-    'delivered_at',
-    'completed_at',
-    'canceled_at',
-  ];
-
-  public function customer(): BelongsTo
-  {
-    return $this->belongsTo(User::class, 'customer_id');
-  }
-
-  public function employee(): BelongsTo|null
-  {
-    return $this->belongsTo(User::class, 'employee_id') ?? null;
-  }
-
-  public function payment(): HasOne|null
-  {
-    return $this->hasOne(Payment::class);
-  }
-
-  public function items(): HasMany
-  {
-    return $this->hasMany(OrderItem::class);
-  }
-
-  /**
-   * Lấy tất cả các mã giảm giá hợp lệ cho đơn hàng (loại order)
-   */
-  public function getActiveDiscounts(): Collection
-  {
-    $now = Carbon::now();
-
-    return Discount::where('target_type', 'order')
-      ->where('is_active', true)
-      ->where('start_date', '<=', $now)
-      ->where('end_date', '>=', $now)
-      ->get();
-  }
-
-  /**
-   * Tìm giảm giá tốt nhất để áp dụng cho đơn hàng
-   */
-  public function getBestDiscount(): ?Discount
-  {
-    $totalAmount = $this->getTotalAmount();
-
-    return $this->getActiveDiscounts()->sortByDesc(function ($discount) use ($totalAmount) {
-      if ($discount->discount_type === 'percentage') {
-        // Kiểm tra điều kiện min_purchase_amount
-        if ($discount->min_purchase_amount > 0 && $totalAmount < $discount->min_purchase_amount) {
-          return 0; // Không đủ điều kiện, trả về 0 để không được chọn
-        }
-
-        // Kiểm tra điều kiện max_discount_amount
-        $discountAmount = ($totalAmount * $discount->discount_value) / 100;
-        $discountValue = $discount->max_discount_amount
-          ? min($discountAmount, $discount->max_discount_amount)
-          : $discountAmount;
-
-        return $discountValue / $totalAmount * 100; // Chuyển thành tương đương %
-      } else { // fixed
-        // Kiểm tra điều kiện min_purchase_amount
-        if ($discount->min_purchase_amount > 0 && $totalAmount < $discount->min_purchase_amount) {
-          return 0; // Không đủ điều kiện, trả về 0 để không được chọn
-        }
-
-        // Kiểm tra điều kiện max_discount_amount
-        $discountValue = $discount->max_discount_amount
-          ? min($discount->discount_value, $discount->max_discount_amount)
-          : $discount->discount_value;
-
-        return $discountValue / $totalAmount * 100; // Chuyển thành tương đương %
-      }
-    })->first();
-  }
-
-  /**
-   * Tính giá trị giảm giá tốt nhất cho đơn hàng
-   */
-  public function getDiscountedValue(): float
-  {
-    $totalAmount = $this->getTotalAmount();
-    $bestDiscount = $this->getBestDiscount();
-
-    if (! $bestDiscount) {
-      return 0;
+        static::creating(function ($model) {
+            $model->{$model->getKeyName()} = App::make('snowflake')->id();
+        });
     }
 
-    if ($bestDiscount->discount_type === 'fixed') {
-      $discountValue = $bestDiscount->max_discount_amount
-        ? min($bestDiscount->discount_value, $bestDiscount->max_discount_amount)
-        : $bestDiscount->discount_value;
+    protected $fillable
+        = [
+          'customer_id',
+          'employee_id',
+          'status',
+          'shopping_name',
+          'shopping_phone',
+          'shopping_city',
+          'shopping_district',
+          'shopping_ward',
+          'shopping_address_line',
+          'ordered_at',
+          'approved_at',
+          'delivered_at',
+          'completed_at',
+          'canceled_at',
+        ];
 
-      return min($totalAmount, $discountValue);
-    } else { // percentage
-      $discountAmount = ($totalAmount * $bestDiscount->discount_value) / 100;
-      $discountValue = $bestDiscount->max_discount_amount
-        ? min($discountAmount, $bestDiscount->max_discount_amount)
-        : $discountAmount;
-
-      return min($totalAmount, $discountValue);
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'customer_id');
     }
-  }
 
-  public function getTotalAmount(): float
-  {
-    return $this->items->sum(function ($item) {
-      return ($item->price_at_time - $item->discount_value) * $item->quantity;
-    });
-  }
+    public function employee(): BelongsTo|null
+    {
+        return $this->belongsTo(User::class, 'employee_id') ?? null;
+    }
 
-  protected function casts(): array
-  {
-    return [
-      'ordered_at' => 'datetime',
-      'approved_at' => 'datetime',
-      'delivered_at' => 'datetime',
-      'completed_at' => 'datetime',
-      'canceled_at' => 'datetime',
-      'created_at' => 'datetime',
-      'updated_at' => 'datetime',
-    ];
-  }
+    public function payment(): HasOne|null
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Lấy tất cả các mã giảm giá hợp lệ cho đơn hàng (loại order)
+     */
+    public function getActiveDiscounts(): Collection
+    {
+        $now = Carbon::now();
+
+        return Discount::where('target_type', 'order')
+          ->where('is_active', true)
+          ->where('start_date', '<=', $now)
+          ->where('end_date', '>=', $now)
+          ->get();
+    }
+
+    /**
+     * Tìm giảm giá tốt nhất để áp dụng cho đơn hàng
+     */
+    public function getBestDiscount(): ?Discount
+    {
+        $totalAmount = $this->getTotalAmount();
+
+        return $this->getActiveDiscounts()->sortByDesc(function ($discount) use ($totalAmount) {
+            if ($discount->discount_type === 'percentage') {
+                // Kiểm tra điều kiện min_purchase_amount
+                if ($discount->min_purchase_amount > 0 && $totalAmount < $discount->min_purchase_amount) {
+                    return 0; // Không đủ điều kiện, trả về 0 để không được chọn
+                }
+
+                // Kiểm tra điều kiện max_discount_amount
+                $discountAmount = ($totalAmount * $discount->discount_value) / 100;
+                $discountValue = $discount->max_discount_amount
+                  ? min($discountAmount, $discount->max_discount_amount)
+                  : $discountAmount;
+
+                return $discountValue / $totalAmount * 100; // Chuyển thành tương đương %
+            } else { // fixed
+                // Kiểm tra điều kiện min_purchase_amount
+                if ($discount->min_purchase_amount > 0 && $totalAmount < $discount->min_purchase_amount) {
+                    return 0; // Không đủ điều kiện, trả về 0 để không được chọn
+                }
+
+                // Kiểm tra điều kiện max_discount_amount
+                $discountValue = $discount->max_discount_amount
+                  ? min($discount->discount_value, $discount->max_discount_amount)
+                  : $discount->discount_value;
+
+                return $discountValue / $totalAmount * 100; // Chuyển thành tương đương %
+            }
+        })->first();
+    }
+
+    /**
+     * Tính giá trị giảm giá tốt nhất cho đơn hàng
+     */
+    public function getDiscountedValue(): float
+    {
+        $totalAmount = $this->getTotalAmount();
+        $bestDiscount = $this->getBestDiscount();
+
+        if (! $bestDiscount) {
+            return 0;
+        }
+
+        if ($bestDiscount->discount_type === 'fixed') {
+            $discountValue = $bestDiscount->max_discount_amount
+              ? min($bestDiscount->discount_value, $bestDiscount->max_discount_amount)
+              : $bestDiscount->discount_value;
+
+            return min($totalAmount, $discountValue);
+        } else { // percentage
+            $discountAmount = ($totalAmount * $bestDiscount->discount_value) / 100;
+            $discountValue = $bestDiscount->max_discount_amount
+              ? min($discountAmount, $bestDiscount->max_discount_amount)
+              : $discountAmount;
+
+            return min($totalAmount, $discountValue);
+        }
+    }
+
+    public function getTotalAmount(): float
+    {
+        return $this->items->sum(function ($item) {
+            return ($item->price_at_time - $item->discount_value) * $item->quantity;
+        });
+    }
+
+    protected function casts(): array
+    {
+        return [
+          'ordered_at' => 'datetime',
+          'approved_at' => 'datetime',
+          'delivered_at' => 'datetime',
+          'completed_at' => 'datetime',
+          'canceled_at' => 'datetime',
+          'created_at' => 'datetime',
+          'updated_at' => 'datetime',
+        ];
+    }
 }
