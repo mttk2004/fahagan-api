@@ -12,209 +12,212 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class OrderControllerTest extends TestCase
 {
-  use RefreshDatabase;
+    use RefreshDatabase;
 
-  private User $employee;
-  private User $customer;
-  private Book $book;
-  private Order $order;
+    private User $employee;
 
-  protected function setUp(): void
-  {
-    parent::setUp();
+    private User $customer;
 
-    // Chạy seeder để tạo các quyền cần thiết
-    $this->seed(TestPermissionSeeder::class);
+    private Book $book;
 
-    // Tạo người dùng employee (không phải customer)
-    $this->employee = User::factory()->create([
-      'is_customer' => false,
-      'password' => Hash::make('password'),
-    ]);
+    private Order $order;
 
-    // Tạo role Sales Staff và gán cho employee
-    Role::create(['name' => 'Sales Staff']);
-    $this->employee->assignRole('Sales Staff');
+    protected function setUp(): void
+    {
+        parent::setUp();
 
-    // Tạo người dùng customer
-    $this->customer = User::factory()->create([
-      'is_customer' => true,
-      'password' => Hash::make('password'),
-    ]);
+        // Chạy seeder để tạo các quyền cần thiết
+        $this->seed(TestPermissionSeeder::class);
 
-    // Tạo một sách để test với số lượng đủ
-    $this->book = Book::factory()->create([
-      'available_count' => 10,
-      'sold_count' => 0,
-    ]);
+        // Tạo người dùng employee (không phải customer)
+        $this->employee = User::factory()->create([
+          'is_customer' => false,
+          'password' => Hash::make('password'),
+        ]);
 
-    // Tạo đơn hàng mới
-    $this->order = Order::create([
-      'customer_id' => $this->customer->id,
-      'shopping_name' => 'Test Customer',
-      'shopping_phone' => '0938244325',
-      'shopping_city' => 'HCM',
-      'shopping_district' => '1',
-      'shopping_ward' => '1',
-      'shopping_address_line' => '123 Test Street',
-      'status' => OrderStatus::PENDING->value,
-    ]);
+        // Tạo role Sales Staff và gán cho employee
+        Role::create(['name' => 'Sales Staff']);
+        $this->employee->assignRole('Sales Staff');
 
-    // Tạo order item
-    $this->order->items()->create([
-      'book_id' => $this->book->id,
-      'quantity' => 2,
-      'price_at_time' => $this->book->price,
-      'discount_value' => 0,
-    ]);
-  }
+        // Tạo người dùng customer
+        $this->customer = User::factory()->create([
+          'is_customer' => true,
+          'password' => Hash::make('password'),
+        ]);
 
-  #[Test]
-  public function employee_can_view_all_orders()
-  {
-    // Đảm bảo người dùng có quyền xem đơn hàng
-    $this->employee->givePermissionTo('view_orders');
-    Sanctum::actingAs($this->employee);
+        // Tạo một sách để test với số lượng đủ
+        $this->book = Book::factory()->create([
+          'available_count' => 10,
+          'sold_count' => 0,
+        ]);
 
-    // Tạo thêm 2 đơn hàng khác
-    for ($i = 0; $i < 2; $i++) {
-      Order::create([
-        'customer_id' => $this->customer->id,
-        'shopping_name' => 'Test Customer',
-        'shopping_phone' => '0938244325',
-        'shopping_city' => 'HCM',
-        'shopping_district' => '1',
-        'shopping_ward' => '1',
-        'shopping_address_line' => '123 Test Street',
-      ]);
+        // Tạo đơn hàng mới
+        $this->order = Order::create([
+          'customer_id' => $this->customer->id,
+          'shopping_name' => 'Test Customer',
+          'shopping_phone' => '0938244325',
+          'shopping_city' => 'HCM',
+          'shopping_district' => '1',
+          'shopping_ward' => '1',
+          'shopping_address_line' => '123 Test Street',
+          'status' => OrderStatus::PENDING->value,
+        ]);
+
+        // Tạo order item
+        $this->order->items()->create([
+          'book_id' => $this->book->id,
+          'quantity' => 2,
+          'price_at_time' => $this->book->price,
+          'discount_value' => 0,
+        ]);
     }
 
-    // Gọi API để lấy danh sách đơn hàng
-    $response = $this->getJson('/api/v1/orders');
+    #[Test]
+    public function employee_can_view_all_orders()
+    {
+        // Đảm bảo người dùng có quyền xem đơn hàng
+        $this->employee->givePermissionTo('view_orders');
+        Sanctum::actingAs($this->employee);
 
-    $response->assertStatus(200)
-      ->assertJsonCount(3, 'data');
-  }
+        // Tạo thêm 2 đơn hàng khác
+        for ($i = 0; $i < 2; $i++) {
+            Order::create([
+              'customer_id' => $this->customer->id,
+              'shopping_name' => 'Test Customer',
+              'shopping_phone' => '0938244325',
+              'shopping_city' => 'HCM',
+              'shopping_district' => '1',
+              'shopping_ward' => '1',
+              'shopping_address_line' => '123 Test Street',
+            ]);
+        }
 
-  #[Test]
-  public function employee_can_view_specific_order()
-  {
-    // Đảm bảo người dùng có quyền xem đơn hàng
-    $this->employee->givePermissionTo('view_orders');
-    Sanctum::actingAs($this->employee);
+        // Gọi API để lấy danh sách đơn hàng
+        $response = $this->getJson('/api/v1/orders');
 
-    // Gọi API để lấy chi tiết đơn hàng
-    $response = $this->getJson("/api/v1/orders/{$this->order->id}");
-
-    // For debugging
-    if ($response->getStatusCode() !== 200) {
-      Log::debug('Response content: ' . $response->getContent());
+        $response->assertStatus(200)
+          ->assertJsonCount(3, 'data');
     }
 
-    $response->assertStatus(200);
+    #[Test]
+    public function employee_can_view_specific_order()
+    {
+        // Đảm bảo người dùng có quyền xem đơn hàng
+        $this->employee->givePermissionTo('view_orders');
+        Sanctum::actingAs($this->employee);
 
-    // Kiểm tra thuộc tính đơn hàng nằm trong attributes
-    $this->assertEquals($this->order->id, $response->json('data.order.id'));
-    $this->assertEquals($this->customer->id, $response->json('data.order.attributes.customer_id'));
-  }
+        // Gọi API để lấy chi tiết đơn hàng
+        $response = $this->getJson("/api/v1/orders/{$this->order->id}");
 
-  #[Test]
-  public function employee_can_update_order_status_from_pending_to_approved()
-  {
-    // Đảm bảo người dùng có quyền chỉnh sửa đơn hàng
-    $this->employee->givePermissionTo('edit_orders');
-    Sanctum::actingAs($this->employee);
+        // For debugging
+        if ($response->getStatusCode() !== 200) {
+            Log::debug('Response content: ' . $response->getContent());
+        }
 
-    // Gọi API để cập nhật trạng thái đơn hàng từ PENDING sang APPROVED
-    $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-      'status' => OrderStatus::APPROVED->value,
-    ]);
+        $response->assertStatus(200);
 
-    // For debugging
-    if ($response->getStatusCode() !== 200) {
-      Log::debug('Response content: ' . $response->getContent());
+        // Kiểm tra thuộc tính đơn hàng nằm trong attributes
+        $this->assertEquals($this->order->id, $response->json('data.order.id'));
+        $this->assertEquals($this->customer->id, $response->json('data.order.attributes.customer_id'));
     }
 
-    // Làm mới dữ liệu sách và đơn hàng
-    $this->book->refresh();
-    $this->order->refresh();
+    #[Test]
+    public function employee_can_update_order_status_from_pending_to_approved()
+    {
+        // Đảm bảo người dùng có quyền chỉnh sửa đơn hàng
+        $this->employee->givePermissionTo('edit_orders');
+        Sanctum::actingAs($this->employee);
 
-    $response->assertStatus(200);
+        // Gọi API để cập nhật trạng thái đơn hàng từ PENDING sang APPROVED
+        $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
+          'status' => OrderStatus::APPROVED->value,
+        ]);
 
-    // Kiểm tra thuộc tính trong attributes và database
-    $this->assertEquals(OrderStatus::APPROVED->value, $this->order->status);
-    $this->assertEquals($this->employee->id, $this->order->employee_id);
-    $this->assertNotNull($this->order->approved_at);
+        // For debugging
+        if ($response->getStatusCode() !== 200) {
+            Log::debug('Response content: ' . $response->getContent());
+        }
 
-    // Kiểm tra số lượng sách đã được cập nhật
-    $this->assertEquals(8, $this->book->available_count);
-    $this->assertEquals(2, $this->book->sold_count);
-  }
+        // Làm mới dữ liệu sách và đơn hàng
+        $this->book->refresh();
+        $this->order->refresh();
 
-  #[Test]
-  public function employee_can_update_order_status_from_approved_to_delivered()
-  {
-    // Đảm bảo người dùng có quyền chỉnh sửa đơn hàng
-    $this->employee->givePermissionTo('edit_orders');
-    Sanctum::actingAs($this->employee);
+        $response->assertStatus(200);
 
-    // Đầu tiên, chuyển trạng thái đơn hàng sang APPROVED
-    $this->order->status = OrderStatus::APPROVED->value;
-    $this->order->employee_id = $this->employee->id;
-    $this->order->approved_at = now();
-    $this->order->save();
+        // Kiểm tra thuộc tính trong attributes và database
+        $this->assertEquals(OrderStatus::APPROVED->value, $this->order->status);
+        $this->assertEquals($this->employee->id, $this->order->employee_id);
+        $this->assertNotNull($this->order->approved_at);
 
-    // Gọi API để cập nhật trạng thái đơn hàng từ APPROVED sang DELIVERED
-    $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-      'status' => OrderStatus::DELIVERED->value,
-    ]);
-
-    // For debugging
-    if ($response->getStatusCode() !== 200) {
-      Log::debug('Response content: ' . $response->getContent());
+        // Kiểm tra số lượng sách đã được cập nhật
+        $this->assertEquals(8, $this->book->available_count);
+        $this->assertEquals(2, $this->book->sold_count);
     }
 
-    $response->assertStatus(200);
+    #[Test]
+    public function employee_can_update_order_status_from_approved_to_delivered()
+    {
+        // Đảm bảo người dùng có quyền chỉnh sửa đơn hàng
+        $this->employee->givePermissionTo('edit_orders');
+        Sanctum::actingAs($this->employee);
 
-    // Refresh order để lấy dữ liệu mới nhất từ database
-    $this->order->refresh();
+        // Đầu tiên, chuyển trạng thái đơn hàng sang APPROVED
+        $this->order->status = OrderStatus::APPROVED->value;
+        $this->order->employee_id = $this->employee->id;
+        $this->order->approved_at = now();
+        $this->order->save();
 
-    // Kiểm tra thuộc tính từ database thay vì response
-    $this->assertEquals(OrderStatus::DELIVERED->value, $this->order->status);
-    $this->assertNotNull($this->order->delivered_at, 'delivered_at chưa được cập nhật trong database');
-  }
+        // Gọi API để cập nhật trạng thái đơn hàng từ APPROVED sang DELIVERED
+        $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
+          'status' => OrderStatus::DELIVERED->value,
+        ]);
 
-  #[Test]
-  public function employee_cannot_update_order_status_with_invalid_transition()
-  {
-    // Đảm bảo người dùng có quyền chỉnh sửa đơn hàng
-    $this->employee->givePermissionTo('edit_orders');
-    Sanctum::actingAs($this->employee);
+        // For debugging
+        if ($response->getStatusCode() !== 200) {
+            Log::debug('Response content: ' . $response->getContent());
+        }
 
-    // Gọi API để cập nhật trạng thái đơn hàng từ PENDING sang DELIVERED (không hợp lệ)
-    $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-      'status' => OrderStatus::DELIVERED->value,
-    ]);
+        $response->assertStatus(200);
 
-    $response->assertStatus(500);
-  }
+        // Refresh order để lấy dữ liệu mới nhất từ database
+        $this->order->refresh();
 
-  #[Test]
-  public function employee_without_permission_cannot_update_order_status()
-  {
-    // Không cấp quyền cho nhân viên
-    Sanctum::actingAs($this->employee);
+        // Kiểm tra thuộc tính từ database thay vì response
+        $this->assertEquals(OrderStatus::DELIVERED->value, $this->order->status);
+        $this->assertNotNull($this->order->delivered_at, 'delivered_at chưa được cập nhật trong database');
+    }
 
-    // Gọi API để cập nhật trạng thái đơn hàng
-    $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-      'status' => 'APPROVED',
-    ]);
+    #[Test]
+    public function employee_cannot_update_order_status_with_invalid_transition()
+    {
+        // Đảm bảo người dùng có quyền chỉnh sửa đơn hàng
+        $this->employee->givePermissionTo('edit_orders');
+        Sanctum::actingAs($this->employee);
 
-    $response->assertStatus(403);
-  }
+        // Gọi API để cập nhật trạng thái đơn hàng từ PENDING sang DELIVERED (không hợp lệ)
+        $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
+          'status' => OrderStatus::DELIVERED->value,
+        ]);
+
+        $response->assertStatus(500);
+    }
+
+    #[Test]
+    public function employee_without_permission_cannot_update_order_status()
+    {
+        // Không cấp quyền cho nhân viên
+        Sanctum::actingAs($this->employee);
+
+        // Gọi API để cập nhật trạng thái đơn hàng
+        $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
+          'status' => 'APPROVED',
+        ]);
+
+        $response->assertStatus(403);
+    }
 }
