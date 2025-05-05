@@ -55,7 +55,7 @@ class OrderResource extends JsonResource
         [
           'customer' => new UserResource($this->customer),
           'employee' => new UserResource($this->employee),
-          'items' => CartItemResource::collection($this->items),
+          'items' => new OrderItemCollection($this->items),
           'payment' => new PaymentResource($this->payment),
         ]
       )
