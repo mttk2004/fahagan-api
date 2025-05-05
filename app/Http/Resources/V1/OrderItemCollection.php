@@ -7,10 +7,10 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class OrderItemCollection extends ResourceCollection
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'data' => $this->collection
-    ];
-  }
+    public function toArray(Request $request): array
+    {
+        return [
+          'data' => $this->collection,
+        ];
+    }
 }

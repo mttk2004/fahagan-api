@@ -21,36 +21,36 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class UserResource extends JsonResource
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'type' => 'user',
-      'id' => $this->id,
-      'attributes' => [
-        'first_name' => $this->first_name,
-        'last_name' => $this->last_name,
-        'email' => $this->email,
-        'is_customer' => $this->is_customer,
-        'phone' => $this->phone,
-        $this->mergeWhen($request->routeIs('users.*') || $request->routeIs('customer.profile.*'), [
-          'full_name' => $this->full_name,
-          'last_login' => $this->last_login,
-          'created_at' => $this->created_at,
-          'updated_at' => $this->updated_at,
-          'deleted_at' => $this->deleted_at,
+    public function toArray(Request $request): array
+    {
+        return [
+          'type' => 'user',
+          'id' => $this->id,
+          'attributes' => [
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'email' => $this->email,
+            'is_customer' => $this->is_customer,
+            'phone' => $this->phone,
+            $this->mergeWhen($request->routeIs('users.*') || $request->routeIs('customer.profile.*'), [
+              'full_name' => $this->full_name,
+              'last_login' => $this->last_login,
+              'created_at' => $this->created_at,
+              'updated_at' => $this->updated_at,
+              'deleted_at' => $this->deleted_at,
 
-          $this->mergeWhen(! $this->is_customer, [
-            'roles' => $this->getRoleNames(),
-            'permissions' => $this->getAllPermissions()->pluck('name'),
-          ]),
-        ]),
-      ],
-      'relationships' => $this->when(
-        ($request->routeIs('users.show') || $request->routeIs('customer.profile.show')) && $this->is_customer,
-        [
-          'cart_items' => CartItemResource::collection($this->cartItems),
+              $this->mergeWhen(! $this->is_customer, [
+                'roles' => $this->getRoleNames(),
+                'permissions' => $this->getAllPermissions()->pluck('name'),
+              ]),
+            ]),
+          ],
+          'relationships' => $this->when(
+              ($request->routeIs('users.show') || $request->routeIs('customer.profile.show')) && $this->is_customer,
+              [
+              'cart_items' => CartItemResource::collection($this->cartItems),
         ]
-      )
-    ];
-  }
+          ),
+        ];
+    }
 }

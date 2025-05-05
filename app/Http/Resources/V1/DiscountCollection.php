@@ -9,12 +9,12 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 /** @see \App\Models\Discount */
 class DiscountCollection extends ResourceCollection
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'status' => 200,
-      'message' => ResponseMessage::LOAD_DISCOUNTS_SUCCESS,
-      'data' => $this->collection
-    ];
-  }
+    public function toArray(Request $request): array
+    {
+        return [
+          'status' => 200,
+          'message' => ResponseMessage::LOAD_DISCOUNTS_SUCCESS,
+          'data' => $this->collection,
+        ];
+    }
 }

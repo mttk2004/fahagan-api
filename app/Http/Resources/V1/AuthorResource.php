@@ -15,25 +15,25 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class AuthorResource extends JsonResource
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'type' => 'author',
-      'id' => $this->id,
-      'attributes' => [
-        'name' => $this->name,
-        'image_url' => $this->image_url,
-        'biography' => $this->when(
-          $request->routeIs('authors.*'),
-          $this->biography
-        ),
-      ],
-      'relationships' => $this->when(
-        $request->routeIs('authors.show', 'authors.store'),
-        [
-          'books' => new BookCollection($this->writtenBooks),
+    public function toArray(Request $request): array
+    {
+        return [
+          'type' => 'author',
+          'id' => $this->id,
+          'attributes' => [
+            'name' => $this->name,
+            'image_url' => $this->image_url,
+            'biography' => $this->when(
+                $request->routeIs('authors.*'),
+                $this->biography
+            ),
+          ],
+          'relationships' => $this->when(
+              $request->routeIs('authors.show', 'authors.store'),
+              [
+              'books' => new BookCollection($this->writtenBooks),
         ]
-      )
-    ];
-  }
+          ),
+        ];
+    }
 }
