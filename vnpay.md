@@ -45,7 +45,7 @@ VNPay là một cổng thanh toán trực tuyến phổ biến tại Việt Nam,
 VNP_TMNCODE=VAAJN51S
 VNP_HASHSECRET=UNOBMR165GLWAXUC51RO1I89FWIBH6V8
 VNP_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-VNP_RETURN_URL=http://your-domain.com/api/v1/payment/vnpay-return
+VNP_RETURN_URL=http://your-domain.com/api/v1/payments/vnpay-return
 ```
 
 ### Cấu hình trong dự án
@@ -57,7 +57,7 @@ return [
   'tmnCode' => env('VNP_TMNCODE', 'VAAJN51S'),
   'hashSecret' => env('VNP_HASHSECRET', 'UNOBMR165GLWAXUC51RO1I89FWIBH6V8'),
   'url' => env('VNP_URL', 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'),
-  'returnUrl' => env('VNP_RETURN_URL', 'http://localhost:8000/api/v1/payment/vnpay-return'),
+  'returnUrl' => env('VNP_RETURN_URL', 'http://localhost:8000/api/v1/payments/vnpay-return'),
   'version' => '2.1.0',
   'command' => 'pay',
   'currCode' => 'VND',
@@ -128,7 +128,7 @@ return [
 
 ### 3. Callback từ VNPay
 
-**Endpoint:** `GET /api/v1/payment/vnpay-return`
+**Endpoint:** `GET /api/v1/payments/vnpay-return`
 
 Đây là URL mà VNPay sẽ gọi sau khi khách hàng hoàn tất thanh toán. Backend sẽ xử lý dữ liệu từ VNPay và trả về kết quả thành công hoặc thất bại.
 

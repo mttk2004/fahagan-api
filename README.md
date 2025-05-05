@@ -72,8 +72,8 @@ Sau khi chạy lệnh trên, tài liệu sẽ được tạo trong thư mục `p
 Sau khi thanh toán VNPay, người dùng sẽ được chuyển hướng về trang frontend. Các URL chuyển hướng được cấu hình trong `.env`:
 
 ```
-VNP_CLIENT_SUCCESS_URL=http://localhost:3000/payment/success
-VNP_CLIENT_FAILED_URL=http://localhost:3000/payment/failed
+VNP_CLIENT_SUCCESS_URL=http://localhost:5173/payments/payment-success
+VNP_CLIENT_FAILED_URL=http://localhost:5173/payments/payments-failed
 ```
 
 Hệ thống chuyển hướng người dùng với các thông tin sau:
