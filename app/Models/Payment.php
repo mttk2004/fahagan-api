@@ -24,13 +24,13 @@ class Payment extends Model
 
     protected $fillable
         = [
-          'order_id',
-          'status',
-          'method',
-          'total_amount',
-          'discount_value',
-          'transaction_ref',
-          'gateway_response',
+            'order_id',
+            'status',
+            'method',
+            'total_amount',
+            'discount_value',
+            'transaction_ref',
+            'gateway_response',
         ];
 
     public function order(): BelongsTo
@@ -41,10 +41,10 @@ class Payment extends Model
     protected function casts(): array
     {
         return [
-          'status' => PaymentStatus::class,
-          'created_at' => 'datetime',
-          'updated_at' => 'datetime',
-          'gateway_response' => 'array',
+            'status' => PaymentStatus::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'gateway_response' => 'array',
         ];
     }
 }

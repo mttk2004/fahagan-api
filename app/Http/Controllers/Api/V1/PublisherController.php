@@ -21,23 +21,23 @@ use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
-    use HandlePagination;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly PublisherService $publisherService,
         private readonly string $entityName = 'publisher'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all publishers
      *
-     * @param Request $request
      *
      * @return PublisherCollection
+     *
      * @group Publishers
+     *
      * @unauthenticated
      */
     public function index(Request $request)
@@ -53,9 +53,9 @@ class PublisherController extends Controller
     /**
      * Create a new publisher
      *
-     * @param PublisherStoreRequest $request
      *
      * @return JsonResponse
+     *
      * @group Publishers
      */
     public function store(PublisherStoreRequest $request)
@@ -70,11 +70,11 @@ class PublisherController extends Controller
             );
 
             return ResponseUtils::created([
-              'publisher' => new PublisherResource($publisher),
+                'publisher' => new PublisherResource($publisher),
             ], ResponseMessage::CREATED_PUBLISHER->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => $request->validated(),
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -82,10 +82,11 @@ class PublisherController extends Controller
     /**
      * Get a publisher
      *
-     * @param int $publisherId
      *
      * @return JsonResponse
+     *
      * @group Publishers
+     *
      * @unauthenticated
      */
     public function show(int $publisherId)
@@ -94,11 +95,11 @@ class PublisherController extends Controller
             $publisher = $this->publisherService->getPublisherById($publisherId);
 
             return ResponseUtils::success([
-              'publisher' => new PublisherResource($publisher),
+                'publisher' => new PublisherResource($publisher),
             ]);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'publisher_id' => $publisherId,
+                'publisher_id' => $publisherId,
             ]);
         }
     }
@@ -106,10 +107,9 @@ class PublisherController extends Controller
     /**
      * Update a publisher
      *
-     * @param PublisherUpdateRequest $request
-     * @param int $publisherId
      *
      * @return JsonResponse
+     *
      * @group Publishers
      */
     public function update(PublisherUpdateRequest $request, int $publisherId)
@@ -132,12 +132,12 @@ class PublisherController extends Controller
             );
 
             return ResponseUtils::success([
-              'publisher' => new PublisherResource($publisher),
+                'publisher' => new PublisherResource($publisher),
             ], ResponseMessage::UPDATED_PUBLISHER->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'publisher_id' => $publisherId,
-              'request_data' => $request->validated(),
+                'publisher_id' => $publisherId,
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -145,9 +145,9 @@ class PublisherController extends Controller
     /**
      * Delete a publisher
      *
-     * @param int $publisherId
      *
      * @return JsonResponse
+     *
      * @group Publishers
      */
     public function destroy(int $publisherId)
@@ -162,7 +162,7 @@ class PublisherController extends Controller
             return ResponseUtils::noContent(ResponseMessage::DELETED_PUBLISHER->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'publisher_id' => $publisherId,
+                'publisher_id' => $publisherId,
             ]);
         }
     }

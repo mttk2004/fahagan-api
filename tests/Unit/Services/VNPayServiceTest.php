@@ -25,7 +25,7 @@ class VNPayServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->vnpayService = new VNPayService();
+        $this->vnpayService = new VNPayService;
 
         // Cấu hình VNPay test
         Config::set('vnpay.tmnCode', 'VAAJN51S');
@@ -37,10 +37,10 @@ class VNPayServiceTest extends TestCase
         // Tạo order và payment
         $this->order = Order::factory()->create();
         $this->payment = Payment::create([
-          'order_id' => $this->order->id,
-          'method' => 'vnpay',
-          'total_amount' => 100000,
-          'status' => PaymentStatus::PENDING,
+            'order_id' => $this->order->id,
+            'method' => 'vnpay',
+            'total_amount' => 100000,
+            'status' => PaymentStatus::PENDING,
         ]);
     }
 
@@ -60,30 +60,30 @@ class VNPayServiceTest extends TestCase
         // Kiểm tra transaction_ref được lưu
         $this->payment->refresh();
         $this->assertNotNull($this->payment->transaction_ref);
-        $this->assertStringContainsString($this->order->id . '-', $this->payment->transaction_ref);
+        $this->assertStringContainsString($this->order->id.'-', $this->payment->transaction_ref);
     }
 
     #[Test]
     public function it_can_process_valid_return_url()
     {
         // Tạo transaction_ref cho payment
-        $txnRef = $this->order->id . '-' . time();
+        $txnRef = $this->order->id.'-'.time();
         $this->payment->transaction_ref = $txnRef;
         $this->payment->save();
 
         // Mô phỏng dữ liệu trả về từ VNPay
         $secureHash = hash_hmac(
             'sha512',
-            'vnp_Amount=10000000&vnp_ResponseCode=00&vnp_TransactionStatus=00&vnp_TxnRef=' . $txnRef,
+            'vnp_Amount=10000000&vnp_ResponseCode=00&vnp_TransactionStatus=00&vnp_TxnRef='.$txnRef,
             Config::get('vnpay.hashSecret')
         );
 
         $returnData = [
-          'vnp_Amount' => 10000000,
-          'vnp_ResponseCode' => '00',
-          'vnp_TransactionStatus' => '00',
-          'vnp_TxnRef' => $txnRef,
-          'vnp_SecureHash' => $secureHash,
+            'vnp_Amount' => 10000000,
+            'vnp_ResponseCode' => '00',
+            'vnp_TransactionStatus' => '00',
+            'vnp_TxnRef' => $txnRef,
+            'vnp_SecureHash' => $secureHash,
         ];
 
         // Xử lý dữ liệu trả về
@@ -103,11 +103,11 @@ class VNPayServiceTest extends TestCase
     {
         // Mô phỏng dữ liệu với hash không hợp lệ
         $returnData = [
-          'vnp_Amount' => 10000000,
-          'vnp_ResponseCode' => '00',
-          'vnp_TransactionStatus' => '00',
-          'vnp_TxnRef' => $this->order->id . '-1234567890',
-          'vnp_SecureHash' => 'invalid_hash',
+            'vnp_Amount' => 10000000,
+            'vnp_ResponseCode' => '00',
+            'vnp_TransactionStatus' => '00',
+            'vnp_TxnRef' => $this->order->id.'-1234567890',
+            'vnp_SecureHash' => 'invalid_hash',
         ];
 
         // Xử lý dữ liệu
@@ -122,23 +122,23 @@ class VNPayServiceTest extends TestCase
     public function it_handles_failed_payment()
     {
         // Tạo transaction_ref cho payment
-        $txnRef = $this->order->id . '-' . time();
+        $txnRef = $this->order->id.'-'.time();
         $this->payment->transaction_ref = $txnRef;
         $this->payment->save();
 
         // Mô phỏng dữ liệu thất bại từ VNPay
         $secureHash = hash_hmac(
             'sha512',
-            'vnp_Amount=10000000&vnp_ResponseCode=24&vnp_TransactionStatus=02&vnp_TxnRef=' . $txnRef,
+            'vnp_Amount=10000000&vnp_ResponseCode=24&vnp_TransactionStatus=02&vnp_TxnRef='.$txnRef,
             Config::get('vnpay.hashSecret')
         );
 
         $returnData = [
-          'vnp_Amount' => 10000000,
-          'vnp_ResponseCode' => '24', // Customer cancelled
-          'vnp_TransactionStatus' => '02',
-          'vnp_TxnRef' => $txnRef,
-          'vnp_SecureHash' => $secureHash,
+            'vnp_Amount' => 10000000,
+            'vnp_ResponseCode' => '24', // Customer cancelled
+            'vnp_TransactionStatus' => '02',
+            'vnp_TxnRef' => $txnRef,
+            'vnp_SecureHash' => $secureHash,
         ];
 
         // Xử lý dữ liệu trả về
@@ -154,21 +154,21 @@ class VNPayServiceTest extends TestCase
     public function it_extracts_order_id_from_txnref()
     {
         // Tạo transaction_ref
-        $txnRef = $this->order->id . '-1234567890';
+        $txnRef = $this->order->id.'-1234567890';
 
         // Mô phỏng dữ liệu trả về
         $secureHash = hash_hmac(
             'sha512',
-            'vnp_Amount=10000000&vnp_ResponseCode=00&vnp_TransactionStatus=00&vnp_TxnRef=' . $txnRef,
+            'vnp_Amount=10000000&vnp_ResponseCode=00&vnp_TransactionStatus=00&vnp_TxnRef='.$txnRef,
             Config::get('vnpay.hashSecret')
         );
 
         $returnData = [
-          'vnp_Amount' => 10000000,
-          'vnp_ResponseCode' => '00',
-          'vnp_TransactionStatus' => '00',
-          'vnp_TxnRef' => $txnRef,
-          'vnp_SecureHash' => $secureHash,
+            'vnp_Amount' => 10000000,
+            'vnp_ResponseCode' => '00',
+            'vnp_TransactionStatus' => '00',
+            'vnp_TxnRef' => $txnRef,
+            'vnp_SecureHash' => $secureHash,
         ];
 
         // Xử lý dữ liệu

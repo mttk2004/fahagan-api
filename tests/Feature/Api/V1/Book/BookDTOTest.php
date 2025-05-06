@@ -71,32 +71,32 @@ class BookDTOTest extends TestCase
     {
         // Dữ liệu request giả lập
         $requestData = [
-          'data' => [
-            'attributes' => [
-              'title' => 'Sách Test',
-              'description' => 'Mô tả sách test',
-              'price' => 150000,
-              'edition' => 1,
-              'pages' => 200,
-              'image_url' => 'https://example.com/book.jpg',
-              'publication_date' => '2023-01-01',
-              'sold_count' => 10,
-              'available_count' => 31,
+            'data' => [
+                'attributes' => [
+                    'title' => 'Sách Test',
+                    'description' => 'Mô tả sách test',
+                    'price' => 150000,
+                    'edition' => 1,
+                    'pages' => 200,
+                    'image_url' => 'https://example.com/book.jpg',
+                    'publication_date' => '2023-01-01',
+                    'sold_count' => 10,
+                    'available_count' => 31,
+                ],
+                'relationships' => [
+                    'publisher' => [
+                        'id' => 1,
+                    ],
+                    'authors' => [
+                        ['id' => 1],
+                        ['id' => 2],
+                    ],
+                    'genres' => [
+                        ['id' => 3],
+                        ['id' => 4],
+                    ],
+                ],
             ],
-            'relationships' => [
-              'publisher' => [
-                'id' => 1,
-              ],
-              'authors' => [
-                ['id' => 1],
-                ['id' => 2],
-              ],
-              'genres' => [
-                ['id' => 3],
-                ['id' => 4],
-              ],
-            ],
-          ],
         ];
 
         // Tạo DTO từ request
@@ -179,15 +179,15 @@ class BookDTOTest extends TestCase
     {
         // Dữ liệu request không có phần relationships
         $requestData = [
-          'data' => [
-            'attributes' => [
-              'title' => 'Sách Test',
-              'description' => 'Mô tả sách test',
-              'price' => 150000,
-              'edition' => 1,
-              'pages' => 200,
+            'data' => [
+                'attributes' => [
+                    'title' => 'Sách Test',
+                    'description' => 'Mô tả sách test',
+                    'price' => 150000,
+                    'edition' => 1,
+                    'pages' => 200,
+                ],
             ],
-          ],
         ];
 
         // Tạo DTO từ request
@@ -208,18 +208,18 @@ class BookDTOTest extends TestCase
     {
         // Dữ liệu request với một phần relationships
         $requestData = [
-          'data' => [
-            'attributes' => [
-              'title' => 'Sách Test',
+            'data' => [
+                'attributes' => [
+                    'title' => 'Sách Test',
+                ],
+                'relationships' => [
+                    'authors' => [
+                        ['id' => 1],
+                        ['id' => 2],
+                    ],
+                    // Thiếu genres và publisher
+                ],
             ],
-            'relationships' => [
-              'authors' => [
-                ['id' => 1],
-                ['id' => 2],
-              ],
-              // Thiếu genres và publisher
-            ],
-          ],
         ];
 
         // Tạo DTO từ request
@@ -236,15 +236,15 @@ class BookDTOTest extends TestCase
     {
         // Dữ liệu request với relationships rỗng
         $requestData = [
-          'data' => [
-            'attributes' => [
-              'title' => 'Sách Test',
+            'data' => [
+                'attributes' => [
+                    'title' => 'Sách Test',
+                ],
+                'relationships' => [
+                    'authors' => [],
+                    'genres' => [],
+                ],
             ],
-            'relationships' => [
-              'authors' => [],
-              'genres' => [],
-            ],
-          ],
         ];
 
         // Tạo DTO từ request
@@ -260,17 +260,17 @@ class BookDTOTest extends TestCase
     {
         // Dữ liệu request với publisher format không đúng
         $requestData = [
-          'data' => [
-            'attributes' => [
-              'title' => 'Sách Test',
+            'data' => [
+                'attributes' => [
+                    'title' => 'Sách Test',
+                ],
+                'relationships' => [
+                    'publisher' => [
+                        // Thiếu 'id' field
+                        'name' => 'Nhà xuất bản test',
+                    ],
+                ],
             ],
-            'relationships' => [
-              'publisher' => [
-                // Thiếu 'id' field
-                'name' => 'Nhà xuất bản test',
-              ],
-            ],
-          ],
         ];
 
         // Tạo DTO từ request
@@ -285,13 +285,13 @@ class BookDTOTest extends TestCase
     {
         // Dữ liệu request không có phần attributes
         $requestData = [
-          'data' => [
-            'relationships' => [
-              'publisher' => [
-                'id' => 1,
-              ],
+            'data' => [
+                'relationships' => [
+                    'publisher' => [
+                        'id' => 1,
+                    ],
+                ],
             ],
-          ],
         ];
 
         // Tạo DTO từ request

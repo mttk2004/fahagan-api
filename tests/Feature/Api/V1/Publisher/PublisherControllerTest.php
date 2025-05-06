@@ -24,12 +24,12 @@ class PublisherControllerTest extends TestCase
 
         // Tạo một người dùng admin và gán quyền quản lý publisher
         $this->adminUser = User::factory()->create([
-          'is_customer' => false,
+            'is_customer' => false,
         ]);
         $this->adminUser->givePermissionTo([
-          'create_publishers',
-          'edit_publishers',
-          'delete_publishers',
+            'create_publishers',
+            'edit_publishers',
+            'delete_publishers',
         ]);
     }
 
@@ -43,9 +43,9 @@ class PublisherControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data',
-          ]);
+            ->assertJsonStructure([
+                'data',
+            ]);
     }
 
     public function test_it_can_get_publisher_details()
@@ -58,20 +58,20 @@ class PublisherControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'data' => [
-              'publisher' => [
-                'id',
-                'type',
-                'attributes' => [
-                  'name',
-                  'biography',
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'publisher' => [
+                        'id',
+                        'type',
+                        'attributes' => [
+                            'name',
+                            'biography',
+                        ],
+                        'relationships',
+                    ],
                 ],
-                'relationships',
-              ],
-            ],
-          ]);
+            ]);
     }
 
     public function test_it_returns_404_when_publisher_not_found()
@@ -81,38 +81,38 @@ class PublisherControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(404)
-          ->assertJson([
-            'status' => 404,
-            'message' => ResponseMessage::NOT_FOUND_PUBLISHER->value,
-          ]);
+            ->assertJson([
+                'status' => 404,
+                'message' => ResponseMessage::NOT_FOUND_PUBLISHER->value,
+            ]);
     }
 
     public function test_it_can_create_publisher()
     {
         // Tạo dữ liệu để tạo nhà xuất bản mới với định dạng trực tiếp
         $publisherData = [
-          'name' => 'NXB Văn Học',
-          'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
+            'name' => 'NXB Văn Học',
+            'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
         ];
 
         // Gọi API tạo nhà xuất bản
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/publishers', $publisherData);
+            ->postJson('/api/v1/publishers', $publisherData);
 
         // Kiểm tra response
         $response->assertStatus(201)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'publisher',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'publisher',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('publishers', [
-          'name' => 'NXB Văn Học',
-          'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
+            'name' => 'NXB Văn Học',
+            'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
         ]);
     }
 
@@ -120,28 +120,28 @@ class PublisherControllerTest extends TestCase
     {
         // Tạo dữ liệu để tạo nhà xuất bản mới
         $publisherData = [
-          'name' => 'NXB Văn Học',
-          'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
+            'name' => 'NXB Văn Học',
+            'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
         ];
 
         // Gọi API tạo nhà xuất bản
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/publishers', $publisherData);
+            ->postJson('/api/v1/publishers', $publisherData);
 
         // Kiểm tra response
         $response->assertStatus(201)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'publisher',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'publisher',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('publishers', [
-          'name' => 'NXB Văn Học',
-          'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
+            'name' => 'NXB Văn Học',
+            'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
         ]);
     }
 
@@ -149,8 +149,8 @@ class PublisherControllerTest extends TestCase
     {
         // Tạo một nhà xuất bản
         $publisher = Publisher::factory()->create([
-          'name' => 'NXB Khoa Học và Kỹ Thuật',
-          'biography' => 'Nhà xuất bản chuyên về sách khoa học - kỹ thuật.',
+            'name' => 'NXB Khoa Học và Kỹ Thuật',
+            'biography' => 'Nhà xuất bản chuyên về sách khoa học - kỹ thuật.',
         ]);
 
         // Xóa mềm nhà xuất bản
@@ -158,28 +158,28 @@ class PublisherControllerTest extends TestCase
 
         // Tạo dữ liệu để tạo lại nhà xuất bản đã bị xóa mềm với định dạng trực tiếp
         $publisherData = [
-          'name' => 'NXB Khoa Học và Kỹ Thuật',
-          'biography' => 'Nhà xuất bản chuyên về sách khoa học - kỹ thuật và công nghệ.',
+            'name' => 'NXB Khoa Học và Kỹ Thuật',
+            'biography' => 'Nhà xuất bản chuyên về sách khoa học - kỹ thuật và công nghệ.',
         ];
 
         // Gọi API tạo nhà xuất bản
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/publishers', $publisherData);
+            ->postJson('/api/v1/publishers', $publisherData);
 
         // Kiểm tra response
         $response->assertStatus(201);
 
         // Kiểm tra dữ liệu trong database (đã được khôi phục và cập nhật)
         $this->assertDatabaseHas('publishers', [
-          'id' => $publisher->id,
-          'name' => 'NXB Khoa Học và Kỹ Thuật',
-          'biography' => 'Nhà xuất bản chuyên về sách khoa học - kỹ thuật và công nghệ.',
+            'id' => $publisher->id,
+            'name' => 'NXB Khoa Học và Kỹ Thuật',
+            'biography' => 'Nhà xuất bản chuyên về sách khoa học - kỹ thuật và công nghệ.',
         ]);
 
         // Đảm bảo bản ghi không còn trong danh sách đã xóa mềm
         $this->assertDatabaseMissing('publishers', [
-          'id' => $publisher->id,
-          'deleted_at' => $publisher->deleted_at,
+            'id' => $publisher->id,
+            'deleted_at' => $publisher->deleted_at,
         ]);
     }
 
@@ -190,29 +190,29 @@ class PublisherControllerTest extends TestCase
 
         // Dữ liệu cập nhật với định dạng trực tiếp
         $updateData = [
-          'name' => 'Tên Mới',
-          'biography' => 'Giới thiệu mới',
+            'name' => 'Tên Mới',
+            'biography' => 'Giới thiệu mới',
         ];
 
         // Gọi API cập nhật nhà xuất bản
         $response = $this->actingAs($this->adminUser)
-          ->patchJson("/api/v1/publishers/{$publisher->id}", $updateData);
+            ->patchJson("/api/v1/publishers/{$publisher->id}", $updateData);
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'publisher',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'publisher',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('publishers', [
-          'id' => $publisher->id,
-          'name' => 'Tên Mới',
-          'biography' => 'Giới thiệu mới',
+            'id' => $publisher->id,
+            'name' => 'Tên Mới',
+            'biography' => 'Giới thiệu mới',
         ]);
     }
 
@@ -223,14 +223,14 @@ class PublisherControllerTest extends TestCase
 
         // Gọi API xóa nhà xuất bản
         $response = $this->actingAs($this->adminUser)
-          ->deleteJson("/api/v1/publishers/{$publisher->id}");
+            ->deleteJson("/api/v1/publishers/{$publisher->id}");
 
         // Kiểm tra response
         $response->assertStatus(204);
 
         // Kiểm tra dữ liệu đã bị xóa mềm
         $this->assertSoftDeleted('publishers', [
-          'id' => $publisher->id,
+            'id' => $publisher->id,
         ]);
     }
 
@@ -238,8 +238,8 @@ class PublisherControllerTest extends TestCase
     {
         // Tạo dữ liệu để tạo nhà xuất bản mới với định dạng trực tiếp
         $publisherData = [
-          'name' => 'NXB Văn Học',
-          'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
+            'name' => 'NXB Văn Học',
+            'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
         ];
 
         // Gọi API tạo nhà xuất bản không có xác thực
@@ -259,13 +259,13 @@ class PublisherControllerTest extends TestCase
 
         // Dữ liệu cập nhật với định dạng trực tiếp
         $updateData = [
-          'name' => 'Tên Mới',
-          'biography' => 'Giới thiệu mới',
+            'name' => 'Tên Mới',
+            'biography' => 'Giới thiệu mới',
         ];
 
         // Gọi API cập nhật nhà xuất bản với user không có quyền
         $response = $this->actingAs($regularUser)
-          ->patchJson("/api/v1/publishers/{$publisher->id}", $updateData);
+            ->patchJson("/api/v1/publishers/{$publisher->id}", $updateData);
 
         // Kiểm tra response phải trả về lỗi 403
         $response->assertStatus(403);
@@ -281,7 +281,7 @@ class PublisherControllerTest extends TestCase
 
         // Gọi API xóa nhà xuất bản với user không có quyền
         $response = $this->actingAs($regularUser)
-          ->deleteJson("/api/v1/publishers/{$publisher->id}");
+            ->deleteJson("/api/v1/publishers/{$publisher->id}");
 
         // Kiểm tra response phải trả về lỗi 403
         $response->assertStatus(403);
@@ -291,16 +291,16 @@ class PublisherControllerTest extends TestCase
     {
         // Tạo dữ liệu thiếu trường bắt buộc
         $invalidData = [
-          // Thiếu trường 'name' bắt buộc
-          'biography' => 'Giới thiệu...',
+            // Thiếu trường 'name' bắt buộc
+            'biography' => 'Giới thiệu...',
         ];
 
         // Gọi API tạo nhà xuất bản
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/publishers', $invalidData);
+            ->postJson('/api/v1/publishers', $invalidData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['name']);
+            ->assertJsonValidationErrors(['name']);
     }
 }

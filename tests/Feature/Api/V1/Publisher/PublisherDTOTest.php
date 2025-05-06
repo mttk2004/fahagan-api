@@ -10,8 +10,8 @@ class PublisherDTOTest extends TestCase
     public function test_it_creates_publisher_dto_from_request()
     {
         $validatedData = [
-          'name' => 'NXB Văn Học',
-          'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
+            'name' => 'NXB Văn Học',
+            'biography' => 'Nhà xuất bản chuyên về sách văn học - nghệ thuật.',
         ];
 
         $publisherDTO = PublisherDTO::fromRequest($validatedData);
@@ -23,8 +23,8 @@ class PublisherDTOTest extends TestCase
     public function test_it_creates_publisher_dto_with_nullable_properties()
     {
         $validatedData = [
-          'name' => 'NXB Văn Học',
-          // Không có trường biography
+            'name' => 'NXB Văn Học',
+            // Không có trường biography
         ];
 
         $publisherDTO = PublisherDTO::fromRequest($validatedData);
@@ -36,7 +36,7 @@ class PublisherDTOTest extends TestCase
     public function test_it_handles_empty_attributes()
     {
         $validatedData = [
-          // Không có thuộc tính
+            // Không có thuộc tính
         ];
 
         $publisherDTO = PublisherDTO::fromRequest($validatedData);

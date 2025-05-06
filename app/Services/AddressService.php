@@ -17,8 +17,6 @@ class AddressService extends BaseService
 {
     /**
      * User model hiện tại
-     *
-     * @var User
      */
     protected User $user;
 
@@ -27,13 +25,12 @@ class AddressService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new Address();
+        $this->model = new Address;
     }
 
     /**
      * Thiết lập user cho service
      *
-     * @param User $user
      * @return $this
      */
     public function forUser(User $user): self

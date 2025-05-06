@@ -17,8 +17,7 @@ class BookDTO extends \App\DTOs\BaseDTO
         public array $genre_ids = [],
         public ?int $sold_count = 0,
         public ?int $available_count = 0,
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(array $validatedData): self
     {
@@ -46,16 +45,16 @@ class BookDTO extends \App\DTOs\BaseDTO
         return new self(
             title: $attributes['title'] ?? null,
             description: $attributes['description'] ?? null,
-            price: isset($attributes['price']) ? (float)$attributes['price'] : null,
-            edition: isset($attributes['edition']) ? (int)$attributes['edition'] : null,
-            pages: isset($attributes['pages']) ? (int)$attributes['pages'] : null,
+            price: isset($attributes['price']) ? (float) $attributes['price'] : null,
+            edition: isset($attributes['edition']) ? (int) $attributes['edition'] : null,
+            pages: isset($attributes['pages']) ? (int) $attributes['pages'] : null,
             image_url: $attributes['image_url'] ?? null,
             publication_date: $attributes['publication_date'] ?? null,
             publisher_id: $publisher_id,
             author_ids: $author_ids,
             genre_ids: $genre_ids,
-            sold_count: isset($attributes['sold_count']) ? (int)$attributes['sold_count'] : 0,
-            available_count: isset($attributes['available_count']) ? (int)$attributes['available_count'] : 0,
+            sold_count: isset($attributes['sold_count']) ? (int) $attributes['sold_count'] : 0,
+            available_count: isset($attributes['available_count']) ? (int) $attributes['available_count'] : 0,
         );
     }
 

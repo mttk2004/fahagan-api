@@ -38,42 +38,42 @@ class CreateOrderWithVNPayTest extends TestCase
 
         // Tạo khách hàng
         $this->customer = User::factory()->create([
-          'is_customer' => true,
-          'password' => Hash::make('password'),
+            'is_customer' => true,
+            'password' => Hash::make('password'),
         ]);
 
         // Tạo địa chỉ
         $this->address = $this->customer->addresses()->create([
-          'name' => 'Test Customer',
-          'phone' => '0938244325',
-          'city' => 'HCM',
-          'district' => '1',
-          'ward' => '1',
-          'address_line' => '123 Test Street',
+            'name' => 'Test Customer',
+            'phone' => '0938244325',
+            'city' => 'HCM',
+            'district' => '1',
+            'ward' => '1',
+            'address_line' => '123 Test Street',
         ]);
 
         // Tạo sách
         $this->book = Book::factory()->create([
-          'price' => 100000,
-          'available_count' => 10,
+            'price' => 100000,
+            'available_count' => 10,
         ]);
 
         // Tạo order trực tiếp thay vì thông qua API
         $this->order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => $this->address->name,
-          'shopping_phone' => $this->address->phone,
-          'shopping_city' => $this->address->city,
-          'shopping_district' => $this->address->district,
-          'shopping_ward' => $this->address->ward,
-          'shopping_address_line' => $this->address->address_line,
+            'customer_id' => $this->customer->id,
+            'shopping_name' => $this->address->name,
+            'shopping_phone' => $this->address->phone,
+            'shopping_city' => $this->address->city,
+            'shopping_district' => $this->address->district,
+            'shopping_ward' => $this->address->ward,
+            'shopping_address_line' => $this->address->address_line,
         ]);
 
         // Mock VNPayService
         $this->mockVNPayService = Mockery::mock(VNPayService::class);
         $this->mockVNPayService->shouldReceive('createPaymentUrl')
-          ->withAnyArgs()
-          ->andReturn('https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?test=1');
+            ->withAnyArgs()
+            ->andReturn('https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?test=1');
 
         $this->instance(VNPayService::class, $this->mockVNPayService);
     }
@@ -83,9 +83,9 @@ class CreateOrderWithVNPayTest extends TestCase
     {
         // Tạo payment với method vnpay
         $payment = $this->order->payment()->create([
-          'method' => 'vnpay',
-          'total_amount' => 200000,
-          'status' => PaymentStatus::PENDING,
+            'method' => 'vnpay',
+            'total_amount' => 200000,
+            'status' => PaymentStatus::PENDING,
         ]);
 
         Sanctum::actingAs($this->customer, ['*']);
@@ -94,18 +94,18 @@ class CreateOrderWithVNPayTest extends TestCase
         $response = $this->getJson("/api/v1/customer/orders/{$this->order->id}/pay-vnpay");
 
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data' => [
-              'payment_url',
-              'order_id',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'payment_url',
+                    'order_id',
+                ],
+            ]);
 
         // Kiểm tra payment đã được tạo với status là PENDING
         $this->assertDatabaseHas('payments', [
-          'id' => $payment->id,
-          'method' => 'vnpay',
-          'status' => PaymentStatus::PENDING->value,
+            'id' => $payment->id,
+            'method' => 'vnpay',
+            'status' => PaymentStatus::PENDING->value,
         ]);
     }
 
@@ -114,27 +114,27 @@ class CreateOrderWithVNPayTest extends TestCase
     {
         // Tạo order mới
         $order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => $this->address->name,
-          'shopping_phone' => $this->address->phone,
-          'shopping_city' => $this->address->city,
-          'shopping_district' => $this->address->district,
-          'shopping_ward' => $this->address->ward,
-          'shopping_address_line' => $this->address->address_line,
+            'customer_id' => $this->customer->id,
+            'shopping_name' => $this->address->name,
+            'shopping_phone' => $this->address->phone,
+            'shopping_city' => $this->address->city,
+            'shopping_district' => $this->address->district,
+            'shopping_ward' => $this->address->ward,
+            'shopping_address_line' => $this->address->address_line,
         ]);
 
         // Tạo payment với method là cod (cash on delivery)
         $payment = $order->payment()->create([
-          'method' => 'cod',
-          'total_amount' => 100000,
-          'status' => PaymentStatus::PAID, // Cash payments are PAID immediately
+            'method' => 'cod',
+            'total_amount' => 100000,
+            'status' => PaymentStatus::PAID, // Cash payments are PAID immediately
         ]);
 
         // Kiểm tra payment đã được tạo với status là PAID
         $this->assertDatabaseHas('payments', [
-          'id' => $payment->id,
-          'method' => 'cod',
-          'status' => PaymentStatus::PAID->value,
+            'id' => $payment->id,
+            'method' => 'cod',
+            'status' => PaymentStatus::PAID->value,
         ]);
     }
 
@@ -143,9 +143,9 @@ class CreateOrderWithVNPayTest extends TestCase
     {
         // Tạo payment với method vnpay
         $payment = $this->order->payment()->create([
-          'method' => 'vnpay',
-          'total_amount' => 200000,
-          'status' => PaymentStatus::PENDING,
+            'method' => 'vnpay',
+            'total_amount' => 200000,
+            'status' => PaymentStatus::PENDING,
         ]);
 
         Sanctum::actingAs($this->customer, ['*']);
@@ -154,7 +154,7 @@ class CreateOrderWithVNPayTest extends TestCase
         $response = $this->getJson("/api/v1/customer/orders/{$this->order->id}/pay-vnpay");
 
         $response->assertStatus(200)
-          ->assertJsonPath('data.payment_url', 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?test=1');
+            ->assertJsonPath('data.payment_url', 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?test=1');
     }
 
     #[Test]
@@ -163,25 +163,25 @@ class CreateOrderWithVNPayTest extends TestCase
         Sanctum::actingAs($this->customer, ['*']);
 
         $response = $this->postJson('/api/v1/customer/orders', [
-          'data' => [
-            'attributes' => [
-              'method' => 'invalid_method', // Phương thức không hỗ trợ, nên so sánh với cod/bank_transfer/vnpay/paypal
-            ],
-            'relationships' => [
-              'address' => [
-                'id' => $this->address->id,
-              ],
-              'items' => [
-                [
-                  'id' => 9999, // ID không tồn tại, nhưng chỉ quan tâm đến validation method
+            'data' => [
+                'attributes' => [
+                    'method' => 'invalid_method', // Phương thức không hỗ trợ, nên so sánh với cod/bank_transfer/vnpay/paypal
                 ],
-              ],
+                'relationships' => [
+                    'address' => [
+                        'id' => $this->address->id,
+                    ],
+                    'items' => [
+                        [
+                            'id' => 9999, // ID không tồn tại, nhưng chỉ quan tâm đến validation method
+                        ],
+                    ],
+                ],
             ],
-          ],
         ]);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['data.attributes.method']);
+            ->assertJsonValidationErrors(['data.attributes.method']);
     }
 
     protected function tearDown(): void

@@ -41,45 +41,45 @@ class CustomerCartItemControllerTest extends TestCase
 
         // Gọi API và kiểm tra response
         $response = $this->actingAs($this->user)
-          ->getJson('/api/v1/customer/cart');
+            ->getJson('/api/v1/customer/cart');
 
         $response->assertStatus(200)
-          ->assertJson(function (AssertableJson $json) {
-              $json->has('status')
-                ->where('status', 200)
-                ->has('message')
-                ->has('data.cart_items');
-          });
+            ->assertJson(function (AssertableJson $json) {
+                $json->has('status')
+                    ->where('status', 200)
+                    ->has('message')
+                    ->has('data.cart_items');
+            });
     }
 
     public function test_it_can_add_item_to_cart()
     {
         // Dữ liệu để thêm vào giỏ hàng
         $data = [
-          'book_id' => $this->book->id,
-          'quantity' => 3,
+            'book_id' => $this->book->id,
+            'quantity' => 3,
         ];
 
         // Gọi API để thêm vào giỏ hàng
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/cart/add', $data);
+            ->postJson('/api/v1/customer/cart/add', $data);
 
         $response->assertStatus(201)
-          ->assertJsonPath('status', 201)
-          ->assertJsonPath('message', ResponseMessage::ADDED_TO_CART->value)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'cart_item',
-            ],
-          ]);
+            ->assertJsonPath('status', 201)
+            ->assertJsonPath('message', ResponseMessage::ADDED_TO_CART->value)
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'cart_item',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('cart_items', [
-          'user_id' => $this->user->id,
-          'book_id' => $this->book->id,
-          'quantity' => 3,
+            'user_id' => $this->user->id,
+            'book_id' => $this->book->id,
+            'quantity' => 3,
         ]);
     }
 
@@ -90,17 +90,17 @@ class CustomerCartItemControllerTest extends TestCase
 
         // Dữ liệu để thêm lại vào giỏ hàng
         $data = [
-          'book_id' => $this->book->id,
-          'quantity' => 3,
+            'book_id' => $this->book->id,
+            'quantity' => 3,
         ];
 
         // Gọi API để thêm lại vào giỏ hàng
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/cart/add', $data);
+            ->postJson('/api/v1/customer/cart/add', $data);
 
         $response->assertStatus(400)
-          ->assertJsonPath('status', 400)
-          ->assertJsonPath('message', ResponseMessage::ALREADY_IN_CART->value);
+            ->assertJsonPath('status', 400)
+            ->assertJsonPath('message', ResponseMessage::ALREADY_IN_CART->value);
     }
 
     public function test_it_can_update_cart_item_quantity()
@@ -110,29 +110,29 @@ class CustomerCartItemControllerTest extends TestCase
 
         // Dữ liệu để cập nhật số lượng
         $data = [
-          'book_id' => $this->book->id,
-          'quantity' => 5,
+            'book_id' => $this->book->id,
+            'quantity' => 5,
         ];
 
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/cart/update-quantity', $data);
+            ->postJson('/api/v1/customer/cart/update-quantity', $data);
 
         $response->assertStatus(200)
-          ->assertJsonPath('status', 200)
-          ->assertJsonPath('message', ResponseMessage::UPDATED_CART_ITEM->value)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'cart_item',
-            ],
-          ]);
+            ->assertJsonPath('status', 200)
+            ->assertJsonPath('message', ResponseMessage::UPDATED_CART_ITEM->value)
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'cart_item',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('cart_items', [
-          'user_id' => $this->user->id,
-          'book_id' => $this->book->id,
-          'quantity' => 5,
+            'user_id' => $this->user->id,
+            'book_id' => $this->book->id,
+            'quantity' => 5,
         ]);
     }
 
@@ -140,21 +140,21 @@ class CustomerCartItemControllerTest extends TestCase
     {
         // Dữ liệu để cập nhật sách chưa có trong giỏ
         $data = [
-          'book_id' => $this->book->id,
-          'quantity' => 3,
+            'book_id' => $this->book->id,
+            'quantity' => 3,
         ];
 
         // Gọi API để cập nhật - Sửa thành POST và update-quantity
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/cart/update-quantity', $data);
+            ->postJson('/api/v1/customer/cart/update-quantity', $data);
 
         $response->assertStatus(200);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('cart_items', [
-          'user_id' => $this->user->id,
-          'book_id' => $this->book->id,
-          'quantity' => 3,
+            'user_id' => $this->user->id,
+            'book_id' => $this->book->id,
+            'quantity' => 3,
         ]);
     }
 
@@ -165,14 +165,14 @@ class CustomerCartItemControllerTest extends TestCase
 
         // Gọi API để xóa khỏi giỏ hàng
         $response = $this->actingAs($this->user)
-          ->deleteJson("/api/v1/customer/cart/remove/{$this->book->id}");
+            ->deleteJson("/api/v1/customer/cart/remove/{$this->book->id}");
 
         $response->assertStatus(204);
 
         // Kiểm tra dữ liệu đã bị xóa khỏi database
         $this->assertDatabaseMissing('cart_items', [
-          'user_id' => $this->user->id,
-          'book_id' => $this->book->id,
+            'user_id' => $this->user->id,
+            'book_id' => $this->book->id,
         ]);
     }
 
@@ -180,37 +180,37 @@ class CustomerCartItemControllerTest extends TestCase
     {
         // Gọi API để xóa sách không có trong giỏ
         $response = $this->actingAs($this->user)
-          ->deleteJson("/api/v1/customer/cart/remove/{$this->book->id}");
+            ->deleteJson("/api/v1/customer/cart/remove/{$this->book->id}");
 
         $response->assertStatus(404)
-          ->assertJsonPath('status', 404)
-          ->assertJsonPath('message', ResponseMessage::NOT_FOUND_CART_ITEM->value);
+            ->assertJsonPath('status', 404)
+            ->assertJsonPath('message', ResponseMessage::NOT_FOUND_CART_ITEM->value);
     }
 
     public function test_it_validates_input_for_adding_to_cart()
     {
         // Dữ liệu thiếu thông tin book_id
         $invalidData = [
-          'quantity' => 3,
+            'quantity' => 3,
         ];
 
         // Gọi API với dữ liệu không hợp lệ
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/cart/add', $invalidData);
+            ->postJson('/api/v1/customer/cart/add', $invalidData);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['book_id']);
+            ->assertJsonValidationErrors(['book_id']);
 
         // Kiểm tra với số lượng không hợp lệ
         $invalidQuantityData = [
-          'book_id' => $this->book->id,
-          'quantity' => -1,
+            'book_id' => $this->book->id,
+            'quantity' => -1,
         ];
 
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/cart/add', $invalidQuantityData);
+            ->postJson('/api/v1/customer/cart/add', $invalidQuantityData);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['quantity']);
+            ->assertJsonValidationErrors(['quantity']);
     }
 }

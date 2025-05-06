@@ -24,12 +24,12 @@ class AuthorControllerTest extends TestCase
 
         // Tạo một người dùng và gán các quyền
         $this->adminUser = User::factory()->create([
-          'is_customer' => false,
+            'is_customer' => false,
         ]);
         $this->adminUser->givePermissionTo([
-          'create_authors',
-          'edit_authors',
-          'delete_authors',
+            'create_authors',
+            'edit_authors',
+            'delete_authors',
         ]);
     }
 
@@ -43,9 +43,9 @@ class AuthorControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data',
-          ]);
+            ->assertJsonStructure([
+                'data',
+            ]);
     }
 
     public function test_it_can_get_author_details()
@@ -58,20 +58,20 @@ class AuthorControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'data' => [
-              'author' => [
-                'id',
-                'type',
-                'attributes' => [
-                  'name',
-                  'biography',
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'author' => [
+                        'id',
+                        'type',
+                        'attributes' => [
+                            'name',
+                            'biography',
+                        ],
+                        'relationships',
+                    ],
                 ],
-                'relationships',
-              ],
-            ],
-          ]);
+            ]);
     }
 
     public function test_it_returns_404_when_author_not_found()
@@ -81,10 +81,10 @@ class AuthorControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(404)
-          ->assertJson([
-            'status' => 404,
-            'message' => ResponseMessage::NOT_FOUND_AUTHOR->value,
-          ]);
+            ->assertJson([
+                'status' => 404,
+                'message' => ResponseMessage::NOT_FOUND_AUTHOR->value,
+            ]);
     }
 
     public function test_it_can_update_author()
@@ -94,30 +94,30 @@ class AuthorControllerTest extends TestCase
 
         // Dữ liệu cập nhật
         $updateData = [
-          'name' => 'Tên Mới',
-          'biography' => 'Tiểu sử mới',
-          'image_url' => 'https://example.com/newimage.jpg',
+            'name' => 'Tên Mới',
+            'biography' => 'Tiểu sử mới',
+            'image_url' => 'https://example.com/newimage.jpg',
         ];
 
         // Gọi API cập nhật tác giả
         $response = $this->actingAs($this->adminUser)
-          ->patchJson("/api/v1/authors/{$author->id}", $updateData);
+            ->patchJson("/api/v1/authors/{$author->id}", $updateData);
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'author',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'author',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('authors', [
-          'id' => $author->id,
-          'name' => 'Tên Mới',
-          'biography' => 'Tiểu sử mới',
+            'id' => $author->id,
+            'name' => 'Tên Mới',
+            'biography' => 'Tiểu sử mới',
         ]);
     }
 
@@ -128,14 +128,14 @@ class AuthorControllerTest extends TestCase
 
         // Gọi API xóa tác giả
         $response = $this->actingAs($this->adminUser)
-          ->deleteJson("/api/v1/authors/{$author->id}");
+            ->deleteJson("/api/v1/authors/{$author->id}");
 
         // Kiểm tra response
         $response->assertStatus(204);
 
         // Kiểm tra dữ liệu đã bị xóa mềm
         $this->assertSoftDeleted('authors', [
-          'id' => $author->id,
+            'id' => $author->id,
         ]);
     }
 
@@ -143,13 +143,13 @@ class AuthorControllerTest extends TestCase
     {
         // Tạo dữ liệu để tạo tác giả mới
         $authorData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Nguyễn Nhật Ánh',
-              'biography' => 'Tác giả nổi tiếng với nhiều tác phẩm văn học thiếu nhi và thanh thiếu niên.',
-              'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nguyễn Nhật Ánh',
+                    'biography' => 'Tác giả nổi tiếng với nhiều tác phẩm văn học thiếu nhi và thanh thiếu niên.',
+                    'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
+                ],
             ],
-          ],
         ];
 
         // Gọi API tạo tác giả không có xác thực
@@ -169,13 +169,13 @@ class AuthorControllerTest extends TestCase
 
         // Dữ liệu cập nhật
         $updateData = [
-          'name' => 'Tên Mới',
-          'biography' => 'Tiểu sử mới',
+            'name' => 'Tên Mới',
+            'biography' => 'Tiểu sử mới',
         ];
 
         // Gọi API cập nhật tác giả với user không có quyền
         $response = $this->actingAs($regularUser)
-          ->patchJson("/api/v1/authors/{$author->id}", $updateData);
+            ->patchJson("/api/v1/authors/{$author->id}", $updateData);
 
         // Kiểm tra response phải trả về lỗi 403
         $response->assertStatus(403);
@@ -191,7 +191,7 @@ class AuthorControllerTest extends TestCase
 
         // Gọi API xóa tác giả với user không có quyền
         $response = $this->actingAs($regularUser)
-          ->deleteJson("/api/v1/authors/{$author->id}");
+            ->deleteJson("/api/v1/authors/{$author->id}");
 
         // Kiểm tra response phải trả về lỗi 403
         $response->assertStatus(403);
@@ -201,42 +201,42 @@ class AuthorControllerTest extends TestCase
     {
         // Tạo dữ liệu thiếu trường bắt buộc
         $invalidData = [
-          // Thiếu trường 'name' bắt buộc
-          'biography' => 'Tiểu sử...',
+            // Thiếu trường 'name' bắt buộc
+            'biography' => 'Tiểu sử...',
         ];
 
         // Gọi API tạo tác giả
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/authors', $invalidData);
+            ->postJson('/api/v1/authors', $invalidData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['name']);
+            ->assertJsonValidationErrors(['name']);
     }
 
     public function test_it_validates_relationships_format()
     {
         // Tạo dữ liệu với relationships không hợp lệ
         $invalidData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Nguyễn Nhật Ánh',
-              'biography' => 'Tiểu sử...',
-              'image_url' => 'https://example.com/nguyen-nhat-anh.jpg',
-            ],
-            'relationships' => [
-              'books' => [
-                'data' => [
-                  ['id' => 1], // Thiếu trường 'type'
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nguyễn Nhật Ánh',
+                    'biography' => 'Tiểu sử...',
+                    'image_url' => 'https://example.com/nguyen-nhat-anh.jpg',
                 ],
-              ],
+                'relationships' => [
+                    'books' => [
+                        'data' => [
+                            ['id' => 1], // Thiếu trường 'type'
+                        ],
+                    ],
+                ],
             ],
-          ],
         ];
 
         // Gọi API tạo tác giả
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/authors', $invalidData);
+            ->postJson('/api/v1/authors', $invalidData);
 
         // Kiểm tra response
         $response->assertStatus(422);
@@ -252,22 +252,22 @@ class AuthorControllerTest extends TestCase
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data',
-            'meta' => [
-              'current_page',
-              'from',
-              'last_page',
-              'path',
-              'per_page',
-              'to',
-              'total',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'data',
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'path',
+                    'per_page',
+                    'to',
+                    'total',
+                ],
+            ]);
 
         // Kiểm tra thông tin phân trang
         $response->assertJsonPath('meta.current_page', 2)
-          ->assertJsonPath('meta.total', 15);
+            ->assertJsonPath('meta.total', 15);
     }
 
     public function test_it_returns_error_when_no_data_to_update()
@@ -277,20 +277,20 @@ class AuthorControllerTest extends TestCase
 
         // Dữ liệu cập nhật rỗng
         $emptyUpdateData = [
-          'data' => [
-            'attributes' => [],
-          ],
+            'data' => [
+                'attributes' => [],
+            ],
         ];
 
         // Gọi API cập nhật tác giả
         $response = $this->actingAs($this->adminUser)
-          ->patchJson("/api/v1/authors/{$author->id}", $emptyUpdateData);
+            ->patchJson("/api/v1/authors/{$author->id}", $emptyUpdateData);
 
         // Kiểm tra response
         $response->assertStatus(400)
-          ->assertJson([
-            'status' => 400,
-            'message' => 'Không có dữ liệu nào để cập nhật.',
-          ]);
+            ->assertJson([
+                'status' => 400,
+                'message' => 'Không có dữ liệu nào để cập nhật.',
+            ]);
     }
 }

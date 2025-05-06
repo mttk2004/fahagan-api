@@ -10,9 +10,9 @@ class AuthorDTOTest extends TestCase
     public function test_it_creates_author_dto_from_json_api_request()
     {
         $validatedData = [
-          'name' => 'Nguyễn Nhật Ánh',
-          'biography' => 'Tác giả nổi tiếng với nhiều tác phẩm văn học thiếu nhi và thanh thiếu niên.',
-          'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
+            'name' => 'Nguyễn Nhật Ánh',
+            'biography' => 'Tác giả nổi tiếng với nhiều tác phẩm văn học thiếu nhi và thanh thiếu niên.',
+            'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);
@@ -25,9 +25,9 @@ class AuthorDTOTest extends TestCase
     public function test_it_creates_author_dto_with_book_ids()
     {
         $validatedData = [
-          'name' => 'Nguyễn Nhật Ánh',
-          'biography' => 'Tác giả nổi tiếng với nhiều tác phẩm văn học thiếu nhi và thanh thiếu niên.',
-          'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
+            'name' => 'Nguyễn Nhật Ánh',
+            'biography' => 'Tác giả nổi tiếng với nhiều tác phẩm văn học thiếu nhi và thanh thiếu niên.',
+            'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);
@@ -38,7 +38,7 @@ class AuthorDTOTest extends TestCase
     public function test_it_creates_author_dto_with_nullable_properties()
     {
         $validatedData = [
-          'name' => 'Nguyễn Nhật Ánh',
+            'name' => 'Nguyễn Nhật Ánh',
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);
@@ -51,9 +51,9 @@ class AuthorDTOTest extends TestCase
     public function test_it_creates_author_dto_with_empty_relationships()
     {
         $validatedData = [
-          'name' => 'Nguyễn Nhật Ánh',
-          'biography' => 'Tác giả nổi tiếng.',
-          'image_url' => 'https://example.com/nguyen-nhat-anh.jpg',
+            'name' => 'Nguyễn Nhật Ánh',
+            'biography' => 'Tác giả nổi tiếng.',
+            'image_url' => 'https://example.com/nguyen-nhat-anh.jpg',
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);
@@ -99,9 +99,9 @@ class AuthorDTOTest extends TestCase
     public function test_it_handles_missing_relationships_section()
     {
         $validatedData = [
-          'name' => 'Nguyễn Nhật Ánh',
-          'biography' => 'Tác giả nổi tiếng.',
-          'image_url' => 'https://example.com/nguyen-nhat-anh.jpg',
+            'name' => 'Nguyễn Nhật Ánh',
+            'biography' => 'Tác giả nổi tiếng.',
+            'image_url' => 'https://example.com/nguyen-nhat-anh.jpg',
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);
@@ -114,7 +114,7 @@ class AuthorDTOTest extends TestCase
     public function test_it_handles_invalid_book_ids_format_gracefully()
     {
         $validatedData = [
-          'name' => 'Nguyễn Nhật Ánh',
+            'name' => 'Nguyễn Nhật Ánh',
         ];
 
         $authorDTO = AuthorDTO::fromRequest($validatedData);

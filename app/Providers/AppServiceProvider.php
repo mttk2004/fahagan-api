@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('snowflake', function ($app) {
-            return (new Snowflake())
+            return (new Snowflake)
                 ->setStartTimeStamp(strtotime('2019-10-10') * 1000)
                 ->setSequenceResolver(new LaravelSequenceResolver($app->get('cache.store')));
         });
@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('frontend.url') . '/reset-password?token=' . $token . '&email=' . $notifiable->getEmailForPasswordReset();
+            return config('frontend.url').'/reset-password?token='.$token.'&email='.$notifiable->getEmailForPasswordReset();
         });
     }
 }

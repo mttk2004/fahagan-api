@@ -32,14 +32,14 @@ class GenreFilter
     protected function filterByName(Builder $query): void
     {
         if (isset($this->filters['name'])) {
-            $query->where('name', 'like', '%' . $this->filters['name'] . '%');
+            $query->where('name', 'like', '%'.$this->filters['name'].'%');
         }
     }
 
     protected function filterBySlug(Builder $query): void
     {
         if (isset($this->filters['slug'])) {
-            $query->where('slug', 'like', '%' . $this->filters['slug'] . '%');
+            $query->where('slug', 'like', '%'.$this->filters['slug'].'%');
         }
     }
 }

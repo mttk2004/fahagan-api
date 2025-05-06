@@ -48,19 +48,19 @@ class DiscountService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new Discount();
+        $this->model = new Discount;
         $this->filterClass = DiscountFilter::class;
         $this->sortClass = DiscountSort::class;
         $this->with = ['targets'];
 
         // Khởi tạo các action
-        $this->createDiscountAction = new CreateDiscountAction();
-        $this->findTrashedDiscountAction = new FindTrashedDiscountAction();
-        $this->restoreDiscountAction = new RestoreDiscountAction();
-        $this->updateDiscountAction = new UpdateDiscountAction();
-        $this->deleteDiscountAction = new DeleteDiscountAction();
-        $this->validateDiscountAction = new ValidateDiscountAction();
-        $this->syncDiscountTargetsAction = new SyncDiscountTargetsAction();
+        $this->createDiscountAction = new CreateDiscountAction;
+        $this->findTrashedDiscountAction = new FindTrashedDiscountAction;
+        $this->restoreDiscountAction = new RestoreDiscountAction;
+        $this->updateDiscountAction = new UpdateDiscountAction;
+        $this->deleteDiscountAction = new DeleteDiscountAction;
+        $this->validateDiscountAction = new ValidateDiscountAction;
+        $this->syncDiscountTargetsAction = new SyncDiscountTargetsAction;
     }
 
     /**
@@ -97,7 +97,7 @@ class DiscountService extends BaseService
             // Nếu là lỗi ràng buộc duy nhất, chuyển nó thành ValidationException
             if ($e->getCode() == 23000 && strpos($e->getMessage(), 'discounts_name_unique') !== false) {
                 throw ValidationException::withMessages([
-                  'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
+                    'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
                 ]);
             }
 
@@ -179,9 +179,6 @@ class DiscountService extends BaseService
 
     /**
      * Tính giá sau khi áp dụng giảm giá cho một sách
-     *
-     * @param Book $book
-     * @return float
      */
     public function calculateDiscountedPrice(Book $book): float
     {
@@ -248,8 +245,7 @@ class DiscountService extends BaseService
     /**
      * Lấy tất cả mã giảm giá đang hoạt động cho một sách
      *
-     * @param int|string $bookId
-     * @return Collection
+     * @param  int|string  $bookId
      */
     public function getActiveBookDiscounts($bookId): Collection
     {
@@ -258,18 +254,15 @@ class DiscountService extends BaseService
         return Discount::whereHas('targets', function ($query) use ($bookId) {
             $query->where('target_id', $bookId);
         })
-          ->where('target_type', 'book')
-          ->where('is_active', true)
-          ->where('start_date', '<=', $now)
-          ->where('end_date', '>=', $now)
-          ->get();
+            ->where('target_type', 'book')
+            ->where('is_active', true)
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->get();
     }
 
     /**
      * Find a trashed resource based on unique attributes
-     *
-     * @param BaseDTO $dto
-     * @return \Illuminate\Database\Eloquent\Model|null
      */
     protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
     {
@@ -283,11 +276,9 @@ class DiscountService extends BaseService
 
     /**
      * Get the message when trying to restore a resource that is not deleted
-     *
-     * @return string
      */
     protected function getResourceNotDeletedMessage(): string
     {
-        return "Mã giảm giá này chưa bị xóa.";
+        return 'Mã giảm giá này chưa bị xóa.';
     }
 }

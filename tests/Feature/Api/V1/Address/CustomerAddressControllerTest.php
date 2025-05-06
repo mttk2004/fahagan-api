@@ -20,7 +20,7 @@ class CustomerAddressControllerTest extends TestCase
 
         // Tạo một người dùng bình thường
         $this->user = User::factory()->create([
-          'is_customer' => true,
+            'is_customer' => true,
         ]);
     }
 
@@ -31,50 +31,50 @@ class CustomerAddressControllerTest extends TestCase
 
         // Gọi API danh sách địa chỉ
         $response = $this->actingAs($this->user)
-          ->getJson('/api/v1/customer/addresses');
+            ->getJson('/api/v1/customer/addresses');
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data',
-          ]);
+            ->assertJsonStructure([
+                'data',
+            ]);
     }
 
     public function test_it_can_create_address()
     {
         // Tạo dữ liệu để tạo địa chỉ mới với direct format
         $addressData = [
-          'name' => 'Nguyễn Văn A',
-          'phone' => '0385123456',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'name' => 'Nguyễn Văn A',
+            'phone' => '0385123456',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ];
 
         // Gọi API tạo địa chỉ
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/addresses', $addressData);
+            ->postJson('/api/v1/customer/addresses', $addressData);
 
         // Kiểm tra response
         $response->assertStatus(201)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'address',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'address',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('addresses', [
-          'user_id' => $this->user->id,
-          'name' => 'Nguyễn Văn A',
-          'phone' => '0385123456',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'user_id' => $this->user->id,
+            'name' => 'Nguyễn Văn A',
+            'phone' => '0385123456',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ]);
     }
 
@@ -85,32 +85,32 @@ class CustomerAddressControllerTest extends TestCase
 
         // Dữ liệu cập nhật với direct format
         $updateData = [
-          'name' => 'Tên Mới',
-          'phone' => '0386123456',
-          'city' => 'Hồ Chí Minh',
+            'name' => 'Tên Mới',
+            'phone' => '0386123456',
+            'city' => 'Hồ Chí Minh',
         ];
 
         // Gọi API cập nhật địa chỉ
         $response = $this->actingAs($this->user)
-          ->patchJson("/api/v1/customer/addresses/{$address->id}", $updateData);
+            ->patchJson("/api/v1/customer/addresses/{$address->id}", $updateData);
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'address',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'address',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('addresses', [
-          'id' => $address->id,
-          'user_id' => $this->user->id,
-          'name' => 'Tên Mới',
-          'phone' => '0386123456',
-          'city' => 'Hồ Chí Minh',
+            'id' => $address->id,
+            'user_id' => $this->user->id,
+            'name' => 'Tên Mới',
+            'phone' => '0386123456',
+            'city' => 'Hồ Chí Minh',
         ]);
     }
 
@@ -118,19 +118,19 @@ class CustomerAddressControllerTest extends TestCase
     {
         // Dữ liệu cập nhật với direct format
         $updateData = [
-          'name' => 'Tên Mới',
+            'name' => 'Tên Mới',
         ];
 
         // Gọi API cập nhật địa chỉ không tồn tại
         $response = $this->actingAs($this->user)
-          ->patchJson("/api/v1/customer/addresses/999999", $updateData);
+            ->patchJson('/api/v1/customer/addresses/999999', $updateData);
 
         // Kiểm tra response
         $response->assertStatus(404)
-          ->assertJson([
-            'status' => 404,
-            'message' => ResponseMessage::NOT_FOUND_ADDRESS->value,
-          ]);
+            ->assertJson([
+                'status' => 404,
+                'message' => ResponseMessage::NOT_FOUND_ADDRESS->value,
+            ]);
     }
 
     public function test_it_can_delete_address()
@@ -140,14 +140,14 @@ class CustomerAddressControllerTest extends TestCase
 
         // Gọi API xóa địa chỉ
         $response = $this->actingAs($this->user)
-          ->deleteJson("/api/v1/customer/addresses/{$address->id}");
+            ->deleteJson("/api/v1/customer/addresses/{$address->id}");
 
         // Kiểm tra response
         $response->assertStatus(204);
 
         // Kiểm tra dữ liệu đã bị xóa
         $this->assertDatabaseMissing('addresses', [
-          'id' => $address->id,
+            'id' => $address->id,
         ]);
     }
 
@@ -155,14 +155,14 @@ class CustomerAddressControllerTest extends TestCase
     {
         // Gọi API xóa địa chỉ không tồn tại
         $response = $this->actingAs($this->user)
-          ->deleteJson("/api/v1/customer/addresses/999999");
+            ->deleteJson('/api/v1/customer/addresses/999999');
 
         // Kiểm tra response
         $response->assertStatus(404)
-          ->assertJson([
-            'status' => 404,
-            'message' => ResponseMessage::NOT_FOUND_ADDRESS->value,
-          ]);
+            ->assertJson([
+                'status' => 404,
+                'message' => ResponseMessage::NOT_FOUND_ADDRESS->value,
+            ]);
     }
 
     public function test_it_requires_authentication_to_access_addresses()
@@ -184,12 +184,12 @@ class CustomerAddressControllerTest extends TestCase
 
         // Cập nhật dữ liệu theo direct format
         $updateData = [
-          'name' => 'Tên Mới',
+            'name' => 'Tên Mới',
         ];
 
         // Gọi API xem địa chỉ của người dùng khác
         $response = $this->actingAs($this->user)
-          ->patchJson("/api/v1/customer/addresses/{$address->id}", $updateData);
+            ->patchJson("/api/v1/customer/addresses/{$address->id}", $updateData);
 
         // Kiểm tra response phải trả về lỗi 404
         $response->assertStatus(404);
@@ -199,23 +199,23 @@ class CustomerAddressControllerTest extends TestCase
     {
         // Tạo dữ liệu không hợp lệ (thiếu các trường bắt buộc) với direct format
         $invalidData = [
-          'name' => 'Nguyễn Văn A',
-          'phone' => 'invalid-phone', // Số điện thoại không đúng định dạng
+            'name' => 'Nguyễn Văn A',
+            'phone' => 'invalid-phone', // Số điện thoại không đúng định dạng
         ];
 
         // Gọi API tạo địa chỉ với dữ liệu không hợp lệ
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/addresses', $invalidData);
+            ->postJson('/api/v1/customer/addresses', $invalidData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-          ->assertJsonValidationErrors([
-            'phone',
-            'city',
-            'district',
-            'ward',
-            'address_line',
-          ]);
+            ->assertJsonValidationErrors([
+                'phone',
+                'city',
+                'district',
+                'ward',
+                'address_line',
+            ]);
     }
 
     public function test_it_handles_pagination_for_addresses()
@@ -225,26 +225,26 @@ class CustomerAddressControllerTest extends TestCase
 
         // Gọi API danh sách địa chỉ với tham số page
         $response = $this->actingAs($this->user)
-          ->getJson('/api/v1/customer/addresses?page=2&per_page=5');
+            ->getJson('/api/v1/customer/addresses?page=2&per_page=5');
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data',
-            'meta' => [
-              'current_page',
-              'from',
-              'last_page',
-              'path',
-              'per_page',
-              'to',
-              'total',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'data',
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'path',
+                    'per_page',
+                    'to',
+                    'total',
+                ],
+            ]);
 
         // Kiểm tra tổng số địa chỉ (15) và trang hiện tại (2)
         $response->assertJsonPath('meta.current_page', 2)
-          ->assertJsonPath('meta.total', 15);
+            ->assertJsonPath('meta.total', 15);
 
         // Lấy giá trị per_page thực tế từ response để kiểm tra
         $perPage = $response->json('meta.per_page');
@@ -256,42 +256,42 @@ class CustomerAddressControllerTest extends TestCase
     {
         // Tạo dữ liệu với số điện thoại không đúng định dạng
         $invalidPhoneData = [
-          'name' => 'Nguyễn Văn A',
-          'phone' => '1234567890', // Không bắt đầu bằng 0
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'name' => 'Nguyễn Văn A',
+            'phone' => '1234567890', // Không bắt đầu bằng 0
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ];
 
         // Gọi API tạo địa chỉ
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/addresses', $invalidPhoneData);
+            ->postJson('/api/v1/customer/addresses', $invalidPhoneData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['phone']);
+            ->assertJsonValidationErrors(['phone']);
     }
 
     public function test_it_validates_max_length_of_name()
     {
         // Tạo dữ liệu với tên quá dài
         $longNameData = [
-          'name' => str_repeat('A', 256), // 256 ký tự, vượt quá max 255
-          'phone' => '0385123456',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'name' => str_repeat('A', 256), // 256 ký tự, vượt quá max 255
+            'phone' => '0385123456',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ];
 
         // Gọi API tạo địa chỉ
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/addresses', $longNameData);
+            ->postJson('/api/v1/customer/addresses', $longNameData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['name']);
+            ->assertJsonValidationErrors(['name']);
     }
 
     public function test_it_can_handle_multiple_addresses_for_user()
@@ -301,21 +301,21 @@ class CustomerAddressControllerTest extends TestCase
 
         // Tạo địa chỉ thứ 4
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/customer/addresses', [
-            'name' => 'Địa chỉ mới',
-            'phone' => '0385123456',
-            'city' => 'Đà Nẵng',
-            'district' => 'Hải Châu',
-            'ward' => 'Thanh Bình',
-            'address_line' => 'Số 123 Đường XYZ',
-          ]);
+            ->postJson('/api/v1/customer/addresses', [
+                'name' => 'Địa chỉ mới',
+                'phone' => '0385123456',
+                'city' => 'Đà Nẵng',
+                'district' => 'Hải Châu',
+                'ward' => 'Thanh Bình',
+                'address_line' => 'Số 123 Đường XYZ',
+            ]);
 
         // Kiểm tra response
         $response->assertStatus(201);
 
         // Kiểm tra tổng số địa chỉ của người dùng
         $response = $this->actingAs($this->user)
-          ->getJson('/api/v1/customer/addresses');
+            ->getJson('/api/v1/customer/addresses');
 
         $response->assertJsonCount(4, 'data');
     }

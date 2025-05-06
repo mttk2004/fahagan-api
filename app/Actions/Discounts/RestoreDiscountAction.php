@@ -14,9 +14,9 @@ class RestoreDiscountAction extends BaseAction
     /**
      * Khôi phục mã giảm giá đã bị xóa mềm và cập nhật thông tin mới
      *
-     * @param Discount $trashedDiscount Mã giảm giá đã bị xóa mềm
-     * @param DiscountDTO $discountDTO Dữ liệu để cập nhật
-     * @return Discount
+     * @param  Discount  $trashedDiscount  Mã giảm giá đã bị xóa mềm
+     * @param  DiscountDTO  $discountDTO  Dữ liệu để cập nhật
+     *
      * @throws Exception
      */
     public function execute(...$args): Discount
@@ -42,8 +42,8 @@ class RestoreDiscountAction extends BaseAction
                 $records = [];
                 foreach ($discountDTO->target_ids as $targetId) {
                     $records[] = [
-                      'discount_id' => $trashedDiscount->id,
-                      'target_id' => $targetId,
+                        'discount_id' => $trashedDiscount->id,
+                        'target_id' => $targetId,
                     ];
                 }
 

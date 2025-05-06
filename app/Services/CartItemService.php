@@ -17,16 +17,12 @@ class CartItemService
     public function getCartItems(User $user): Collection
     {
         return $user->cartItems()
-          ->with('book')
-          ->get();
+            ->with('book')
+            ->get();
     }
 
     /**
      * Tìm sản phẩm trong giỏ hàng
-     *
-     * @param User $user
-     * @param int $bookId
-     * @return CartItem|null
      */
     public function findCartItem(User $user, int $bookId): ?CartItem
     {
@@ -40,9 +36,6 @@ class CartItemService
     /**
      * Thêm sản phẩm vào giỏ hàng không cần kiểm tra tồn tại
      *
-     * @param User $user
-     * @param CartItemDTO $cartItemDTO
-     * @return CartItem
      * @throws Exception
      */
     public function addToCartNoChecking(User $user, CartItemDTO $cartItemDTO): CartItem
@@ -51,7 +44,7 @@ class CartItemService
             DB::beginTransaction();
 
             $user->booksInCart()->attach($cartItemDTO->book_id, [
-              'quantity' => $cartItemDTO->quantity,
+                'quantity' => $cartItemDTO->quantity,
             ]);
 
             $cartItem = $user->getCartItemByBook($cartItemDTO->book_id);
@@ -95,7 +88,7 @@ class CartItemService
             DB::beginTransaction();
 
             $user->booksInCart()->updateExistingPivot($cartItemDTO->book_id, [
-              'quantity' => $cartItemDTO->quantity,
+                'quantity' => $cartItemDTO->quantity,
             ]);
 
             $cartItem = $user->getCartItemByBook($cartItemDTO->book_id);
@@ -139,8 +132,6 @@ class CartItemService
     /**
      * Xóa toàn bộ giỏ hàng của người dùng
      *
-     * @param User $user
-     * @return bool
      * @throws Exception
      */
     public function clearCart(User $user): bool

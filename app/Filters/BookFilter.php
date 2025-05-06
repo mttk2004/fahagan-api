@@ -95,7 +95,7 @@ class BookFilter
     protected function filterByTitle(Builder $query): void
     {
         if (isset($this->filters['title'])) {
-            $query->where('title', 'like', '%' . $this->filters['title'] . '%');
+            $query->where('title', 'like', '%'.$this->filters['title'].'%');
         }
     }
 }

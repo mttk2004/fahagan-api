@@ -49,7 +49,7 @@ class GenreServiceTest extends TestCase
         Genre::factory(5)->create();
 
         // Tạo mock request
-        $request = new Request();
+        $request = new Request;
 
         // Gọi service để lấy tất cả thể loại
         $result = $this->genreService->getAllGenres($request);

@@ -20,23 +20,23 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    use HandlePagination;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly OrderService $orderService,
         private readonly string $entityName = 'order'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all orders
      *
-     * @param Request $request
      *
      * @return OrderCollection|JsonResponse
+     *
      * @group Orders
+     *
      * @authenticated
      */
     public function index(Request $request)
@@ -52,10 +52,9 @@ class OrderController extends Controller
 
     /**
      * Get order by ID
-     * @param int $order_id
      *
-     * @return JsonResponse
      * @group Orders
+     *
      * @unauthenticated
      */
     public function show(int $order_id): JsonResponse
@@ -68,22 +67,22 @@ class OrderController extends Controller
             $order = $this->orderService->getOrderById($order_id);
 
             return ResponseUtils::success([
-              'order' => new OrderResource($order),
+                'order' => new OrderResource($order),
             ]);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'order_id' => $order_id,
+                'order_id' => $order_id,
             ]);
         }
     }
 
     /**
      * Update order status
-     * @param Request $request
-     * @param int $order_id
      *
-     * @return JsonResponse
+     * @param  Request  $request
+     *
      * @group Orders
+     *
      * @authenticated
      */
     public function updateStatus(OrderStatusUpdateRequest $request, int $order_id): JsonResponse
@@ -102,11 +101,11 @@ class OrderController extends Controller
             );
 
             return ResponseUtils::success([
-              'order' => new OrderResource($order),
+                'order' => new OrderResource($order),
             ], ResponseMessage::UPDATED_ORDER->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'order_id' => $order_id,
+                'order_id' => $order_id,
             ]);
         }
     }

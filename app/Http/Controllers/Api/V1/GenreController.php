@@ -21,22 +21,21 @@ use Illuminate\Http\Request;
 
 class GenreController extends Controller
 {
-    use HandlePagination;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly GenreService $genreService,
         private string $entityName = 'genre'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all genres
      *
-     * @param Request $request
      *
      * @return GenreCollection|JsonResponse
+     *
      * @group Genres
      */
     public function index(Request $request)
@@ -49,9 +48,9 @@ class GenreController extends Controller
     /**
      * Create a new genre
      *
-     * @param GenreStoreRequest $request
      *
      * @return JsonResponse
+     *
      * @group Genres
      */
     public function store(GenreStoreRequest $request)
@@ -78,9 +77,9 @@ class GenreController extends Controller
     /**
      * Get a genre
      *
-     * @param $genre_id
      *
      * @return JsonResponse
+     *
      * @group Genres
      */
     public function show($genre_id)
@@ -110,9 +109,9 @@ class GenreController extends Controller
      * 2. Truy vấn API: Khi client muốn tìm kiếm thể loại dựa trên tên thay vì ID
      * 3. SEO: URL có chứa slug dễ đọc giúp cải thiện SEO
      *
-     * @param $slug
      *
      * @return JsonResponse
+     *
      * @group Genres
      */
     public function showBySlug($slug)
@@ -133,10 +132,9 @@ class GenreController extends Controller
     /**
      * Update a genre
      *
-     * @param GenreUpdateRequest $request
-     * @param                   $genre_id
      *
      * @return JsonResponse
+     *
      * @group Genres
      */
     public function update(GenreUpdateRequest $request, $genre_id)
@@ -171,9 +169,9 @@ class GenreController extends Controller
     /**
      * Delete a genre
      *
-     * @param $genre_id
      *
      * @return JsonResponse
+     *
      * @group Genres
      */
     public function destroy($genre_id)
@@ -196,9 +194,9 @@ class GenreController extends Controller
     /**
      * Restore a soft deleted genre
      *
-     * @param $genre_id
      *
      * @return JsonResponse
+     *
      * @group Genres
      */
     public function restore($genre_id)

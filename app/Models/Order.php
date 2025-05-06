@@ -30,20 +30,20 @@ class Order extends Model
 
     protected $fillable
         = [
-          'customer_id',
-          'employee_id',
-          'status',
-          'shopping_name',
-          'shopping_phone',
-          'shopping_city',
-          'shopping_district',
-          'shopping_ward',
-          'shopping_address_line',
-          'ordered_at',
-          'approved_at',
-          'delivered_at',
-          'completed_at',
-          'canceled_at',
+            'customer_id',
+            'employee_id',
+            'status',
+            'shopping_name',
+            'shopping_phone',
+            'shopping_city',
+            'shopping_district',
+            'shopping_ward',
+            'shopping_address_line',
+            'ordered_at',
+            'approved_at',
+            'delivered_at',
+            'completed_at',
+            'canceled_at',
         ];
 
     public function customer(): BelongsTo
@@ -51,12 +51,12 @@ class Order extends Model
         return $this->belongsTo(User::class, 'customer_id');
     }
 
-    public function employee(): BelongsTo|null
+    public function employee(): ?BelongsTo
     {
         return $this->belongsTo(User::class, 'employee_id') ?? null;
     }
 
-    public function payment(): HasOne|null
+    public function payment(): ?HasOne
     {
         return $this->hasOne(Payment::class);
     }
@@ -74,10 +74,10 @@ class Order extends Model
         $now = Carbon::now();
 
         return Discount::where('target_type', 'order')
-          ->where('is_active', true)
-          ->where('start_date', '<=', $now)
-          ->where('end_date', '>=', $now)
-          ->get();
+            ->where('is_active', true)
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->get();
     }
 
     /**
@@ -158,13 +158,13 @@ class Order extends Model
     protected function casts(): array
     {
         return [
-          'ordered_at' => 'datetime',
-          'approved_at' => 'datetime',
-          'delivered_at' => 'datetime',
-          'completed_at' => 'datetime',
-          'canceled_at' => 'datetime',
-          'created_at' => 'datetime',
-          'updated_at' => 'datetime',
+            'ordered_at' => 'datetime',
+            'approved_at' => 'datetime',
+            'delivered_at' => 'datetime',
+            'completed_at' => 'datetime',
+            'canceled_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 }

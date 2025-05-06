@@ -22,7 +22,7 @@ class GenreService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new Genre();
+        $this->model = new Genre;
         $this->filterClass = GenreFilter::class;
         $this->sortClass = GenreSort::class;
         $this->with = [];
@@ -134,9 +134,6 @@ class GenreService extends BaseService
 
     /**
      * Find a trashed resource based on unique attributes
-     *
-     * @param BaseDTO $dto
-     * @return \Illuminate\Database\Eloquent\Model|null
      */
     protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
     {
@@ -146,18 +143,16 @@ class GenreService extends BaseService
         }
 
         return Genre::withTrashed()
-          ->where('slug', $dto->slug)
-          ->onlyTrashed()
-          ->first();
+            ->where('slug', $dto->slug)
+            ->onlyTrashed()
+            ->first();
     }
 
     /**
      * Get the message when trying to restore a resource that is not deleted
-     *
-     * @return string
      */
     protected function getResourceNotDeletedMessage(): string
     {
-        return "Thể loại này chưa bị xóa.";
+        return 'Thể loại này chưa bị xóa.';
     }
 }

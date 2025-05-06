@@ -73,26 +73,26 @@ class DiscountDTOTest extends TestCase
     {
         // Dữ liệu request giả lập cho discount sách
         $requestData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Giảm giá mùa hè',
-              'discount_type' => 'percentage',
-              'discount_value' => 10.5,
-              'target_type' => 'book',
-              'min_purchase_amount' => 100000,
-              'max_discount_amount' => 50000,
-              'start_date' => '2023-06-01',
-              'end_date' => '2023-08-31',
-              'description' => 'Áp dụng cho sách',
-              'is_active' => true,
+            'data' => [
+                'attributes' => [
+                    'name' => 'Giảm giá mùa hè',
+                    'discount_type' => 'percentage',
+                    'discount_value' => 10.5,
+                    'target_type' => 'book',
+                    'min_purchase_amount' => 100000,
+                    'max_discount_amount' => 50000,
+                    'start_date' => '2023-06-01',
+                    'end_date' => '2023-08-31',
+                    'description' => 'Áp dụng cho sách',
+                    'is_active' => true,
+                ],
+                'relationships' => [
+                    'targets' => [
+                        ['id' => 1, 'type' => 'book'],
+                        ['id' => 2, 'type' => 'book'],
+                    ],
+                ],
             ],
-            'relationships' => [
-              'targets' => [
-                ['id' => 1, 'type' => 'book'],
-                ['id' => 2, 'type' => 'book'],
-              ],
-            ],
-          ],
         ];
 
         // Tạo DTO từ request
@@ -116,21 +116,21 @@ class DiscountDTOTest extends TestCase
     {
         // Dữ liệu request giả lập cho discount đơn hàng
         $requestData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Giảm giá đơn hàng',
-              'discount_type' => 'fixed',
-              'discount_value' => 50000,
-              'target_type' => 'order',
-              'min_purchase_amount' => 500000,
-              'max_discount_amount' => 100000,
-              'start_date' => '2023-06-01',
-              'end_date' => '2023-08-31',
-              'description' => 'Áp dụng cho đơn hàng',
-              'is_active' => true,
+            'data' => [
+                'attributes' => [
+                    'name' => 'Giảm giá đơn hàng',
+                    'discount_type' => 'fixed',
+                    'discount_value' => 50000,
+                    'target_type' => 'order',
+                    'min_purchase_amount' => 500000,
+                    'max_discount_amount' => 100000,
+                    'start_date' => '2023-06-01',
+                    'end_date' => '2023-08-31',
+                    'description' => 'Áp dụng cho đơn hàng',
+                    'is_active' => true,
+                ],
+                // Không có relationships targets cho order discount
             ],
-            // Không có relationships targets cho order discount
-          ],
         ];
 
         // Tạo DTO từ request

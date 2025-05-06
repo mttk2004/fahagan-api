@@ -8,8 +8,7 @@ class OrderDTO extends \App\DTOs\BaseDTO
         public readonly ?string $method,
         public readonly ?int $address_id = null,
         public readonly array $items = [],
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(array $validatedData): self
     {
@@ -19,8 +18,8 @@ class OrderDTO extends \App\DTOs\BaseDTO
 
         $items = array_map(
             fn ($item) => [
-            'id' => $item['id'],
-      ],
+                'id' => $item['id'],
+            ],
             $items
         );
 

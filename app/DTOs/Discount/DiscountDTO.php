@@ -16,8 +16,7 @@ class DiscountDTO extends \App\DTOs\BaseDTO
         public readonly ?string $description = null,
         public readonly ?bool $is_active = true,
         public readonly array $target_ids = [],
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(array $validatedData): self
     {
@@ -33,10 +32,10 @@ class DiscountDTO extends \App\DTOs\BaseDTO
         return new self(
             name: $attributes['name'] ?? null,
             discount_type: $attributes['discount_type'] ?? null,
-            discount_value: isset($attributes['discount_value']) ? (float)$attributes['discount_value'] : null,
+            discount_value: isset($attributes['discount_value']) ? (float) $attributes['discount_value'] : null,
             target_type: $attributes['target_type'] ?? 'book',
-            min_purchase_amount: isset($attributes['min_purchase_amount']) ? (float)$attributes['min_purchase_amount'] : null,
-            max_discount_amount: isset($attributes['max_discount_amount']) ? (float)$attributes['max_discount_amount'] : null,
+            min_purchase_amount: isset($attributes['min_purchase_amount']) ? (float) $attributes['min_purchase_amount'] : null,
+            max_discount_amount: isset($attributes['max_discount_amount']) ? (float) $attributes['max_discount_amount'] : null,
             start_date: $attributes['start_date'] ?? null,
             end_date: $attributes['end_date'] ?? null,
             description: $attributes['description'] ?? null,

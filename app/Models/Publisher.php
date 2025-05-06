@@ -18,8 +18,8 @@ class Publisher extends Model
 
     protected $fillable
         = [
-          'name',
-          'biography',
+            'name',
+            'biography',
         ];
 
     public function publishedBooks(): HasMany

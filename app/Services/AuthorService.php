@@ -22,7 +22,7 @@ class AuthorService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new Author();
+        $this->model = new Author;
         $this->filterClass = AuthorFilter::class;
         $this->sortClass = AuthorSort::class;
         $this->with = ['writtenBooks'];
@@ -82,9 +82,6 @@ class AuthorService extends BaseService
 
     /**
      * Find a trashed resource based on unique attributes
-     *
-     * @param BaseDTO $dto
-     * @return Model|null
      */
     protected function findTrashed(BaseDTO $dto): ?Model
     {
@@ -94,8 +91,8 @@ class AuthorService extends BaseService
         }
 
         return Author::withTrashed()
-          ->where('name', $dto->name)
-          ->onlyTrashed()
-          ->first();
+            ->where('name', $dto->name)
+            ->onlyTrashed()
+            ->first();
     }
 }

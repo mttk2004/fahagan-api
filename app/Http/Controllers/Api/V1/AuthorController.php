@@ -21,21 +21,22 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-    use HandlePagination;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly AuthorService $authorService,
         private readonly string $entityName = 'author'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all authors
      *
      * @return AuthorCollection
+     *
      * @group Authors
+     *
      * @unauthenticated
      */
     public function index(Request $request)
@@ -48,9 +49,9 @@ class AuthorController extends Controller
     /**
      * Create a new author
      *
-     * @param AuthorStoreRequest $request
      *
      * @return JsonResponse
+     *
      * @group Authors
      */
     public function store(AuthorStoreRequest $request)
@@ -65,11 +66,11 @@ class AuthorController extends Controller
             );
 
             return ResponseUtils::created([
-              'author' => new AuthorResource($author),
+                'author' => new AuthorResource($author),
             ], ResponseMessage::CREATED_AUTHOR->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => $request->validated(),
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -77,10 +78,11 @@ class AuthorController extends Controller
     /**
      * Get an author
      *
-     * @param $author_id
      *
      * @return JsonResponse
+     *
      * @group Authors
+     *
      * @unauthenticated
      */
     public function show($author_id)
@@ -89,11 +91,11 @@ class AuthorController extends Controller
             $author = $this->authorService->getAuthorById($author_id);
 
             return ResponseUtils::success([
-              'author' => new AuthorResource($author),
+                'author' => new AuthorResource($author),
             ]);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'author_id' => $author_id,
+                'author_id' => $author_id,
             ]);
         }
     }
@@ -101,10 +103,9 @@ class AuthorController extends Controller
     /**
      * Update an author
      *
-     * @param AuthorUpdateRequest $request
-     * @param                     $author_id
      *
      * @return JsonResponse
+     *
      * @group Authors
      */
     public function update(AuthorUpdateRequest $request, $author_id)
@@ -127,11 +128,11 @@ class AuthorController extends Controller
             );
 
             return ResponseUtils::success([
-              'author' => new AuthorResource($author),
+                'author' => new AuthorResource($author),
             ], ResponseMessage::UPDATED_AUTHOR->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => $request->validated(),
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -139,9 +140,9 @@ class AuthorController extends Controller
     /**
      * Delete an author
      *
-     * @param         $author_id
      *
      * @return JsonResponse
+     *
      * @group Authors
      */
     public function destroy($author_id)
@@ -156,7 +157,7 @@ class AuthorController extends Controller
             return ResponseUtils::noContent(ResponseMessage::DELETED_AUTHOR->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'author_id' => $author_id,
+                'author_id' => $author_id,
             ]);
         }
     }

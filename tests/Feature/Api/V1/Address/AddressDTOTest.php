@@ -10,12 +10,12 @@ class AddressDTOTest extends TestCase
     public function test_it_creates_address_dto_from_direct_format_request()
     {
         $requestData = [
-          'name' => 'Nguyễn Văn A',
-          'phone' => '0123456789',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'name' => 'Nguyễn Văn A',
+            'phone' => '0123456789',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ];
 
         $addressDTO = AddressDTO::fromRequest($requestData);
@@ -31,7 +31,7 @@ class AddressDTOTest extends TestCase
     public function test_it_creates_address_dto_with_nullable_properties()
     {
         $requestData = [
-          'name' => 'Nguyễn Văn A',
+            'name' => 'Nguyễn Văn A',
         ];
 
         $addressDTO = AddressDTO::fromRequest($requestData);

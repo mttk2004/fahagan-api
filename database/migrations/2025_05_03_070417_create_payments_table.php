@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -15,22 +16,22 @@ return new class extends Migration {
 
             $table->unsignedBigInteger('order_id');
             $table->foreign('order_id')
-              ->references('id')
-              ->on('orders')
-              ->onDelete('cascade')
-              ->onUpdate('cascade');
+                ->references('id')
+                ->on('orders')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->enum('status', [
-              'pending',
-              'paid',
-              'failed',
+                'pending',
+                'paid',
+                'failed',
             ])->default('pending');
             $table->enum('method', [
-              'cod',
-              'bank_transfer',
-              'credit_card',
-              'vnpay',
-              'paypal',
+                'cod',
+                'bank_transfer',
+                'credit_card',
+                'vnpay',
+                'paypal',
             ])->default('cod');
             $table->decimal('total_amount', 12, 1);
             $table->decimal('discount_value', 12, 1)->default(0.0);

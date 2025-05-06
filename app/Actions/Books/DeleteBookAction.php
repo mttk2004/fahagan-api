@@ -12,8 +12,9 @@ class DeleteBookAction extends BaseAction
     /**
      * Xóa sách (soft delete)
      *
-     * @param Book $book Sách cần xóa
+     * @param  Book  $book  Sách cần xóa
      * @return Book Sách đã xóa
+     *
      * @throws Exception
      */
     public function execute(...$args): Book

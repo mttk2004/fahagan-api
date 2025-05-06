@@ -23,7 +23,7 @@ class AddressServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->addressService = new AddressService();
+        $this->addressService = new AddressService;
         $this->user = User::factory()->create();
     }
 
@@ -33,7 +33,7 @@ class AddressServiceTest extends TestCase
         Address::factory(3)->create(['user_id' => $this->user->id]);
 
         // Gọi service để lấy tất cả địa chỉ
-        $result = $this->addressService->getAllAddresses($this->user, new Request());
+        $result = $this->addressService->getAllAddresses($this->user, new Request);
 
         // Kiểm tra kết quả
         $this->assertEquals(3, $result->total());
@@ -56,14 +56,14 @@ class AddressServiceTest extends TestCase
 
         // Kiểm tra kết quả
         $this->assertDatabaseHas('addresses', [
-          'id' => $result->id,
-          'user_id' => $this->user->id,
-          'name' => 'Nguyễn Văn A',
-          'phone' => '0123456789',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'id' => $result->id,
+            'user_id' => $this->user->id,
+            'name' => 'Nguyễn Văn A',
+            'phone' => '0123456789',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ]);
     }
 
@@ -93,10 +93,10 @@ class AddressServiceTest extends TestCase
     {
         // Tạo một địa chỉ
         $address = Address::factory()->create([
-          'user_id' => $this->user->id,
-          'name' => 'Nguyễn Văn A',
-          'phone' => '0123456789',
-          'city' => 'Hà Nội',
+            'user_id' => $this->user->id,
+            'name' => 'Nguyễn Văn A',
+            'phone' => '0123456789',
+            'city' => 'Hà Nội',
         ]);
 
         // Tạo DTO cập nhật
@@ -118,10 +118,10 @@ class AddressServiceTest extends TestCase
     {
         // Tạo một địa chỉ
         $address = Address::factory()->create([
-          'user_id' => $this->user->id,
-          'name' => 'Nguyễn Văn A',
-          'phone' => '0123456789',
-          'city' => 'Hà Nội',
+            'user_id' => $this->user->id,
+            'name' => 'Nguyễn Văn A',
+            'phone' => '0123456789',
+            'city' => 'Hà Nội',
         ]);
 
         // Tạo DTO chỉ cập nhật thành phố
@@ -148,7 +148,7 @@ class AddressServiceTest extends TestCase
 
         // Kiểm tra địa chỉ đã bị xóa
         $this->assertDatabaseMissing('addresses', [
-          'id' => $address->id,
+            'id' => $address->id,
         ]);
     }
 
@@ -169,7 +169,7 @@ class AddressServiceTest extends TestCase
 
     public function test_it_returns_empty_collection_when_no_addresses_exist()
     {
-        $result = $this->addressService->getAllAddresses($this->user, new Request());
+        $result = $this->addressService->getAllAddresses($this->user, new Request);
         $this->assertEquals(0, $result->total());
     }
 
@@ -177,19 +177,19 @@ class AddressServiceTest extends TestCase
     {
         // Tạo 2 địa chỉ với thành phố Hà Nội
         Address::factory()->create([
-          'user_id' => $this->user->id,
-          'city' => 'Hà Nội',
+            'user_id' => $this->user->id,
+            'city' => 'Hà Nội',
         ]);
 
         Address::factory()->create([
-          'user_id' => $this->user->id,
-          'city' => 'Hà Nội',
+            'user_id' => $this->user->id,
+            'city' => 'Hà Nội',
         ]);
 
         // Và 1 địa chỉ với thành phố khác
         Address::factory()->create([
-          'user_id' => $this->user->id,
-          'city' => 'Hồ Chí Minh',
+            'user_id' => $this->user->id,
+            'city' => 'Hồ Chí Minh',
         ]);
 
         // Tạo request với filter
@@ -217,7 +217,7 @@ class AddressServiceTest extends TestCase
         Address::factory()->create(['user_id' => $otherUser->id]);
 
         // Gọi service để lấy tất cả địa chỉ của người dùng hiện tại
-        $result = $this->addressService->getAllAddresses($this->user, new Request());
+        $result = $this->addressService->getAllAddresses($this->user, new Request);
 
         // Kiểm tra kết quả - không thấy địa chỉ của người dùng khác
         $this->assertEquals(0, $result->total());
@@ -227,13 +227,13 @@ class AddressServiceTest extends TestCase
     {
         // Tạo một địa chỉ
         $address = Address::factory()->create([
-          'user_id' => $this->user->id,
-          'name' => 'Nguyễn Văn A',
-          'phone' => '0123456789',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'user_id' => $this->user->id,
+            'name' => 'Nguyễn Văn A',
+            'phone' => '0123456789',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ]);
 
         // Tạo DTO chỉ cập nhật một số trường, các trường khác để null

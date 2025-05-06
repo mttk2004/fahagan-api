@@ -97,9 +97,9 @@ class GenreDTOTest extends TestCase
     {
         // Giả lập dữ liệu validated từ request với định dạng trực tiếp
         $validatedData = [
-          'name' => 'Tiểu thuyết lịch sử',
-          'slug' => 'tieu-thuyet-lich-su',
-          'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
+            'name' => 'Tiểu thuyết lịch sử',
+            'slug' => 'tieu-thuyet-lich-su',
+            'description' => 'Thể loại tiểu thuyết lấy bối cảnh từ các sự kiện lịch sử.',
         ];
 
         // Tạo DTO từ dữ liệu request
@@ -115,7 +115,7 @@ class GenreDTOTest extends TestCase
     {
         // Giả lập dữ liệu validated từ request chỉ có trường bắt buộc với định dạng trực tiếp
         $validatedData = [
-          'name' => 'Tiểu thuyết trinh thám',
+            'name' => 'Tiểu thuyết trinh thám',
         ];
 
         // Tạo DTO từ dữ liệu request

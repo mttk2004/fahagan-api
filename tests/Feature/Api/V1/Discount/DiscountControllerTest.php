@@ -29,11 +29,11 @@ class DiscountControllerTest extends TestCase
         // Tạo một user và gán các quyền
         $this->user = User::factory()->create();
         $this->user->givePermissionTo([
-          'view_discounts',
-          'create_discounts',
-          'edit_discounts',
-          'delete_discounts',
-          'restore_discounts',
+            'view_discounts',
+            'create_discounts',
+            'edit_discounts',
+            'delete_discounts',
+            'restore_discounts',
         ]);
     }
 
@@ -41,12 +41,12 @@ class DiscountControllerTest extends TestCase
     {
         // Tạo một số mã giảm giá
         Discount::factory()->count(5)->create([
-          'target_type' => 'book',
+            'target_type' => 'book',
         ]);
 
         // Gọi API và kiểm tra response
         $response = $this->actingAs($this->user)
-          ->getJson('/api/v1/discounts');
+            ->getJson('/api/v1/discounts');
 
         $response->assertStatus(200);
     }
@@ -55,22 +55,22 @@ class DiscountControllerTest extends TestCase
     {
         // Tạo một mã giảm giá mới
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá mùa hè',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
+            'name' => 'Giảm giá mùa hè',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
         ]);
 
         // Gọi API với ID của mã giảm giá và kiểm tra response
         $response = $this->actingAs($this->user)
-          ->getJson("/api/v1/discounts/{$discount->id}");
+            ->getJson("/api/v1/discounts/{$discount->id}");
 
         $response->assertStatus(200)
-          ->assertJsonPath('status', 200)
-          ->assertJsonPath('data.discount.attributes.name', 'Giảm giá mùa hè')
-          ->assertJsonPath('data.discount.attributes.discount_type', 'percentage')
-          ->assertJsonPath('data.discount.attributes.discount_value', '10.0')
-          ->assertJsonPath('data.discount.attributes.target_type', 'book');
+            ->assertJsonPath('status', 200)
+            ->assertJsonPath('data.discount.attributes.name', 'Giảm giá mùa hè')
+            ->assertJsonPath('data.discount.attributes.discount_type', 'percentage')
+            ->assertJsonPath('data.discount.attributes.discount_value', '10.0')
+            ->assertJsonPath('data.discount.attributes.target_type', 'book');
     }
 
     public function test_it_returns_404_when_discount_not_found()
@@ -78,13 +78,13 @@ class DiscountControllerTest extends TestCase
         // Gọi API với một ID không tồn tại
         $invalidId = 'non-existent-id';
         $response = $this->actingAs($this->user)
-          ->getJson("/api/v1/discounts/{$invalidId}");
+            ->getJson("/api/v1/discounts/{$invalidId}");
 
         $response->assertStatus(404)
-          ->assertJson([
-            'status' => 404,
-            'message' => ResponseMessage::NOT_FOUND_DISCOUNT->value,
-          ]);
+            ->assertJson([
+                'status' => 404,
+                'message' => ResponseMessage::NOT_FOUND_DISCOUNT->value,
+            ]);
     }
 
     public function test_it_can_create_a_new_discount()
@@ -126,18 +126,18 @@ class DiscountControllerTest extends TestCase
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('discounts', [
-          'name' => 'Test Discount',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
-          'min_purchase_amount' => 100000,
-          'max_discount_amount' => 50000,
+            'name' => 'Test Discount',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
+            'min_purchase_amount' => 100000,
+            'max_discount_amount' => 50000,
         ]);
 
         // Kiểm tra liên kết với sách
         $this->assertDatabaseHas('discount_targets', [
-          'discount_id' => $result->id,
-          'target_id' => $book->id,
+            'discount_id' => $result->id,
+            'target_id' => $book->id,
         ]);
     }
 
@@ -145,94 +145,94 @@ class DiscountControllerTest extends TestCase
     {
         // Dữ liệu thiếu thông tin bắt buộc
         $discountData = [
-          'data' => [
-            'attributes' => [
-              // missing name
-              'discount_type' => 'percentage',
-              // missing discount_value
-              // missing target_type
+            'data' => [
+                'attributes' => [
+                    // missing name
+                    'discount_type' => 'percentage',
+                    // missing discount_value
+                    // missing target_type
+                ],
             ],
-          ],
         ];
 
         // Gọi API với dữ liệu thiếu
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/discounts', $discountData);
+            ->postJson('/api/v1/discounts', $discountData);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors([
-            'data.attributes.name',
-            'data.attributes.discount_value',
-            'data.attributes.target_type',
-          ]);
+            ->assertJsonValidationErrors([
+                'data.attributes.name',
+                'data.attributes.discount_value',
+                'data.attributes.target_type',
+            ]);
     }
 
     public function test_it_validates_book_targets_when_creating_book_discount()
     {
         // Dữ liệu với target_type là book nhưng không có targets
         $discountData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Test Discount',
-              'discount_type' => 'percentage',
-              'discount_value' => 10,
-              'target_type' => 'book',
-              'start_date' => '2023-06-01',
-              'end_date' => '2023-08-31',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Test Discount',
+                    'discount_type' => 'percentage',
+                    'discount_value' => 10,
+                    'target_type' => 'book',
+                    'start_date' => '2023-06-01',
+                    'end_date' => '2023-08-31',
+                ],
+                // Missing relationships.targets
             ],
-            // Missing relationships.targets
-          ],
         ];
 
         // Gọi API với dữ liệu thiếu targets
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/discounts', $discountData);
+            ->postJson('/api/v1/discounts', $discountData);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors([
-            'data.relationships.targets',
-          ]);
+            ->assertJsonValidationErrors([
+                'data.relationships.targets',
+            ]);
     }
 
     public function test_it_can_update_a_discount()
     {
         // Tạo một mã giảm giá mới
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá ban đầu',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
+            'name' => 'Giảm giá ban đầu',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
         ]);
 
         // Dữ liệu cập nhật
         $updateData = [
-          'data' => [
-            'attributes' => [
-              'name' => ResponseMessage::UPDATED_DISCOUNT->value,
-              'discount_value' => 20,
-              'target_type' => 'order', // Đổi từ book sang order
+            'data' => [
+                'attributes' => [
+                    'name' => ResponseMessage::UPDATED_DISCOUNT->value,
+                    'discount_value' => 20,
+                    'target_type' => 'order', // Đổi từ book sang order
+                ],
             ],
-          ],
         ];
 
         // Gọi API với dữ liệu cập nhật
         $response = $this->actingAs($this->user)
-          ->patchJson("/api/v1/discounts/{$discount->id}", $updateData);
+            ->patchJson("/api/v1/discounts/{$discount->id}", $updateData);
 
         $response->assertStatus(200)
-          ->assertJson(function (AssertableJson $json) {
-              $json->has('status')
-                ->where('status', 200)
-                ->has('message')
-                ->has('data.discount');
-          });
+            ->assertJson(function (AssertableJson $json) {
+                $json->has('status')
+                    ->where('status', 200)
+                    ->has('message')
+                    ->has('data.discount');
+            });
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('discounts', [
-          'id' => $discount->id,
-          'name' => ResponseMessage::UPDATED_DISCOUNT->value,
-          'discount_value' => 20,
-          'target_type' => 'order',
+            'id' => $discount->id,
+            'name' => ResponseMessage::UPDATED_DISCOUNT->value,
+            'discount_value' => 20,
+            'target_type' => 'order',
         ]);
     }
 
@@ -240,27 +240,27 @@ class DiscountControllerTest extends TestCase
     {
         // Tạo hai mã giảm giá với tên khác nhau
         $discount1 = Discount::factory()->create([
-          'name' => 'Giảm giá thứ nhất',
-          'target_type' => 'book',
+            'name' => 'Giảm giá thứ nhất',
+            'target_type' => 'book',
         ]);
 
         $discount2 = Discount::factory()->create([
-          'name' => 'Giảm giá thứ hai',
-          'target_type' => 'book',
+            'name' => 'Giảm giá thứ hai',
+            'target_type' => 'book',
         ]);
 
         // Dữ liệu cập nhật discount2 thành tên giống discount1
         $updateData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Giảm giá thứ nhất',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Giảm giá thứ nhất',
+                ],
             ],
-          ],
         ];
 
         // Gọi API với dữ liệu cập nhật
         $response = $this->actingAs($this->user)
-          ->patchJson("/api/v1/discounts/{$discount2->id}", $updateData);
+            ->patchJson("/api/v1/discounts/{$discount2->id}", $updateData);
 
         $response->assertStatus(422);
     }
@@ -269,18 +269,18 @@ class DiscountControllerTest extends TestCase
     {
         // Tạo một mã giảm giá mới
         $discount = Discount::factory()->create([
-          'target_type' => 'book',
+            'target_type' => 'book',
         ]);
 
         // Gọi API để xóa mã giảm giá
         $response = $this->actingAs($this->user)
-          ->deleteJson("/api/v1/discounts/{$discount->id}");
+            ->deleteJson("/api/v1/discounts/{$discount->id}");
 
         $response->assertStatus(204);
 
         // Kiểm tra rằng mã giảm giá đã bị soft delete
         $this->assertSoftDeleted('discounts', [
-          'id' => $discount->id,
+            'id' => $discount->id,
         ]);
     }
 
@@ -288,7 +288,7 @@ class DiscountControllerTest extends TestCase
     {
         // Tạo một mã giảm giá mới
         $discount = Discount::factory()->create([
-          'target_type' => 'book',
+            'target_type' => 'book',
         ]);
 
         // Thử gọi API không có auth token
@@ -297,15 +297,15 @@ class DiscountControllerTest extends TestCase
 
         // Xóa quyền của user hiện tại
         $this->user->revokePermissionTo([
-          'create_discounts',
-          'edit_discounts',
-          'delete_discounts',
-          'view_discounts',
+            'create_discounts',
+            'edit_discounts',
+            'delete_discounts',
+            'view_discounts',
         ]);
 
         // Thử gọi API với user không có quyền
         $unauthorizedResponse = $this->actingAs($this->user)
-          ->getJson("/api/v1/discounts/{$discount->id}");
+            ->getJson("/api/v1/discounts/{$discount->id}");
         $unauthorizedResponse->assertStatus(403);
     }
 
@@ -316,60 +316,60 @@ class DiscountControllerTest extends TestCase
 
         // Tạo factory cho mã giảm giá
         $discountData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Test API Discount',
-              'discount_type' => 'percentage',
-              'discount_value' => 10,
-              'target_type' => 'book',
-              'start_date' => '2023-06-01',
-              'end_date' => '2023-08-31',
-              'description' => 'API test discount',
-              'is_active' => true,
-            ],
-            'relationships' => [
-              'targets' => [
-                [
-                  'type' => 'book',
-                  'id' => $book->id,
+            'data' => [
+                'attributes' => [
+                    'name' => 'Test API Discount',
+                    'discount_type' => 'percentage',
+                    'discount_value' => 10,
+                    'target_type' => 'book',
+                    'start_date' => '2023-06-01',
+                    'end_date' => '2023-08-31',
+                    'description' => 'API test discount',
+                    'is_active' => true,
                 ],
-              ],
+                'relationships' => [
+                    'targets' => [
+                        [
+                            'type' => 'book',
+                            'id' => $book->id,
+                        ],
+                    ],
+                ],
             ],
-          ],
         ];
 
         // Mock DiscountStoreRequest để tránh validation
         $this->mock(\App\Http\Requests\V1\DiscountStoreRequest::class, function ($mock) use ($discountData) {
             $mock->shouldReceive('validated')
-              ->andReturn($discountData);
+                ->andReturn($discountData);
         });
 
         // Gọi API với dữ liệu
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/discounts', $discountData);
+            ->postJson('/api/v1/discounts', $discountData);
 
         // Kiểm tra response
         $response->assertStatus(201)
-          ->assertJson(function (\Illuminate\Testing\Fluent\AssertableJson $json) {
-              $json->has('status')
-                ->where('status', 201)
-                ->has('message')
-                ->has('data.discount');
-          });
+            ->assertJson(function (\Illuminate\Testing\Fluent\AssertableJson $json) {
+                $json->has('status')
+                    ->where('status', 201)
+                    ->has('message')
+                    ->has('data.discount');
+            });
 
         // Kiểm tra database
         $this->assertDatabaseHas('discounts', [
-          'name' => 'Test API Discount',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
+            'name' => 'Test API Discount',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
         ]);
 
         // Kiểm tra liên kết với sách
         $discount = Discount::where('name', 'Test API Discount')->first();
         $this->assertDatabaseHas('discount_targets', [
-          'discount_id' => $discount->id,
-          'target_id' => $book->id,
+            'discount_id' => $discount->id,
+            'target_id' => $book->id,
         ]);
     }
 
@@ -377,47 +377,47 @@ class DiscountControllerTest extends TestCase
     {
         // Tạo factory cho mã giảm giá đơn hàng
         $discountData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Order Discount',
-              'discount_type' => 'fixed',
-              'discount_value' => 50000,
-              'target_type' => 'order',
-              'start_date' => '2023-06-01',
-              'end_date' => '2023-08-31',
-              'description' => 'Discount for all orders',
-              'is_active' => true,
+            'data' => [
+                'attributes' => [
+                    'name' => 'Order Discount',
+                    'discount_type' => 'fixed',
+                    'discount_value' => 50000,
+                    'target_type' => 'order',
+                    'start_date' => '2023-06-01',
+                    'end_date' => '2023-08-31',
+                    'description' => 'Discount for all orders',
+                    'is_active' => true,
+                ],
+                // Không cần relationships.targets cho order discount
             ],
-            // Không cần relationships.targets cho order discount
-          ],
         ];
 
         // Mock DiscountStoreRequest để tránh validation
         $this->mock(\App\Http\Requests\V1\DiscountStoreRequest::class, function ($mock) use ($discountData) {
             $mock->shouldReceive('validated')
-              ->andReturn($discountData);
+                ->andReturn($discountData);
         });
 
         // Gọi API với dữ liệu
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/discounts', $discountData);
+            ->postJson('/api/v1/discounts', $discountData);
 
         // Kiểm tra response
         $response->assertStatus(201)
-          ->assertJson(function (\Illuminate\Testing\Fluent\AssertableJson $json) {
-              $json->has('status')
-                ->where('status', 201)
-                ->has('message')
-                ->has('data.discount');
-          });
+            ->assertJson(function (\Illuminate\Testing\Fluent\AssertableJson $json) {
+                $json->has('status')
+                    ->where('status', 201)
+                    ->has('message')
+                    ->has('data.discount');
+            });
 
         // Kiểm tra database
         $this->assertDatabaseHas('discounts', [
-          'name' => 'Order Discount',
-          'discount_type' => 'fixed',
-          'discount_value' => 50000,
-          'target_type' => 'order',
-          'description' => 'Discount for all orders',
+            'name' => 'Order Discount',
+            'discount_type' => 'fixed',
+            'discount_value' => 50000,
+            'target_type' => 'order',
+            'description' => 'Discount for all orders',
         ]);
     }
 
@@ -426,29 +426,29 @@ class DiscountControllerTest extends TestCase
     {
         // Dữ liệu với min_purchase_amount và max_discount_amount không hợp lệ
         $discountData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Test Discount',
-              'discount_type' => 'percentage',
-              'discount_value' => 10,
-              'target_type' => 'order',
-              'min_purchase_amount' => -100, // Giá trị âm - không hợp lệ
-              'max_discount_amount' => -50,  // Giá trị âm - không hợp lệ
-              'start_date' => '2023-06-01',
-              'end_date' => '2023-08-31',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Test Discount',
+                    'discount_type' => 'percentage',
+                    'discount_value' => 10,
+                    'target_type' => 'order',
+                    'min_purchase_amount' => -100, // Giá trị âm - không hợp lệ
+                    'max_discount_amount' => -50,  // Giá trị âm - không hợp lệ
+                    'start_date' => '2023-06-01',
+                    'end_date' => '2023-08-31',
+                ],
             ],
-          ],
         ];
 
         // Gọi API với dữ liệu không hợp lệ
         $response = $this->actingAs($this->user)
-          ->postJson('/api/v1/discounts', $discountData);
+            ->postJson('/api/v1/discounts', $discountData);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors([
-            'data.attributes.min_purchase_amount',
-            'data.attributes.max_discount_amount',
-          ]);
+            ->assertJsonValidationErrors([
+                'data.attributes.min_purchase_amount',
+                'data.attributes.max_discount_amount',
+            ]);
     }
 
     public function test_it_can_create_discount_with_min_purchase_amount_and_max_discount_amount()
@@ -484,10 +484,10 @@ class DiscountControllerTest extends TestCase
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('discounts', [
-          'name' => 'Conditional Discount',
-          'discount_type' => 'percentage',
-          'min_purchase_amount' => 500000,
-          'max_discount_amount' => 100000,
+            'name' => 'Conditional Discount',
+            'discount_type' => 'percentage',
+            'min_purchase_amount' => 500000,
+            'max_discount_amount' => 100000,
         ]);
     }
 
@@ -495,12 +495,12 @@ class DiscountControllerTest extends TestCase
     {
         // Tạo một mã giảm giá mới với loại order
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá ban đầu',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'order',
-          'min_purchase_amount' => 0,
-          'max_discount_amount' => null,
+            'name' => 'Giảm giá ban đầu',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'order',
+            'min_purchase_amount' => 0,
+            'max_discount_amount' => null,
         ]);
 
         // Sử dụng DiscountService trực tiếp thay vì API
@@ -531,9 +531,9 @@ class DiscountControllerTest extends TestCase
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('discounts', [
-          'id' => $discount->id,
-          'min_purchase_amount' => 300000,
-          'max_discount_amount' => 50000,
+            'id' => $discount->id,
+            'min_purchase_amount' => 300000,
+            'max_discount_amount' => 50000,
         ]);
     }
 }

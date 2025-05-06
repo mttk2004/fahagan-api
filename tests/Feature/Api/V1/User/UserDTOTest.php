@@ -10,11 +10,11 @@ class UserDTOTest extends TestCase
     public function test_it_creates_user_dto_from_request()
     {
         $validatedData = [
-          'first_name' => 'John',
-          'last_name' => 'Doe',
-          'email' => 'john.doe@example.com',
-          'phone' => '0987654321',
-          'is_customer' => true,
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'phone' => '0987654321',
+            'is_customer' => true,
         ];
 
         $userDTO = UserDTO::fromRequest($validatedData);
@@ -30,12 +30,12 @@ class UserDTOTest extends TestCase
     public function test_it_creates_user_dto_with_password()
     {
         $validatedData = [
-          'first_name' => 'Jane',
-          'last_name' => 'Doe',
-          'email' => 'jane.doe@example.com',
-          'phone' => '0123456789',
-          'password' => 'password123',
-          'is_customer' => false,
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
+            'email' => 'jane.doe@example.com',
+            'phone' => '0123456789',
+            'password' => 'password123',
+            'is_customer' => false,
         ];
 
         $userDTO = UserDTO::fromRequest($validatedData);
@@ -53,7 +53,7 @@ class UserDTOTest extends TestCase
     public function test_it_creates_user_dto_with_nullable_properties()
     {
         $validatedData = [
-          'first_name' => 'Alex',
+            'first_name' => 'Alex',
         ];
 
         $userDTO = UserDTO::fromRequest($validatedData);

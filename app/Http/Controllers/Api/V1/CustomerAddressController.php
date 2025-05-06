@@ -21,21 +21,22 @@ use Throwable;
 
 class CustomerAddressController extends Controller
 {
-    use HandlePagination;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly AddressService $addressService,
         private readonly string $entityName = 'address'
-    ) {
-    }
+    ) {}
 
     /**
      * Show all addresses of the authenticated user.
      *
      * @return AddressCollection|JsonResponse
+     *
      * @group Customer.Address
+     *
      * @authenticated
      */
     public function index()
@@ -56,11 +57,13 @@ class CustomerAddressController extends Controller
     /**
      * Store a new address for the authenticated user.
      *
-     * @param AddressStoreRequest $request
      *
      * @return JsonResponse
+     *
      * @group Customer.Address
+     *
      * @authenticated
+     *
      * @throws Throwable
      */
     public function store(AddressStoreRequest $request)
@@ -75,11 +78,11 @@ class CustomerAddressController extends Controller
             $address = $this->addressService->createAddress(AuthUtils::user(), $addressDTO);
 
             return ResponseUtils::created([
-              'address' => new AddressResource($address),
+                'address' => new AddressResource($address),
             ], ResponseMessage::CREATED_ADDRESS->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => $request->validated(),
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -87,12 +90,13 @@ class CustomerAddressController extends Controller
     /**
      * Update an address of the authenticated user.
      *
-     * @param AddressUpdateRequest $request
-     * @param                      $address_id
      *
      * @return JsonResponse
+     *
      * @group Customer.Address
+     *
      * @authenticated
+     *
      * @throws Throwable
      */
     public function update(AddressUpdateRequest $request, $address_id)
@@ -116,11 +120,11 @@ class CustomerAddressController extends Controller
             );
 
             return ResponseUtils::success([
-              'address' => new AddressResource($address),
+                'address' => new AddressResource($address),
             ], ResponseMessage::UPDATED_ADDRESS->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => $request->validated(),
+                'request_data' => $request->validated(),
             ]);
         }
     }
@@ -128,11 +132,13 @@ class CustomerAddressController extends Controller
     /**
      * Delete an address of the authenticated user.
      *
-     * @param $address_id
      *
      * @return JsonResponse
+     *
      * @group Customer.Address
+     *
      * @authenticated
+     *
      * @throws Throwable
      */
     public function destroy($address_id)
@@ -147,9 +153,9 @@ class CustomerAddressController extends Controller
             return ResponseUtils::noContent(ResponseMessage::DELETED_ADDRESS->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'request_data' => [
-                'address_id' => $address_id,
-              ],
+                'request_data' => [
+                    'address_id' => $address_id,
+                ],
             ]);
         }
     }

@@ -21,8 +21,7 @@ class ResponseUtils
     /**
      * Trả về phản hồi 201 Created
      */
-    public static function created(array $data = [], string $message = 'Tạo mới thành công.'):
-    JsonResponse
+    public static function created(array $data = [], string $message = 'Tạo mới thành công.'): JsonResponse
     {
         return response()->json([
             'status' => 201,
@@ -48,8 +47,7 @@ class ResponseUtils
     public static function badRequest(
         string $message = 'Yêu cầu không hợp lệ.',
         array $errors = [],
-    ):
-    JsonResponse {
+    ): JsonResponse {
         return response()->json([
             'status' => 400,
             'message' => $message,
@@ -60,8 +58,7 @@ class ResponseUtils
     /**
      * Trả về phản hồi 401 Unauthorized
      */
-    public static function unauthorized(string $message = 'Bạn không có quyền truy cập.'):
-    JsonResponse
+    public static function unauthorized(string $message = 'Bạn không có quyền truy cập.'): JsonResponse
     {
         return response()->json([
             'status' => 401,
@@ -121,7 +118,7 @@ class ResponseUtils
     /**
      * Process validation errors to clean them up and make them more user-friendly
      *
-     * @param array $errors The validation errors to process
+     * @param  array  $errors  The validation errors to process
      * @return array Processed validation errors
      */
     private static function processValidationErrors(array $errors): array
@@ -150,9 +147,9 @@ class ResponseUtils
 
                     // Process date comparison error messages
                     if (str_contains($message, 'before or equal to') && str_contains($message, 'date')) {
-                        $message = "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc";
+                        $message = 'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc';
                     } elseif (str_contains($message, 'after or equal to') && str_contains($message, 'date')) {
-                        $message = "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu";
+                        $message = 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu';
                     } elseif (str_contains($message, 'The data.attributes.') && str_contains($message, 'field')) {
                         // Extract field name from English error message
                         $fieldMatches = [];
@@ -193,8 +190,7 @@ class ResponseUtils
     /**
      * Trả về phản hồi 500 Internal Server Error
      */
-    public static function serverError(string $message = 'Lỗi máy chủ, vui lòng thử lại sau.'):
-    JsonResponse
+    public static function serverError(string $message = 'Lỗi máy chủ, vui lòng thử lại sau.'): JsonResponse
     {
         return response()->json([
             'status' => 500,

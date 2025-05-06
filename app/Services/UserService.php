@@ -21,7 +21,7 @@ class UserService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new User();
+        $this->model = new User;
         $this->filterClass = UserFilter::class;
         $this->sortClass = UserSort::class;
         $this->with = [];
@@ -81,9 +81,6 @@ class UserService extends BaseService
 
     /**
      * Find a trashed resource based on unique attributes
-     *
-     * @param BaseDTO $dto
-     * @return \Illuminate\Database\Eloquent\Model|null
      */
     protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
     {
@@ -93,8 +90,8 @@ class UserService extends BaseService
         }
 
         return User::withTrashed()
-          ->where('email', $dto->email)
-          ->onlyTrashed()
-          ->first();
+            ->where('email', $dto->email)
+            ->onlyTrashed()
+            ->first();
     }
 }

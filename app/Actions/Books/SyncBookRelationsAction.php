@@ -10,9 +10,8 @@ class SyncBookRelationsAction extends BaseAction
     /**
      * Đồng bộ các mối quan hệ với sách
      *
-     * @param Book $book Sách cần đồng bộ mối quan hệ
-     * @param array $relations Mảng chứa các mối quan hệ cần đồng bộ
-     * @return bool
+     * @param  Book  $book  Sách cần đồng bộ mối quan hệ
+     * @param  array  $relations  Mảng chứa các mối quan hệ cần đồng bộ
      */
     public function execute(...$args): bool
     {
@@ -39,9 +38,6 @@ class SyncBookRelationsAction extends BaseAction
 
     /**
      * Trích xuất các mối quan hệ từ request data
-     *
-     * @param array $requestData
-     * @return array
      */
     public function extractRelationsFromRequest(array $requestData): array
     {

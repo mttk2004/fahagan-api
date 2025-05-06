@@ -25,14 +25,14 @@ class SupplierControllerTest extends TestCase
 
         // Tạo một người dùng admin và gán quyền quản lý nhà cung cấp
         $this->adminUser = User::factory()->create([
-          'is_customer' => false,
+            'is_customer' => false,
         ]);
         $this->adminUser->givePermissionTo([
-          'view_suppliers',
-          'create_suppliers',
-          'edit_suppliers',
-          'delete_suppliers',
-          'restore_suppliers',
+            'view_suppliers',
+            'create_suppliers',
+            'edit_suppliers',
+            'delete_suppliers',
+            'restore_suppliers',
         ]);
     }
 
@@ -43,13 +43,13 @@ class SupplierControllerTest extends TestCase
 
         // Gọi API danh sách nhà cung cấp
         $response = $this->actingAs($this->adminUser)
-          ->getJson('/api/v1/suppliers');
+            ->getJson('/api/v1/suppliers');
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'data',
-          ]);
+            ->assertJsonStructure([
+                'data',
+            ]);
     }
 
     public function test_it_can_get_supplier_details()
@@ -59,42 +59,42 @@ class SupplierControllerTest extends TestCase
 
         // Gọi API xem chi tiết nhà cung cấp
         $response = $this->actingAs($this->adminUser)
-          ->getJson("/api/v1/suppliers/{$supplier->id}");
+            ->getJson("/api/v1/suppliers/{$supplier->id}");
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'data' => [
-              'supplier' => [
-                'id',
-                'type',
-                'attributes' => [
-                  'name',
-                  'phone',
-                  'email',
-                  'city',
-                  'district',
-                  'ward',
-                  'address_line',
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'supplier' => [
+                        'id',
+                        'type',
+                        'attributes' => [
+                            'name',
+                            'phone',
+                            'email',
+                            'city',
+                            'district',
+                            'ward',
+                            'address_line',
+                        ],
+                    ],
                 ],
-              ],
-            ],
-          ]);
+            ]);
     }
 
     public function test_it_returns_404_when_supplier_not_found()
     {
         // Gọi API với ID không tồn tại
         $response = $this->actingAs($this->adminUser)
-          ->getJson('/api/v1/suppliers/999999');
+            ->getJson('/api/v1/suppliers/999999');
 
         // Kiểm tra response
         $response->assertStatus(404)
-          ->assertJson([
-            'status' => 404,
-            'message' => ResponseMessage::NOT_FOUND_SUPPLIER->value,
-          ]);
+            ->assertJson([
+                'status' => 404,
+                'message' => ResponseMessage::NOT_FOUND_SUPPLIER->value,
+            ]);
     }
 
     public function test_it_can_create_supplier()
@@ -104,47 +104,47 @@ class SupplierControllerTest extends TestCase
 
         // Tạo dữ liệu để tạo nhà cung cấp mới
         $supplierData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Nhà Sách Test',
-              'phone' => '0987654321',
-              'email' => 'test@example.com',
-              'city' => 'Hà Nội',
-              'district' => 'Cầu Giấy',
-              'ward' => 'Dịch Vọng',
-              'address_line' => 'Số 1 Đường ABC',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nhà Sách Test',
+                    'phone' => '0987654321',
+                    'email' => 'test@example.com',
+                    'city' => 'Hà Nội',
+                    'district' => 'Cầu Giấy',
+                    'ward' => 'Dịch Vọng',
+                    'address_line' => 'Số 1 Đường ABC',
+                ],
+                'relationships' => [
+                    'books' => $books->map(function ($book) {
+                        return ['id' => $book->id];
+                    })->toArray(),
+                ],
             ],
-            'relationships' => [
-              'books' => $books->map(function ($book) {
-                  return ['id' => $book->id];
-              })->toArray(),
-            ],
-          ],
         ];
 
         // Gọi API tạo nhà cung cấp
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/suppliers', $supplierData);
+            ->postJson('/api/v1/suppliers', $supplierData);
 
         // Kiểm tra response
         $response->assertStatus(201)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'supplier',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'supplier',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('suppliers', [
-          'name' => 'Nhà Sách Test',
-          'phone' => '0987654321',
-          'email' => 'test@example.com',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'name' => 'Nhà Sách Test',
+            'phone' => '0987654321',
+            'email' => 'test@example.com',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ]);
 
         // Lấy ID của nhà cung cấp vừa tạo
@@ -153,8 +153,8 @@ class SupplierControllerTest extends TestCase
         // Kiểm tra mối quan hệ với sách
         foreach ($books as $book) {
             $this->assertDatabaseHas('book_supplier', [
-              'book_id' => $book->id,
-              'supplier_id' => $supplierId,
+                'book_id' => $book->id,
+                'supplier_id' => $supplierId,
             ]);
         }
     }
@@ -169,27 +169,27 @@ class SupplierControllerTest extends TestCase
 
         // Kiểm tra đã bị xóa mềm
         $this->assertSoftDeleted('suppliers', [
-          'id' => $supplier->id,
+            'id' => $supplier->id,
         ]);
 
         // Gọi API khôi phục nhà cung cấp
         $response = $this->actingAs($this->adminUser)
-          ->postJson("/api/v1/suppliers/restore/{$supplier->id}");
+            ->postJson("/api/v1/suppliers/restore/{$supplier->id}");
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'supplier',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'supplier',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database (đã được khôi phục)
         $this->assertDatabaseHas('suppliers', [
-          'id' => $supplier->id,
-          'deleted_at' => null,
+            'id' => $supplier->id,
+            'deleted_at' => null,
         ]);
     }
 
@@ -203,47 +203,47 @@ class SupplierControllerTest extends TestCase
 
         // Dữ liệu cập nhật
         $updateData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Tên Mới',
-              'phone' => '0987654321',
-              'email' => 'updated@example.com',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                    'phone' => '0987654321',
+                    'email' => 'updated@example.com',
+                ],
+                'relationships' => [
+                    'books' => $books->map(function ($book) {
+                        return ['id' => $book->id];
+                    })->toArray(),
+                ],
             ],
-            'relationships' => [
-              'books' => $books->map(function ($book) {
-                  return ['id' => $book->id];
-              })->toArray(),
-            ],
-          ],
         ];
 
         // Gọi API cập nhật nhà cung cấp
         $response = $this->actingAs($this->adminUser)
-          ->patchJson("/api/v1/suppliers/{$supplier->id}", $updateData);
+            ->patchJson("/api/v1/suppliers/{$supplier->id}", $updateData);
 
         // Kiểm tra response
         $response->assertStatus(200)
-          ->assertJsonStructure([
-            'status',
-            'message',
-            'data' => [
-              'supplier',
-            ],
-          ]);
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'supplier',
+                ],
+            ]);
 
         // Kiểm tra dữ liệu trong database
         $this->assertDatabaseHas('suppliers', [
-          'id' => $supplier->id,
-          'name' => 'Tên Mới',
-          'phone' => '0987654321',
-          'email' => 'updated@example.com',
+            'id' => $supplier->id,
+            'name' => 'Tên Mới',
+            'phone' => '0987654321',
+            'email' => 'updated@example.com',
         ]);
 
         // Kiểm tra mối quan hệ với sách
         foreach ($books as $book) {
             $this->assertDatabaseHas('book_supplier', [
-              'book_id' => $book->id,
-              'supplier_id' => $supplier->id,
+                'book_id' => $book->id,
+                'supplier_id' => $supplier->id,
             ]);
         }
     }
@@ -259,21 +259,21 @@ class SupplierControllerTest extends TestCase
 
         // Gọi API xóa nhà cung cấp
         $response = $this->actingAs($this->adminUser)
-          ->deleteJson("/api/v1/suppliers/{$supplier->id}");
+            ->deleteJson("/api/v1/suppliers/{$supplier->id}");
 
         // Kiểm tra response
         $response->assertStatus(204);
 
         // Kiểm tra dữ liệu đã bị xóa mềm
         $this->assertSoftDeleted('suppliers', [
-          'id' => $supplier->id,
+            'id' => $supplier->id,
         ]);
 
         // Kiểm tra mối quan hệ với sách đã bị xóa
         foreach ($books as $book) {
             $this->assertDatabaseMissing('book_supplier', [
-              'book_id' => $book->id,
-              'supplier_id' => $supplier->id,
+                'book_id' => $book->id,
+                'supplier_id' => $supplier->id,
             ]);
         }
     }
@@ -282,17 +282,17 @@ class SupplierControllerTest extends TestCase
     {
         // Tạo dữ liệu để tạo nhà cung cấp mới
         $supplierData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Nhà Sách Test',
-              'phone' => '0123456789',
-              'email' => 'test@example.com',
-              'city' => 'Hà Nội',
-              'district' => 'Cầu Giấy',
-              'ward' => 'Dịch Vọng',
-              'address_line' => 'Số 1 Đường ABC',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Nhà Sách Test',
+                    'phone' => '0123456789',
+                    'email' => 'test@example.com',
+                    'city' => 'Hà Nội',
+                    'district' => 'Cầu Giấy',
+                    'ward' => 'Dịch Vọng',
+                    'address_line' => 'Số 1 Đường ABC',
+                ],
             ],
-          ],
         ];
 
         // Gọi API tạo nhà cung cấp không có xác thực
@@ -312,18 +312,18 @@ class SupplierControllerTest extends TestCase
 
         // Dữ liệu cập nhật
         $updateData = [
-          'data' => [
-            'attributes' => [
-              'name' => 'Tên Mới',
-              'phone' => '0987654321',
-              'email' => 'updated@example.com',
+            'data' => [
+                'attributes' => [
+                    'name' => 'Tên Mới',
+                    'phone' => '0987654321',
+                    'email' => 'updated@example.com',
+                ],
             ],
-          ],
         ];
 
         // Gọi API cập nhật nhà cung cấp với tài khoản không có quyền
         $response = $this->actingAs($regularUser)
-          ->patchJson("/api/v1/suppliers/{$supplier->id}", $updateData);
+            ->patchJson("/api/v1/suppliers/{$supplier->id}", $updateData);
 
         // Kiểm tra response
         $response->assertStatus(403);
@@ -339,7 +339,7 @@ class SupplierControllerTest extends TestCase
 
         // Gọi API xóa nhà cung cấp với tài khoản không có quyền
         $response = $this->actingAs($regularUser)
-          ->deleteJson("/api/v1/suppliers/{$supplier->id}");
+            ->deleteJson("/api/v1/suppliers/{$supplier->id}");
 
         // Kiểm tra response
         $response->assertStatus(403);
@@ -349,20 +349,20 @@ class SupplierControllerTest extends TestCase
     {
         // Tạo dữ liệu không hợp lệ (thiếu name là trường bắt buộc)
         $invalidData = [
-          'data' => [
-            'attributes' => [
-              'phone' => '0123456789',
-              'email' => 'invalid-email', // Email không đúng định dạng
+            'data' => [
+                'attributes' => [
+                    'phone' => '0123456789',
+                    'email' => 'invalid-email', // Email không đúng định dạng
+                ],
             ],
-          ],
         ];
 
         // Gọi API tạo nhà cung cấp với dữ liệu không hợp lệ
         $response = $this->actingAs($this->adminUser)
-          ->postJson('/api/v1/suppliers', $invalidData);
+            ->postJson('/api/v1/suppliers', $invalidData);
 
         // Kiểm tra response
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['data.attributes.name', 'data.attributes.email']);
+            ->assertJsonValidationErrors(['data.attributes.name', 'data.attributes.email']);
     }
 }

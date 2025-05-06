@@ -13,10 +13,10 @@ class UpdateDiscountAction extends BaseAction
     /**
      * Cập nhật mã giảm giá với dữ liệu và mối quan hệ mới
      *
-     * @param Discount $discount Mã giảm giá cần cập nhật
-     * @param array $data Dữ liệu cập nhật
-     * @param array $relations Mối quan hệ cần cập nhật
-     * @return Discount
+     * @param  Discount  $discount  Mã giảm giá cần cập nhật
+     * @param  array  $data  Dữ liệu cập nhật
+     * @param  array  $relations  Mối quan hệ cần cập nhật
+     *
      * @throws Exception
      */
     public function execute(...$args): Discount
@@ -49,10 +49,6 @@ class UpdateDiscountAction extends BaseAction
 
     /**
      * Đồng bộ targets với mã giảm giá
-     *
-     * @param Discount $discount
-     * @param array $targetIds
-     * @return void
      */
     private function syncTargets(Discount $discount, array $targetIds): void
     {
@@ -63,8 +59,8 @@ class UpdateDiscountAction extends BaseAction
         $records = [];
         foreach ($targetIds as $targetId) {
             $records[] = [
-              'discount_id' => $discount->id,
-              'target_id' => $targetId,
+                'discount_id' => $discount->id,
+                'target_id' => $targetId,
             ];
         }
 

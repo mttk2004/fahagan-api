@@ -34,7 +34,7 @@ class DiscountFilter
     protected function filterByName(Builder $query): void
     {
         if (isset($this->filters['name'])) {
-            $query->where('name', 'like', '%' . $this->filters['name'] . '%');
+            $query->where('name', 'like', '%'.$this->filters['name'].'%');
         }
     }
 

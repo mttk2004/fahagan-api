@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
@@ -12,26 +13,26 @@ return new class extends Migration {
 
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')
-              ->references('id')
-              ->on('users')
-              ->onDelete('cascade')
-              ->onUpdate('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->unsignedBigInteger('employee_id')->nullable();
             // Nullable because the order only has a customer when it is created
             // and the employee is assigned later.
             $table->foreign('employee_id')
-              ->references('id')
-              ->on('users')
-              ->onDelete('cascade')
-              ->onUpdate('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->enum('status', [
-              'pending',
-              'approved',
-              'delivered',
-              'completed',
-              'canceled',
+                'pending',
+                'approved',
+                'delivered',
+                'completed',
+                'canceled',
             ])->default('pending');
 
             $table->string('shopping_name');
@@ -54,23 +55,23 @@ return new class extends Migration {
 
         Schema::create('order_items', function (Blueprint $table) {
             $table->unsignedSmallInteger('id')
-              ->autoIncrement()
-              ->startingValue(10000)
-              ->primary();
+                ->autoIncrement()
+                ->startingValue(10000)
+                ->primary();
 
             $table->unsignedBigInteger('order_id');
             $table->foreign('order_id')
-              ->references('id')
-              ->on('orders')
-              ->onDelete('cascade')
-              ->onUpdate('cascade');
+                ->references('id')
+                ->on('orders')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->unsignedBigInteger('book_id');
             $table->foreign('book_id')
-              ->references('id')
-              ->on('books')
-              ->onDelete('cascade')
-              ->onUpdate('cascade');
+                ->references('id')
+                ->on('books')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->unsignedSmallInteger('quantity');
             $table->decimal('price_at_time', 9, 1)->unsigned();

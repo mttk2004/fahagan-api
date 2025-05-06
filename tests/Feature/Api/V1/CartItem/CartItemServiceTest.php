@@ -23,7 +23,7 @@ class CartItemServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->cartItemService = new CartItemService();
+        $this->cartItemService = new CartItemService;
         $this->user = User::factory()->create();
         $this->book = Book::factory()->create();
     }

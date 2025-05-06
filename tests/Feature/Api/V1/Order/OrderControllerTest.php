@@ -36,8 +36,8 @@ class OrderControllerTest extends TestCase
 
         // Tạo người dùng employee (không phải customer)
         $this->employee = User::factory()->create([
-          'is_customer' => false,
-          'password' => Hash::make('password'),
+            'is_customer' => false,
+            'password' => Hash::make('password'),
         ]);
 
         // Tạo role Sales Staff và gán cho employee
@@ -46,34 +46,34 @@ class OrderControllerTest extends TestCase
 
         // Tạo người dùng customer
         $this->customer = User::factory()->create([
-          'is_customer' => true,
-          'password' => Hash::make('password'),
+            'is_customer' => true,
+            'password' => Hash::make('password'),
         ]);
 
         // Tạo một sách để test với số lượng đủ
         $this->book = Book::factory()->create([
-          'available_count' => 10,
-          'sold_count' => 0,
+            'available_count' => 10,
+            'sold_count' => 0,
         ]);
 
         // Tạo đơn hàng mới
         $this->order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => 'Test Customer',
-          'shopping_phone' => '0938244325',
-          'shopping_city' => 'HCM',
-          'shopping_district' => '1',
-          'shopping_ward' => '1',
-          'shopping_address_line' => '123 Test Street',
-          'status' => OrderStatus::PENDING->value,
+            'customer_id' => $this->customer->id,
+            'shopping_name' => 'Test Customer',
+            'shopping_phone' => '0938244325',
+            'shopping_city' => 'HCM',
+            'shopping_district' => '1',
+            'shopping_ward' => '1',
+            'shopping_address_line' => '123 Test Street',
+            'status' => OrderStatus::PENDING->value,
         ]);
 
         // Tạo order item
         $this->order->items()->create([
-          'book_id' => $this->book->id,
-          'quantity' => 2,
-          'price_at_time' => $this->book->price,
-          'discount_value' => 0,
+            'book_id' => $this->book->id,
+            'quantity' => 2,
+            'price_at_time' => $this->book->price,
+            'discount_value' => 0,
         ]);
     }
 
@@ -87,13 +87,13 @@ class OrderControllerTest extends TestCase
         // Tạo thêm 2 đơn hàng khác
         for ($i = 0; $i < 2; $i++) {
             Order::create([
-              'customer_id' => $this->customer->id,
-              'shopping_name' => 'Test Customer',
-              'shopping_phone' => '0938244325',
-              'shopping_city' => 'HCM',
-              'shopping_district' => '1',
-              'shopping_ward' => '1',
-              'shopping_address_line' => '123 Test Street',
+                'customer_id' => $this->customer->id,
+                'shopping_name' => 'Test Customer',
+                'shopping_phone' => '0938244325',
+                'shopping_city' => 'HCM',
+                'shopping_district' => '1',
+                'shopping_ward' => '1',
+                'shopping_address_line' => '123 Test Street',
             ]);
         }
 
@@ -101,7 +101,7 @@ class OrderControllerTest extends TestCase
         $response = $this->getJson('/api/v1/orders');
 
         $response->assertStatus(200)
-          ->assertJsonCount(3, 'data');
+            ->assertJsonCount(3, 'data');
     }
 
     #[Test]
@@ -116,7 +116,7 @@ class OrderControllerTest extends TestCase
 
         // For debugging
         if ($response->getStatusCode() !== 200) {
-            Log::debug('Response content: ' . $response->getContent());
+            Log::debug('Response content: '.$response->getContent());
         }
 
         $response->assertStatus(200);
@@ -135,12 +135,12 @@ class OrderControllerTest extends TestCase
 
         // Gọi API để cập nhật trạng thái đơn hàng từ PENDING sang APPROVED
         $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-          'status' => OrderStatus::APPROVED->value,
+            'status' => OrderStatus::APPROVED->value,
         ]);
 
         // For debugging
         if ($response->getStatusCode() !== 200) {
-            Log::debug('Response content: ' . $response->getContent());
+            Log::debug('Response content: '.$response->getContent());
         }
 
         // Làm mới dữ liệu sách và đơn hàng
@@ -174,12 +174,12 @@ class OrderControllerTest extends TestCase
 
         // Gọi API để cập nhật trạng thái đơn hàng từ APPROVED sang DELIVERED
         $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-          'status' => OrderStatus::DELIVERED->value,
+            'status' => OrderStatus::DELIVERED->value,
         ]);
 
         // For debugging
         if ($response->getStatusCode() !== 200) {
-            Log::debug('Response content: ' . $response->getContent());
+            Log::debug('Response content: '.$response->getContent());
         }
 
         $response->assertStatus(200);
@@ -201,7 +201,7 @@ class OrderControllerTest extends TestCase
 
         // Gọi API để cập nhật trạng thái đơn hàng từ PENDING sang DELIVERED (không hợp lệ)
         $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-          'status' => OrderStatus::DELIVERED->value,
+            'status' => OrderStatus::DELIVERED->value,
         ]);
 
         $response->assertStatus(500);
@@ -215,7 +215,7 @@ class OrderControllerTest extends TestCase
 
         // Gọi API để cập nhật trạng thái đơn hàng
         $response = $this->patchJson("/api/v1/orders/{$this->order->id}/status", [
-          'status' => 'APPROVED',
+            'status' => 'APPROVED',
         ]);
 
         $response->assertStatus(403);

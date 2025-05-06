@@ -19,7 +19,7 @@ class PublisherServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->publisherService = new PublisherService();
+        $this->publisherService = new PublisherService;
     }
 
     public function test_it_can_get_all_publishers()
@@ -28,7 +28,7 @@ class PublisherServiceTest extends TestCase
         Publisher::factory()->count(5)->create();
 
         // Tạo request rỗng
-        $request = new Request();
+        $request = new Request;
 
         // Lấy danh sách nhà xuất bản
         $publishers = $this->publisherService->getAllPublishers($request);

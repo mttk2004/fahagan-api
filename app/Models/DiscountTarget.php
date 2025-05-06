@@ -11,8 +11,8 @@ class DiscountTarget extends Model
 
     protected $fillable
         = [
-          'discount_id',
-          'target_id',
+            'discount_id',
+            'target_id',
         ];
 
     /**

@@ -7,8 +7,7 @@ class PublisherDTO extends \App\DTOs\BaseDTO
     public function __construct(
         public readonly ?string $name,
         public readonly ?string $biography,
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(array $validatedData): self
     {

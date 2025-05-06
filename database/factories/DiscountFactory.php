@@ -32,16 +32,16 @@ class DiscountFactory extends Factory
         );
 
         return [
-          'id' => Str::random(18),
-          'name' => 'Giảm giá ' . fake('vi_VN')->word(),
-          'target_type' => $targetType,
-          'description' => fake('vi_VN')->sentence(),
-          'discount_type' => $discountType,
-          'discount_value' => $discountType === 'percentage'
-            ? fake('vi_VN')->numberBetween(5, 50)
-            : fake('vi_VN')->numberBetween(1, 20) * 10000,
-          'start_date' => $startDate,
-          'end_date' => $endDate,
+            'id' => Str::random(18),
+            'name' => 'Giảm giá '.fake('vi_VN')->word(),
+            'target_type' => $targetType,
+            'description' => fake('vi_VN')->sentence(),
+            'discount_type' => $discountType,
+            'discount_value' => $discountType === 'percentage'
+              ? fake('vi_VN')->numberBetween(5, 50)
+              : fake('vi_VN')->numberBetween(1, 20) * 10000,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ];
     }
 }

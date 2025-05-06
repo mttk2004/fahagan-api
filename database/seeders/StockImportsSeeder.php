@@ -14,14 +14,14 @@ class StockImportsSeeder extends Seeder
         Supplier::all()->each(function (Supplier $supplier) {
             // Mỗi nhà cung cấp có 1 hoặc 2 lần nhập hàng
             $stockImports = StockImport::factory(fake()->numberBetween(1, 2))->create([
-              'supplier_id' => $supplier->id,
+                'supplier_id' => $supplier->id,
             ]);
 
             $stockImports->each(function (StockImport $stockImport) use ($supplier) {
                 // Mỗi lần nhập hàng có 1 hoặc nhiều cuốn sách thuộc danh sách sách của nhà cung cấp
                 $books = $supplier->suppliedBooks()->inRandomOrder()
-                  ->take(fake()->numberBetween(1, min(3, $supplier->suppliedBooks()->count())))
-                  ->get();
+                    ->take(fake()->numberBetween(1, min(3, $supplier->suppliedBooks()->count())))
+                    ->get();
 
                 $totalCost = 0.0;
 
@@ -32,9 +32,9 @@ class StockImportsSeeder extends Seeder
 
                     // Tạo stock import item
                     $stockImportItem = $stockImport->stockImportItems()->create([
-                      'book_id' => $book->id,
-                      'quantity' => $quantity,
-                      'unit_price' => $book->price,
+                        'book_id' => $book->id,
+                        'quantity' => $quantity,
+                        'unit_price' => $book->price,
                     ]);
 
                     // Cập nhật available_count trong Book

@@ -18,14 +18,13 @@ class CustomerCartItemController extends Controller
 {
     public function __construct(
         private readonly CartItemService $cartItemService
-    ) {
-    }
+    ) {}
 
     /**
      * Get all cart items of the customer.
      *
-     * @return JsonResponse
      * @group Customer.Cart
+     *
      * @authenticated
      */
     public function index(): JsonResponse
@@ -34,17 +33,16 @@ class CustomerCartItemController extends Controller
         $cartItems = $this->cartItemService->getCartItems($user);
 
         return ResponseUtils::success([
-          'cart_items' => new CartItemCollection($cartItems),
+            'cart_items' => new CartItemCollection($cartItems),
         ]);
     }
 
     /**
      * Update the quantity of a cart item or add a new book to the cart if it doesn't exist.
      *
-     * @param AddToCartRequest $request
      *
-     * @return JsonResponse
      * @group Customer.Cart
+     *
      * @authenticated
      */
     public function updateCartItemQuantity(AddToCartRequest $request): JsonResponse
@@ -67,7 +65,7 @@ class CustomerCartItemController extends Controller
             }
 
             return ResponseUtils::success([
-              'cart_item' => new CartItemResource($cartItem),
+                'cart_item' => new CartItemResource($cartItem),
             ], $message);
         } catch (Exception $e) {
             return ResponseUtils::serverError($e->getMessage());
@@ -77,10 +75,9 @@ class CustomerCartItemController extends Controller
     /**
      * Add a book to the cart or return an error if it already exists.
      *
-     * @param AddToCartRequest $request
      *
-     * @return JsonResponse
      * @group Customer.Cart
+     *
      * @authenticated
      */
     public function addToCart(AddToCartRequest $request): JsonResponse
@@ -92,7 +89,7 @@ class CustomerCartItemController extends Controller
             $cartItem = $this->cartItemService->addToCart($user, $cartItemDTO);
 
             return ResponseUtils::created([
-              'cart_item' => new CartItemResource($cartItem),
+                'cart_item' => new CartItemResource($cartItem),
             ], ResponseMessage::ADDED_TO_CART->value);
         } catch (Exception $e) {
             if ($e->getMessage() === 'Sách đã tồn tại trong giỏ hàng.') {
@@ -106,10 +103,9 @@ class CustomerCartItemController extends Controller
     /**
      * Remove a book from the cart.
      *
-     * @param int $book_id
      *
-     * @return JsonResponse
      * @group Customer.Cart
+     *
      * @authenticated
      */
     public function removeFromCart(int $book_id): JsonResponse

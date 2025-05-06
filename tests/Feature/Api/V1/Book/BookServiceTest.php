@@ -29,7 +29,7 @@ class BookServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->bookService = new BookService();
+        $this->bookService = new BookService;
         $this->publisher = Publisher::factory()->create();
     }
 
@@ -37,11 +37,11 @@ class BookServiceTest extends TestCase
     {
         // Tạo một số sách
         Book::factory()->count(5)->create([
-          'publisher_id' => $this->publisher->id,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo request giả lập
-        $request = new Request();
+        $request = new Request;
 
         // Gọi method getAllBooks
         $result = $this->bookService->getAllBooks($request, 10);
@@ -56,7 +56,7 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách
         $book = Book::factory()->create([
-          'publisher_id' => $this->publisher->id,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Gọi method getBookById
@@ -84,16 +84,16 @@ class BookServiceTest extends TestCase
 
         // Tạo BookDTO
         $bookData = [
-          'title' => 'Sách Test',
-          'description' => 'Mô tả sách test',
-          'price' => 150000,
-          'edition' => 1,
-          'pages' => 200,
-          'publication_date' => '2023-01-01',
-          'image_url' => 'https://example.com/book.jpg',
-          'publisher_id' => $this->publisher->id,
-          'author_ids' => $authors->pluck('id')->toArray(),
-          'genre_ids' => $genres->pluck('id')->toArray(),
+            'title' => 'Sách Test',
+            'description' => 'Mô tả sách test',
+            'price' => 150000,
+            'edition' => 1,
+            'pages' => 200,
+            'publication_date' => '2023-01-01',
+            'image_url' => 'https://example.com/book.jpg',
+            'publisher_id' => $this->publisher->id,
+            'author_ids' => $authors->pluck('id')->toArray(),
+            'genre_ids' => $genres->pluck('id')->toArray(),
         ];
 
         $bookDTO = new BookDTO(
@@ -125,8 +125,8 @@ class BookServiceTest extends TestCase
 
         // Kiểm tra database
         $this->assertDatabaseHas('books', [
-          'title' => 'Sách Test',
-          'description' => 'Mô tả sách test',
+            'title' => 'Sách Test',
+            'description' => 'Mô tả sách test',
         ]);
     }
 
@@ -134,16 +134,16 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách và soft delete nó
         $book = Book::factory()->create([
-          'title' => 'Sách Đã Xóa',
-          'edition' => 2,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Sách Đã Xóa',
+            'edition' => 2,
+            'publisher_id' => $this->publisher->id,
         ]);
         $bookId = $book->id;
         $book->delete();
 
         // Kiểm tra rằng sách đã bị soft delete
         $this->assertSoftDeleted('books', [
-          'id' => $bookId,
+            'id' => $bookId,
         ]);
 
         // Tạo BookDTO với title và edition giống sách đã xóa
@@ -169,8 +169,8 @@ class BookServiceTest extends TestCase
 
         // Kiểm tra database rằng sách không còn bị soft delete
         $this->assertDatabaseHas('books', [
-          'id' => $bookId,
-          'deleted_at' => null,
+            'id' => $bookId,
+            'deleted_at' => null,
         ]);
     }
 
@@ -178,11 +178,11 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách
         $book = Book::factory()->create([
-          'title' => 'Sách Gốc',
-          'description' => 'Mô tả gốc',
-          'price' => 150000,
-          'edition' => 1,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Sách Gốc',
+            'description' => 'Mô tả gốc',
+            'price' => 150000,
+            'edition' => 1,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo BookDTO cho cập nhật
@@ -209,9 +209,9 @@ class BookServiceTest extends TestCase
 
         // Kiểm tra database
         $this->assertDatabaseHas('books', [
-          'id' => $book->id,
-          'title' => 'Sách Đã Cập Nhật',
-          'description' => 'Mô tả đã cập nhật',
+            'id' => $book->id,
+            'title' => 'Sách Đã Cập Nhật',
+            'description' => 'Mô tả đã cập nhật',
         ]);
     }
 
@@ -219,15 +219,15 @@ class BookServiceTest extends TestCase
     {
         // Tạo hai sách với title và edition khác nhau
         $book1 = Book::factory()->create([
-          'title' => 'Sách thứ nhất',
-          'edition' => 1,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Sách thứ nhất',
+            'edition' => 1,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         $book2 = Book::factory()->create([
-          'title' => 'Sách thứ hai',
-          'edition' => 2,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Sách thứ hai',
+            'edition' => 2,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo BookDTO cập nhật book2 thành title và edition của book1
@@ -253,7 +253,7 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách
         $book = Book::factory()->create([
-          'publisher_id' => $this->publisher->id,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Gọi method deleteBook
@@ -265,7 +265,7 @@ class BookServiceTest extends TestCase
 
         // Kiểm tra database rằng sách đã bị soft delete
         $this->assertSoftDeleted('books', [
-          'id' => $book->id,
+            'id' => $book->id,
         ]);
     }
 
@@ -273,18 +273,18 @@ class BookServiceTest extends TestCase
     {
         // Tạo các sách với tiêu đề khác nhau
         Book::factory()->create([
-          'title' => 'PHP Master',
-          'publisher_id' => $this->publisher->id,
+            'title' => 'PHP Master',
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'Laravel Advanced',
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Laravel Advanced',
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'PHP Beginner',
-          'publisher_id' => $this->publisher->id,
+            'title' => 'PHP Beginner',
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo request với filter theo tiêu đề
@@ -303,21 +303,21 @@ class BookServiceTest extends TestCase
     {
         // Tạo các sách với giá khác nhau
         Book::factory()->create([
-          'title' => 'Book 1',
-          'price' => 250000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Book 1',
+            'price' => 250000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'Book 2',
-          'price' => 350000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Book 2',
+            'price' => 350000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'Book 3',
-          'price' => 450000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Book 3',
+            'price' => 450000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo request với filter theo khoảng giá - sử dụng tên tham số đúng
@@ -335,21 +335,21 @@ class BookServiceTest extends TestCase
     {
         // Tạo các sách với giá khác nhau
         Book::factory()->create([
-          'title' => 'Expensive Book',
-          'price' => 450000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Expensive Book',
+            'price' => 450000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'Cheap Book',
-          'price' => 250000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Cheap Book',
+            'price' => 250000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'Medium Book',
-          'price' => 350000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Medium Book',
+            'price' => 350000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo request với sort theo giá tăng dần
@@ -368,21 +368,21 @@ class BookServiceTest extends TestCase
     {
         // Tạo các sách với giá khác nhau
         Book::factory()->create([
-          'title' => 'Expensive Book',
-          'price' => 450000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Expensive Book',
+            'price' => 450000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'Cheap Book',
-          'price' => 250000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Cheap Book',
+            'price' => 250000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         Book::factory()->create([
-          'title' => 'Medium Book',
-          'price' => 350000,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Medium Book',
+            'price' => 350000,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo request với sort theo giá giảm dần
@@ -401,7 +401,7 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách với tác giả và thể loại
         $book = Book::factory()->create([
-          'publisher_id' => $this->publisher->id,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         $initialAuthors = Author::factory()->count(2)->create();
@@ -429,15 +429,15 @@ class BookServiceTest extends TestCase
 
         // Cập nhật sách
         $validatedData = [
-          'data' => [
-            'relationships' => [
-              'authors' => [
-                'data' => $newAuthors->map(function ($author) {
-                    return ['id' => $author->id, 'type' => 'authors'];
-                })->toArray(),
-              ],
+            'data' => [
+                'relationships' => [
+                    'authors' => [
+                        'data' => $newAuthors->map(function ($author) {
+                            return ['id' => $author->id, 'type' => 'authors'];
+                        })->toArray(),
+                    ],
+                ],
             ],
-          ],
         ];
 
         $updatedBook = $this->bookService->updateBook($book->id, $bookDTO, $validatedData);
@@ -454,7 +454,7 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách và hai nhà xuất bản
         $book = Book::factory()->create([
-          'publisher_id' => $this->publisher->id,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         $newPublisher = Publisher::factory()->create();
@@ -473,24 +473,24 @@ class BookServiceTest extends TestCase
 
         // Dữ liệu từ request với định dạng đúng
         $validatedData = [
-          'data' => [
-            'attributes' => [
-              // Empty attributes but required to trigger the publisher update
+            'data' => [
+                'attributes' => [
+                    // Empty attributes but required to trigger the publisher update
+                ],
+                'relationships' => [
+                    'publisher' => [
+                        'id' => $newPublisher->id,
+                    ],
+                ],
             ],
-            'relationships' => [
-              'publisher' => [
-                'id' => $newPublisher->id,
-              ],
-            ],
-          ],
         ];
 
         $updatedBook = $this->bookService->updateBook($book->id, $bookDTO, $validatedData);
 
         // Kiểm tra publisher_id đã được cập nhật trong database
         $this->assertDatabaseHas('books', [
-          'id' => $book->id,
-          'publisher_id' => $newPublisher->id,
+            'id' => $book->id,
+            'publisher_id' => $newPublisher->id,
         ]);
 
         // Kiểm tra kết quả trả về
@@ -522,7 +522,7 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách với tác giả và thể loại
         $book = Book::factory()->create([
-          'publisher_id' => $this->publisher->id,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         $initialAuthors = Author::factory()->count(3)->create();
@@ -551,20 +551,20 @@ class BookServiceTest extends TestCase
 
         // Dữ liệu từ request với định dạng đúng
         $validatedData = [
-          'data' => [
-            'relationships' => [
-              'authors' => [
-                'data' => $newAuthors->map(function ($author) {
-                    return ['id' => $author->id, 'type' => 'authors'];
-                })->toArray(),
-              ],
-              'genres' => [
-                'data' => $newGenres->map(function ($genre) {
-                    return ['id' => $genre->id, 'type' => 'genres'];
-                })->toArray(),
-          ],
+            'data' => [
+                'relationships' => [
+                    'authors' => [
+                        'data' => $newAuthors->map(function ($author) {
+                            return ['id' => $author->id, 'type' => 'authors'];
+                        })->toArray(),
+                    ],
+                    'genres' => [
+                        'data' => $newGenres->map(function ($genre) {
+                            return ['id' => $genre->id, 'type' => 'genres'];
+                        })->toArray(),
+                    ],
+                ],
             ],
-          ],
         ];
 
         // Cập nhật sách
@@ -602,25 +602,25 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách
         $book = Book::factory()->create([
-          'publisher_id' => $this->publisher->id,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         // Tạo discount và liên kết với sách
         $discount = Discount::factory()->create([
-          'target_type' => 'book',
-          'start_date' => Carbon::now()->subDay(),
-          'end_date' => Carbon::now()->addDay(),
+            'target_type' => 'book',
+            'start_date' => Carbon::now()->subDay(),
+            'end_date' => Carbon::now()->addDay(),
         ]);
 
         $discountTarget = DiscountTarget::create([
-          'discount_id' => $discount->id,
-          'target_id' => $book->id,
+            'discount_id' => $discount->id,
+            'target_id' => $book->id,
         ]);
 
         // Kiểm tra discount đã được tạo
         $this->assertDatabaseHas('discount_targets', [
-          'discount_id' => $discount->id,
-          'target_id' => $book->id,
+            'discount_id' => $discount->id,
+            'target_id' => $book->id,
         ]);
 
         // Xóa sách
@@ -628,13 +628,13 @@ class BookServiceTest extends TestCase
 
         // Kiểm tra discountTarget đã bị xóa
         $this->assertDatabaseMissing('discount_targets', [
-          'discount_id' => $discount->id,
-          'target_id' => $book->id,
+            'discount_id' => $discount->id,
+            'target_id' => $book->id,
         ]);
 
         // Kiểm tra sách đã bị soft delete
         $this->assertSoftDeleted('books', [
-          'id' => $book->id,
+            'id' => $book->id,
         ]);
     }
 
@@ -671,12 +671,12 @@ class BookServiceTest extends TestCase
     {
         // Mock BookService với phương thức bị lỗi
         $mockService = $this->getMockBuilder(BookService::class)
-          ->onlyMethods(['createBook'])
-          ->getMock();
+            ->onlyMethods(['createBook'])
+            ->getMock();
 
         // Thiết lập mock để ném ngoại lệ khi gọi createBook
         $mockService->method('createBook')
-          ->will($this->throwException(new Exception('Simulated database error')));
+            ->will($this->throwException(new Exception('Simulated database error')));
 
         // Tạo BookDTO hợp lệ
         $bookDTO = new BookDTO(
@@ -699,7 +699,7 @@ class BookServiceTest extends TestCase
 
         // Kiểm tra không có sách nào được lưu vào database
         $this->assertDatabaseMissing('books', [
-          'title' => 'Sách Test Transaction',
+            'title' => 'Sách Test Transaction',
         ]);
     }
 
@@ -707,11 +707,11 @@ class BookServiceTest extends TestCase
     {
         // Tạo một sách với tác giả và thể loại
         $book = Book::factory()->create([
-          'title' => 'Sách Gốc',
-          'description' => 'Mô tả gốc',
-          'price' => 150000,
-          'edition' => 1,
-          'publisher_id' => $this->publisher->id,
+            'title' => 'Sách Gốc',
+            'description' => 'Mô tả gốc',
+            'price' => 150000,
+            'edition' => 1,
+            'publisher_id' => $this->publisher->id,
         ]);
 
         $authors = Author::factory()->count(2)->create();
@@ -736,14 +736,14 @@ class BookServiceTest extends TestCase
 
         // Dữ liệu từ request không chứa thông tin về relationships
         $validatedData = [
-          'data' => [
-            'attributes' => [
-              'title' => 'Sách Đã Cập Nhật',
-              'description' => 'Mô tả đã cập nhật',
-              'price' => 200000,
-              'edition' => 2,
+            'data' => [
+                'attributes' => [
+                    'title' => 'Sách Đã Cập Nhật',
+                    'description' => 'Mô tả đã cập nhật',
+                    'price' => 200000,
+                    'edition' => 2,
+                ],
             ],
-          ],
         ];
 
         // Cập nhật sách

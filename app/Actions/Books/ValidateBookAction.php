@@ -12,10 +12,10 @@ class ValidateBookAction extends BaseAction
     /**
      * Xác thực dữ liệu sách
      *
-     * @param BookDTO $bookDTO
-     * @param bool $forUpdate Xác thực cho cập nhật hay tạo mới
-     * @param Book|null $book Đối tượng Book hiện tại (chỉ khi $forUpdate = true)
-     * @return bool
+     * @param  BookDTO  $bookDTO
+     * @param  bool  $forUpdate  Xác thực cho cập nhật hay tạo mới
+     * @param  Book|null  $book  Đối tượng Book hiện tại (chỉ khi $forUpdate = true)
+     *
      * @throws ValidationException
      */
     public function execute(...$args): bool
@@ -62,13 +62,13 @@ class ValidateBookAction extends BaseAction
             $edition = $bookDTO->edition ?? $book->edition;
 
             $duplicate = Book::where('title', $title)
-              ->where('edition', $edition)
-              ->where('id', '!=', $book->id)
-              ->first();
+                ->where('edition', $edition)
+                ->where('id', '!=', $book->id)
+                ->first();
 
             if ($duplicate) {
                 throw ValidationException::withMessages([
-                  'title' => 'Đã tồn tại sách với tiêu đề và phiên bản này.',
+                    'title' => 'Đã tồn tại sách với tiêu đề và phiên bản này.',
                 ]);
             }
         }
@@ -79,18 +79,17 @@ class ValidateBookAction extends BaseAction
     /**
      * Xác thực sách không tồn tại với cùng title và edition
      *
-     * @param BookDTO $bookDTO
      * @throws ValidationException
      */
     private function validateBookDoesNotExist(BookDTO $bookDTO): void
     {
         $existingBook = Book::where('title', $bookDTO->title)
-          ->where('edition', $bookDTO->edition)
-          ->first();
+            ->where('edition', $bookDTO->edition)
+            ->first();
 
         if ($existingBook) {
             throw ValidationException::withMessages([
-              'title' => 'Đã tồn tại sách với tiêu đề và phiên bản này.',
+                'title' => 'Đã tồn tại sách với tiêu đề và phiên bản này.',
             ]);
         }
     }

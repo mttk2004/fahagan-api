@@ -11,9 +11,6 @@ class JsonApiFormatter
 {
     /**
      * Lấy attributes từ request theo định dạng JSON:API
-     *
-     * @param Request $request
-     * @return array
      */
     public static function getAttributes(Request $request): array
     {
@@ -28,9 +25,6 @@ class JsonApiFormatter
 
     /**
      * Lấy relationships từ request theo định dạng JSON:API
-     *
-     * @param Request $request
-     * @return array
      */
     public static function getRelationships(Request $request): array
     {
@@ -45,9 +39,6 @@ class JsonApiFormatter
 
     /**
      * Kiểm tra xem request có đúng định dạng JSON:API không
-     *
-     * @param Request $request
-     * @return bool
      */
     public static function isValidJsonApiFormat(Request $request): bool
     {

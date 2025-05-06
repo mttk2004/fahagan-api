@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('books', function (Blueprint $table) {
@@ -12,10 +13,10 @@ return new class extends Migration {
 
             $table->unsignedSmallInteger('publisher_id');
             $table->foreign('publisher_id')
-                  ->references('id')
-                  ->on('publishers')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('id')
+                ->on('publishers')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->string('title');
             $table->text('description');

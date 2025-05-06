@@ -22,9 +22,10 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable implements HasCart
 {
+    use HasApiTokens;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory;
-    use HasApiTokens;
     use HasRoles;
     use Notifiable;
     use SoftDeletes;
@@ -49,13 +50,13 @@ class User extends Authenticatable implements HasCart
      */
     protected $fillable
         = [
-          'first_name',
-          'last_name',
-          'phone',
-          'email',
-          'password',
-          'is_customer',
-          'last_login',
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
+            'password',
+            'is_customer',
+            'last_login',
         ];
 
     /**
@@ -65,7 +66,7 @@ class User extends Authenticatable implements HasCart
      */
     protected $hidden
         = [
-          'password',
+            'password',
         ];
 
     /**
@@ -76,19 +77,19 @@ class User extends Authenticatable implements HasCart
     protected function casts(): array
     {
         return [
-          'password' => 'hashed',
-          'is_customer' => 'boolean',
-          'last_login' => 'datetime',
-          'created_at' => 'datetime',
-          'updated_at' => 'datetime',
-          'deleted_at' => 'datetime',
+            'password' => 'hashed',
+            'is_customer' => 'boolean',
+            'last_login' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->first_name . ' ' . $this->last_name
+            get: fn () => $this->first_name.' '.$this->last_name
         );
     }
 
@@ -132,7 +133,7 @@ class User extends Authenticatable implements HasCart
     public function booksInCart(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'cart_items', 'user_id', 'book_id')
-          ->withPivot('quantity');
+            ->withPivot('quantity');
     }
 
     /**

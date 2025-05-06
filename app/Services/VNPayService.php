@@ -12,8 +12,6 @@ class VNPayService
     /**
      * Tạo URL thanh toán VNPay
      *
-     * @param Order $order
-     * @param Payment $payment
      * @return string URL thanh toán
      */
     public function createPaymentUrl(Order $order, Payment $payment): string
@@ -30,51 +28,51 @@ class VNPayService
         // Thông tin đơn hàng
         // Format số tiền thành số nguyên * 100 (VD: 10.000đ -> 1000000)
         $vnp_Amount = $payment->total_amount * 100;
-        $vnp_OrderInfo = 'Thanh toan don hang #' . $order->id;
+        $vnp_OrderInfo = 'Thanh toan don hang #'.$order->id;
         $vnp_OrderType = 'billpayment';
-        $vnp_TxnRef = $order->id . '-' . time(); // Mã đơn hàng (order_id + timestamp)
+        $vnp_TxnRef = $order->id.'-'.time(); // Mã đơn hàng (order_id + timestamp)
 
         // Lưu transaction reference vào payment
         $payment->transaction_ref = $vnp_TxnRef;
         $payment->save();
 
         $inputData = [
-          "vnp_Version" => $vnp_Version,
-          "vnp_TmnCode" => $vnp_TmnCode,
-          "vnp_Amount" => $vnp_Amount,
-          "vnp_Command" => $vnp_Command,
-          "vnp_CreateDate" => date('YmdHis'),
-          "vnp_CurrCode" => $vnp_CurrCode,
-          "vnp_IpAddr" => request()->ip(),
-          "vnp_Locale" => $vnp_Locale,
-          "vnp_OrderInfo" => $vnp_OrderInfo,
-          "vnp_OrderType" => $vnp_OrderType,
-          "vnp_ReturnUrl" => $vnp_ReturnUrl,
-          "vnp_TxnRef" => $vnp_TxnRef,
+            'vnp_Version' => $vnp_Version,
+            'vnp_TmnCode' => $vnp_TmnCode,
+            'vnp_Amount' => $vnp_Amount,
+            'vnp_Command' => $vnp_Command,
+            'vnp_CreateDate' => date('YmdHis'),
+            'vnp_CurrCode' => $vnp_CurrCode,
+            'vnp_IpAddr' => request()->ip(),
+            'vnp_Locale' => $vnp_Locale,
+            'vnp_OrderInfo' => $vnp_OrderInfo,
+            'vnp_OrderType' => $vnp_OrderType,
+            'vnp_ReturnUrl' => $vnp_ReturnUrl,
+            'vnp_TxnRef' => $vnp_TxnRef,
         ];
 
         // Sắp xếp theo key
         ksort($inputData);
-        $query = "";
+        $query = '';
         $i = 0;
-        $hashdata = "";
+        $hashdata = '';
 
         foreach ($inputData as $key => $value) {
             if ($i == 1) {
-                $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
+                $hashdata .= '&'.urlencode($key).'='.urlencode($value);
             } else {
-                $hashdata .= urlencode($key) . "=" . urlencode($value);
+                $hashdata .= urlencode($key).'='.urlencode($value);
                 $i = 1;
             }
-            $query .= urlencode($key) . "=" . urlencode($value) . '&';
+            $query .= urlencode($key).'='.urlencode($value).'&';
         }
 
         // Tạo URL thông qua các thông tin đã gửi
-        $vnp_Url = $vnp_Url . "?" . $query;
+        $vnp_Url = $vnp_Url.'?'.$query;
 
         // Tạo chữ ký
         $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-        $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
+        $vnp_Url .= 'vnp_SecureHash='.$vnpSecureHash;
 
         return $vnp_Url;
     }
@@ -82,7 +80,7 @@ class VNPayService
     /**
      * Tạo chuỗi JavaScript để thực hiện chuyển hướng trình duyệt từ frontend
      *
-     * @param string $url URL cần chuyển hướng đến
+     * @param  string  $url  URL cần chuyển hướng đến
      * @return string Chuỗi JavaScript thực hiện chuyển hướng
      */
     public function createRedirectScript(string $url): string
@@ -92,9 +90,6 @@ class VNPayService
 
     /**
      * Xử lý response từ VNPay sau khi thanh toán
-     *
-     * @param array $data
-     * @return array
      */
     public function processReturnUrl(array $data): array
     {
@@ -109,12 +104,12 @@ class VNPayService
 
         // Tạo chuỗi hash
         $i = 0;
-        $hashData = "";
+        $hashData = '';
         foreach ($data as $key => $value) {
             if ($i == 1) {
-                $hashData .= '&' . urlencode($key) . "=" . urlencode($value);
+                $hashData .= '&'.urlencode($key).'='.urlencode($value);
             } else {
-                $hashData .= urlencode($key) . "=" . urlencode($value);
+                $hashData .= urlencode($key).'='.urlencode($value);
                 $i = 1;
             }
         }
@@ -140,13 +135,13 @@ class VNPayService
         }
 
         return [
-          'isValidSignature' => $isValidSignature,
-          'paymentStatus' => $paymentStatus,
-          'orderId' => $orderId,
-          'txnRef' => $txnRef,
-          'responseCode' => $responseCode,
-          'amount' => ($data['vnp_Amount'] ?? 0) / 100, // Chuyển về đơn vị VNĐ
-          'rawData' => $data,
+            'isValidSignature' => $isValidSignature,
+            'paymentStatus' => $paymentStatus,
+            'orderId' => $orderId,
+            'txnRef' => $txnRef,
+            'responseCode' => $responseCode,
+            'amount' => ($data['vnp_Amount'] ?? 0) / 100, // Chuyển về đơn vị VNĐ
+            'rawData' => $data,
         ];
     }
 }

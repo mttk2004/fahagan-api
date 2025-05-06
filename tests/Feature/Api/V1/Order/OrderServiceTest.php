@@ -36,45 +36,45 @@ class OrderServiceTest extends TestCase
 
         // Tạo người dùng customer
         $this->customer = User::factory()->create([
-          'is_customer' => true,
+            'is_customer' => true,
         ]);
 
         // Tạo nhân viên
         $this->employee = User::factory()->create([
-          'is_customer' => false,
+            'is_customer' => false,
         ]);
 
         // Tạo một sách để test với số lượng đủ
         $this->book = Book::factory()->create([
-          'available_count' => 10,
-          'sold_count' => 0,
+            'available_count' => 10,
+            'sold_count' => 0,
         ]);
 
         // Thêm sản phẩm vào giỏ hàng
         $this->cartItem = CartItem::create([
-          'user_id' => $this->customer->id,
-          'book_id' => $this->book->id,
-          'quantity' => 2,
+            'user_id' => $this->customer->id,
+            'book_id' => $this->book->id,
+            'quantity' => 2,
         ]);
 
         // Tạo đơn hàng mới
         $this->order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => 'Test Customer',
-          'shopping_phone' => '0938244325',
-          'shopping_city' => 'HCM',
-          'shopping_district' => '1',
-          'shopping_ward' => '1',
-          'shopping_address_line' => '123 Test Street',
-          'status' => OrderStatus::PENDING->value,
+            'customer_id' => $this->customer->id,
+            'shopping_name' => 'Test Customer',
+            'shopping_phone' => '0938244325',
+            'shopping_city' => 'HCM',
+            'shopping_district' => '1',
+            'shopping_ward' => '1',
+            'shopping_address_line' => '123 Test Street',
+            'status' => OrderStatus::PENDING->value,
         ]);
 
         // Tạo order item
         $this->order->items()->create([
-          'book_id' => $this->book->id,
-          'quantity' => 2,
-          'price_at_time' => $this->book->price,
-          'discount_value' => 0,
+            'book_id' => $this->book->id,
+            'quantity' => 2,
+            'price_at_time' => $this->book->price,
+            'discount_value' => 0,
         ]);
 
         // Khởi tạo OrderService
@@ -89,30 +89,30 @@ class OrderServiceTest extends TestCase
         // Tạo thêm 2 đơn hàng khác cho customer này
         for ($i = 0; $i < 2; $i++) {
             Order::create([
-              'customer_id' => $this->customer->id,
-              'shopping_name' => 'Test Customer',
-              'shopping_phone' => '0938244325',
-              'shopping_city' => 'HCM',
-              'shopping_district' => '1',
-              'shopping_ward' => '1',
-              'shopping_address_line' => '123 Test Street',
+                'customer_id' => $this->customer->id,
+                'shopping_name' => 'Test Customer',
+                'shopping_phone' => '0938244325',
+                'shopping_city' => 'HCM',
+                'shopping_district' => '1',
+                'shopping_ward' => '1',
+                'shopping_address_line' => '123 Test Street',
             ]);
         }
 
         // Tạo một khách hàng khác và một đơn hàng
         $otherCustomer = User::factory()->create(['is_customer' => true]);
         Order::create([
-          'customer_id' => $otherCustomer->id,
-          'shopping_name' => 'Other Customer',
-          'shopping_phone' => '0938244326',
-          'shopping_city' => 'HN',
-          'shopping_district' => '2',
-          'shopping_ward' => '2',
-          'shopping_address_line' => '456 Test Street',
+            'customer_id' => $otherCustomer->id,
+            'shopping_name' => 'Other Customer',
+            'shopping_phone' => '0938244326',
+            'shopping_city' => 'HN',
+            'shopping_district' => '2',
+            'shopping_ward' => '2',
+            'shopping_address_line' => '456 Test Street',
         ]);
 
         // Gọi phương thức getCustomerOrders
-        $request = new Request();
+        $request = new Request;
         $customerOrders = $this->orderService->getCustomerOrders($request, 10);
 
         // Kiểm tra kết quả
@@ -215,7 +215,7 @@ class OrderServiceTest extends TestCase
 
         // Thử cập nhật từ PENDING sang DELIVERED (không hợp lệ)
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("Không thể cập nhật từ trạng thái");
+        $this->expectExceptionMessage('Không thể cập nhật từ trạng thái');
 
         $this->orderService->updateOrderStatus($this->order->id, OrderStatus::DELIVERED->value);
     }

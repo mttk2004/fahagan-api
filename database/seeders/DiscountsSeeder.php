@@ -12,24 +12,24 @@ class DiscountsSeeder extends Seeder
     public function run(): void
     {
         $discounts = [
-          [
-            'name' => 'Giảm 10% cho sách của một tác giả ngẫu nhiên',
-            'discount_type' => 'percentage',
-            'discount_value' => 10,
-            'target_type' => 'book',
-            'start_date' => now(),
-            'end_date' => now()->addDays(15),
-            'description' => 'Giảm 10% cho sách của một tác giả ngẫu nhiên',
-          ],
-          [
-            'name' => 'Giảm 20% cho tất cả các đơn hàng',
-            'discount_type' => 'percentage',
-            'discount_value' => 20,
-            'target_type' => 'order',
-            'start_date' => now(),
-            'end_date' => now()->addDays(10),
-            'description' => 'Giảm 20% cho tất cả các đơn hàng',
-          ],
+            [
+                'name' => 'Giảm 10% cho sách của một tác giả ngẫu nhiên',
+                'discount_type' => 'percentage',
+                'discount_value' => 10,
+                'target_type' => 'book',
+                'start_date' => now(),
+                'end_date' => now()->addDays(15),
+                'description' => 'Giảm 10% cho sách của một tác giả ngẫu nhiên',
+            ],
+            [
+                'name' => 'Giảm 20% cho tất cả các đơn hàng',
+                'discount_type' => 'percentage',
+                'discount_value' => 20,
+                'target_type' => 'order',
+                'start_date' => now(),
+                'end_date' => now()->addDays(10),
+                'description' => 'Giảm 20% cho tất cả các đơn hàng',
+            ],
         ];
 
         foreach ($discounts as $discount) {

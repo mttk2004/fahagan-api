@@ -23,14 +23,15 @@ class CustomerProfileController extends Controller
     public function __construct(
         private readonly UserService $userService,
         private readonly string $entityName = 'user'
-    ) {
-    }
+    ) {}
 
     /**
      * Xem thông tin profile của customer đang đăng nhập
      *
      * @return JsonResponse
+     *
      * @group Customer.Profile
+     *
      * @authenticated
      */
     public function show()
@@ -42,7 +43,7 @@ class CustomerProfileController extends Controller
             }
 
             return ResponseUtils::success([
-              'user' => new UserResource($user),
+                'user' => new UserResource($user),
             ]);
         } catch (Exception $e) {
             return $this->handleException(
@@ -55,9 +56,10 @@ class CustomerProfileController extends Controller
     /**
      * Cập nhật thông tin profile của customer đang đăng nhập
      *
-     * @param UserUpdateRequest $request
      * @return JsonResponse
+     *
      * @group Customer.Profile
+     *
      * @authenticated
      */
     public function update(UserUpdateRequest $request)
@@ -78,15 +80,15 @@ class CustomerProfileController extends Controller
             $updatedUser = $this->userService->updateUser($user->id, UserDTO::fromRequest($validatedData));
 
             return ResponseUtils::success([
-              'user' => new UserResource($updatedUser),
+                'user' => new UserResource($updatedUser),
             ], ResponseMessage::UPDATED_USER->value);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'request_data' => $request->validated(),
-        ]
+                    'request_data' => $request->validated(),
+                ]
             );
         }
     }
@@ -95,7 +97,9 @@ class CustomerProfileController extends Controller
      * Xóa tài khoản của customer đang đăng nhập
      *
      * @return JsonResponse
+     *
      * @group Customer.Profile
+     *
      * @authenticated
      */
     public function destroy()

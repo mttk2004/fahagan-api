@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\Route;
  */
 // Public resource routes with only index and show actions
 Route::apiResources([
-  'books' => BookController::class,
-  'authors' => AuthorController::class,
-  'publishers' => PublisherController::class,
-  'genres' => GenreController::class,
+    'books' => BookController::class,
+    'authors' => AuthorController::class,
+    'publishers' => PublisherController::class,
+    'genres' => GenreController::class,
 ], ['only' => ['index', 'show']]);
 
 // Additional genre route
@@ -31,7 +31,7 @@ Route::get('genres/slug/{slug}', [GenreController::class, 'showBySlug'])->name('
 
 // VNPay callback route
 Route::get('/payments/vnpay-return', [PaymentController::class, 'handleVNPayReturn'])
-  ->name('vnpay.return');
+    ->name('vnpay.return');
 
 /**
  * AUTHENTICATED ROUTES
@@ -75,7 +75,7 @@ Route::middleware('auth.*')->group(function () {
 
         // Payment routes
         Route::get('/orders/{order}/pay-vnpay', [PaymentController::class, 'createVNPayPayment'])
-          ->name('customer.order.pay-vnpay');
+            ->name('customer.order.pay-vnpay');
     });
 
     /**
@@ -84,16 +84,16 @@ Route::middleware('auth.*')->group(function () {
     Route::middleware('auth.employee')->group(function () {
         // CRUD resources except index and show (which are public)
         Route::apiResources([
-          'books' => BookController::class,
-          'authors' => AuthorController::class,
-          'publishers' => PublisherController::class,
-          'genres' => GenreController::class,
+            'books' => BookController::class,
+            'authors' => AuthorController::class,
+            'publishers' => PublisherController::class,
+            'genres' => GenreController::class,
         ], ['except' => ['index', 'show']]);
 
         // Full CRUD resources (employee only)
         Route::apiResources([
-          'discounts' => DiscountController::class,
-          'suppliers' => SupplierController::class,
+            'discounts' => DiscountController::class,
+            'suppliers' => SupplierController::class,
         ]);
 
         // Additional genre routes
@@ -103,7 +103,7 @@ Route::middleware('auth.*')->group(function () {
 
         // Additional supplier routes
         Route::post('suppliers/restore/{supplier}', [SupplierController::class, 'restore'])
-          ->name('suppliers.restore');
+            ->name('suppliers.restore');
 
         // Full routes for users
         Route::apiResource('users', UserController::class)->except('store');

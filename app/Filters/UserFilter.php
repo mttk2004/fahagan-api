@@ -36,8 +36,8 @@ class UserFilter
         if (isset($this->filters['name'])) {
             $name = $this->filters['name'];
             $query->where(function ($q) use ($name) {
-                $q->where('first_name', 'like', '%' . $name . '%')
-                  ->orWhere('last_name', 'like', '%' . $name . '%');
+                $q->where('first_name', 'like', '%'.$name.'%')
+                    ->orWhere('last_name', 'like', '%'.$name.'%');
             });
         }
     }
@@ -45,14 +45,14 @@ class UserFilter
     protected function filterByEmail(Builder $query): void
     {
         if (isset($this->filters['email'])) {
-            $query->where('email', 'like', '%' . $this->filters['email'] . '%');
+            $query->where('email', 'like', '%'.$this->filters['email'].'%');
         }
     }
 
     protected function filterByPhone(Builder $query): void
     {
         if (isset($this->filters['phone'])) {
-            $query->where('phone', 'like', '%' . $this->filters['phone'] . '%');
+            $query->where('phone', 'like', '%'.$this->filters['phone'].'%');
         }
     }
 

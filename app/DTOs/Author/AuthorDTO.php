@@ -8,8 +8,7 @@ class AuthorDTO extends \App\DTOs\BaseDTO
         public readonly ?string $name,
         public readonly ?string $biography,
         public readonly ?string $image_url,
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(array $validatedData): self
     {

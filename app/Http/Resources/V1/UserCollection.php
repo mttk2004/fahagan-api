@@ -12,14 +12,14 @@ class UserCollection extends BaseCollection
     {
         if ($this->getIsDirectResponse()) {
             return [
-              'status' => 200,
-              'message' => ResponseMessage::LOAD_USERS_SUCCESS,
-              'data' => $this->collection,
+                'status' => 200,
+                'message' => ResponseMessage::LOAD_USERS_SUCCESS,
+                'data' => $this->collection,
             ];
         }
 
         return [
-          'data' => $this->collection,
+            'data' => $this->collection,
         ];
     }
 }

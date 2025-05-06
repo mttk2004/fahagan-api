@@ -9,9 +9,6 @@ trait HandleValidation
 {
     /**
      * Kiểm tra xem dữ liệu cập nhật có rỗng không
-     *
-     * @param array|null $validatedData
-     * @return bool
      */
     protected function isEmptyUpdateData(?array $validatedData): bool
     {
@@ -20,9 +17,6 @@ trait HandleValidation
 
     /**
      * Kiểm tra và trả về response lỗi nếu dữ liệu cập nhật rỗng
-     *
-     * @param array|null $validatedData
-     * @return JsonResponse|null
      */
     protected function validateUpdateData(?array $validatedData): ?JsonResponse
     {

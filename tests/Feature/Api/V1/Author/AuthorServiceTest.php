@@ -19,7 +19,7 @@ class AuthorServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->authorService = new AuthorService();
+        $this->authorService = new AuthorService;
     }
 
     public function test_it_can_get_all_authors()
@@ -28,7 +28,7 @@ class AuthorServiceTest extends TestCase
         Author::factory()->count(5)->create();
 
         // Tạo request rỗng
-        $request = new Request();
+        $request = new Request;
 
         // Lấy danh sách tác giả
         $authors = $this->authorService->getAllAuthors($request);
@@ -154,9 +154,9 @@ class AuthorServiceTest extends TestCase
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('authors', [
-          'name' => 'Nguyễn Nhật Ánh',
-          'biography' => 'Tiểu sử Nguyễn Nhật Ánh',
-          'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
+            'name' => 'Nguyễn Nhật Ánh',
+            'biography' => 'Tiểu sử Nguyễn Nhật Ánh',
+            'image_url' => 'https://example.com/authors/nguyen-nhat-anh.jpg',
         ]);
     }
 
@@ -164,8 +164,8 @@ class AuthorServiceTest extends TestCase
     {
         // Tạo tác giả
         $author = Author::factory()->create([
-          'name' => 'Tô Hoài',
-          'biography' => 'Tiểu sử Tô Hoài',
+            'name' => 'Tô Hoài',
+            'biography' => 'Tiểu sử Tô Hoài',
         ]);
 
         // Lấy thông tin tác giả
@@ -187,8 +187,8 @@ class AuthorServiceTest extends TestCase
     {
         // Tạo tác giả
         $author = Author::factory()->create([
-          'name' => 'Tô Hoài',
-          'biography' => 'Tiểu sử Tô Hoài',
+            'name' => 'Tô Hoài',
+            'biography' => 'Tiểu sử Tô Hoài',
         ]);
 
         // Tạo AuthorDTO với thông tin cập nhật
@@ -208,9 +208,9 @@ class AuthorServiceTest extends TestCase
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('authors', [
-          'id' => $author->id,
-          'name' => 'Tô Hoài (Đã cập nhật)',
-          'biography' => 'Tiểu sử Tô Hoài (Đã cập nhật)',
+            'id' => $author->id,
+            'name' => 'Tô Hoài (Đã cập nhật)',
+            'biography' => 'Tiểu sử Tô Hoài (Đã cập nhật)',
         ]);
     }
 
@@ -218,9 +218,9 @@ class AuthorServiceTest extends TestCase
     {
         // Tạo tác giả
         $author = Author::factory()->create([
-          'name' => 'Original Name',
-          'biography' => 'Original Biography',
-          'image_url' => 'original-image.jpg',
+            'name' => 'Original Name',
+            'biography' => 'Original Biography',
+            'image_url' => 'original-image.jpg',
         ]);
 
         // Tạo AuthorDTO chỉ cập nhật tên
@@ -243,9 +243,9 @@ class AuthorServiceTest extends TestCase
     {
         // Tạo tác giả
         $author = Author::factory()->create([
-          'name' => 'Original Name',
-          'biography' => 'Original Biography',
-          'image_url' => 'original-image.jpg',
+            'name' => 'Original Name',
+            'biography' => 'Original Biography',
+            'image_url' => 'original-image.jpg',
         ]);
 
         // Tạo AuthorDTO chỉ cập nhật tiểu sử
@@ -268,9 +268,9 @@ class AuthorServiceTest extends TestCase
     {
         // Tạo tác giả
         $author = Author::factory()->create([
-          'name' => 'Original Name',
-          'biography' => 'Original Biography',
-          'image_url' => 'original-image.jpg',
+            'name' => 'Original Name',
+            'biography' => 'Original Biography',
+            'image_url' => 'original-image.jpg',
         ]);
 
         // Tạo AuthorDTO chỉ cập nhật ảnh
@@ -300,7 +300,7 @@ class AuthorServiceTest extends TestCase
 
         // Kiểm tra tác giả đã bị xóa mềm
         $this->assertSoftDeleted('authors', [
-          'id' => $authorId,
+            'id' => $authorId,
         ]);
     }
 

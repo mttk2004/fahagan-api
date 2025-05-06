@@ -4,20 +4,21 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->unsignedSmallInteger('id')
-                  ->autoIncrement()
-                  ->startingValue(10000)
-                  ->primary();
+                ->autoIncrement()
+                ->startingValue(10000)
+                ->primary();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('name');
             $table->string('phone');
             $table->string('city');

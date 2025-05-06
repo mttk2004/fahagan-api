@@ -20,7 +20,7 @@ class SupplierService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new Supplier();
+        $this->model = new Supplier;
         $this->filterClass = SupplierFilter::class;
         $this->sortClass = SupplierSort::class;
         $this->with = ['suppliedBooks'];
@@ -28,10 +28,6 @@ class SupplierService extends BaseService
 
     /**
      * Lấy danh sách tất cả nhà cung cấp với filter và sắp xếp
-     *
-     * @param Request $request
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     public function getAllSuppliers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
@@ -41,9 +37,6 @@ class SupplierService extends BaseService
     /**
      * Tạo nhà cung cấp mới
      *
-     * @param SupplierDTO $supplierDTO
-     * @param array|null $bookIds
-     * @return Supplier
      * @throws ValidationException
      * @throws Exception
      */
@@ -63,8 +56,6 @@ class SupplierService extends BaseService
     /**
      * Lấy thông tin chi tiết nhà cung cấp
      *
-     * @param string|int $supplierId
-     * @return Supplier
      * @throws ModelNotFoundException
      */
     public function getSupplierById(string|int $supplierId): Supplier
@@ -75,10 +66,6 @@ class SupplierService extends BaseService
     /**
      * Cập nhật thông tin nhà cung cấp
      *
-     * @param string|int $supplierId
-     * @param SupplierDTO $supplierDTO
-     * @param array|null $bookIds
-     * @return Supplier
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception
@@ -99,8 +86,6 @@ class SupplierService extends BaseService
     /**
      * Xóa nhà cung cấp
      *
-     * @param string|int $supplierId
-     * @return void
      * @throws ModelNotFoundException
      * @throws Exception
      */
@@ -112,8 +97,6 @@ class SupplierService extends BaseService
     /**
      * Khôi phục nhà cung cấp đã xóa mềm
      *
-     * @param string|int $supplierId
-     * @return Supplier
      * @throws ModelNotFoundException
      * @throws Exception
      */
@@ -124,9 +107,6 @@ class SupplierService extends BaseService
 
     /**
      * Actions to perform before deleting a resource
-     *
-     * @param \Illuminate\Database\Eloquent\Model $resource
-     * @return void
      */
     protected function beforeDelete(\Illuminate\Database\Eloquent\Model $resource): void
     {
@@ -139,11 +119,9 @@ class SupplierService extends BaseService
 
     /**
      * Get the message when trying to restore a resource that is not deleted
-     *
-     * @return string
      */
     protected function getResourceNotDeletedMessage(): string
     {
-        return "Nhà cung cấp này chưa bị xóa.";
+        return 'Nhà cung cấp này chưa bị xóa.';
     }
 }

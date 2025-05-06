@@ -33,18 +33,18 @@ class CustomerOrderControllerTest extends TestCase
 
         // Tạo người dùng customer
         $this->customer = User::factory()->create([
-          'is_customer' => true,
-          'password' => Hash::make('password'),
+            'is_customer' => true,
+            'password' => Hash::make('password'),
         ]);
 
         // Tạo địa chỉ cho khách hàng
         $this->address = $this->customer->addresses()->create([
-          'name' => 'Test Customer',
-          'phone' => '0938244325',
-          'city' => 'HCM',
-          'district' => '1',
-          'ward' => '1',
-          'address_line' => '123 Test Street',
+            'name' => 'Test Customer',
+            'phone' => '0938244325',
+            'city' => 'HCM',
+            'district' => '1',
+            'ward' => '1',
+            'address_line' => '123 Test Street',
         ]);
 
         // Tạo một sách để test
@@ -52,9 +52,9 @@ class CustomerOrderControllerTest extends TestCase
 
         // Thêm sản phẩm vào giỏ hàng
         $this->cartItem = CartItem::create([
-          'user_id' => $this->customer->id,
-          'book_id' => $this->book->id,
-          'quantity' => 2,
+            'user_id' => $this->customer->id,
+            'book_id' => $this->book->id,
+            'quantity' => 2,
         ]);
     }
 
@@ -67,33 +67,33 @@ class CustomerOrderControllerTest extends TestCase
         $orderCount = 3;
         for ($i = 0; $i < $orderCount; $i++) {
             Order::create([
-              'customer_id' => $this->customer->id,
-              'shopping_name' => 'Test Customer',
-              'shopping_phone' => '0938244325',
-              'shopping_city' => 'HCM',
-              'shopping_district' => '1',
-              'shopping_ward' => '1',
-              'shopping_address_line' => '123 Test Street',
+                'customer_id' => $this->customer->id,
+                'shopping_name' => 'Test Customer',
+                'shopping_phone' => '0938244325',
+                'shopping_city' => 'HCM',
+                'shopping_district' => '1',
+                'shopping_ward' => '1',
+                'shopping_address_line' => '123 Test Street',
             ]);
         }
 
         // Tạo một khách hàng khác và đơn hàng cho khách hàng đó
         $otherCustomer = User::factory()->create(['is_customer' => true]);
         Order::create([
-          'customer_id' => $otherCustomer->id,
-          'shopping_name' => 'Other Customer',
-          'shopping_phone' => '0938244326',
-          'shopping_city' => 'HN',
-          'shopping_district' => '2',
-          'shopping_ward' => '2',
-          'shopping_address_line' => '456 Test Street',
+            'customer_id' => $otherCustomer->id,
+            'shopping_name' => 'Other Customer',
+            'shopping_phone' => '0938244326',
+            'shopping_city' => 'HN',
+            'shopping_district' => '2',
+            'shopping_ward' => '2',
+            'shopping_address_line' => '456 Test Street',
         ]);
 
         // Kiểm tra API index
         $response = $this->getJson('/api/v1/customer/orders');
 
         $response->assertStatus(200)
-          ->assertJsonCount($orderCount, 'data');
+            ->assertJsonCount($orderCount, 'data');
     }
 
     #[Test]
@@ -103,13 +103,13 @@ class CustomerOrderControllerTest extends TestCase
 
         // Tạo đơn hàng mới
         $order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => 'Test Customer',
-          'shopping_phone' => '0938244325',
-          'shopping_city' => 'HCM',
-          'shopping_district' => '1',
-          'shopping_ward' => '1',
-          'shopping_address_line' => '123 Test Street',
+            'customer_id' => $this->customer->id,
+            'shopping_name' => 'Test Customer',
+            'shopping_phone' => '0938244325',
+            'shopping_city' => 'HCM',
+            'shopping_district' => '1',
+            'shopping_ward' => '1',
+            'shopping_address_line' => '123 Test Street',
         ]);
 
         // First verify that the order was created with the correct customer ID
@@ -119,12 +119,12 @@ class CustomerOrderControllerTest extends TestCase
         $this->assertEquals($this->customer->id, AuthUtils::user()->id);
 
         // Kiểm tra API show
-        $response = $this->getJson('/api/v1/customer/orders/' . $order->id);
+        $response = $this->getJson('/api/v1/customer/orders/'.$order->id);
 
         // For debugging purposes
         if ($response->getStatusCode() !== 200) {
-            Log::debug('Response status: ' . $response->getStatusCode());
-            Log::debug('Response content: ' . $response->getContent());
+            Log::debug('Response status: '.$response->getStatusCode());
+            Log::debug('Response content: '.$response->getContent());
         }
 
         $response->assertStatus(200);
@@ -144,17 +144,17 @@ class CustomerOrderControllerTest extends TestCase
         // Tạo khách hàng khác và đơn hàng của họ
         $otherCustomer = User::factory()->create(['is_customer' => true]);
         $otherOrder = Order::create([
-          'customer_id' => $otherCustomer->id,
-          'shopping_name' => 'Other Customer',
-          'shopping_phone' => '0938244326',
-          'shopping_city' => 'HN',
-          'shopping_district' => '2',
-          'shopping_ward' => '2',
-          'shopping_address_line' => '456 Test Street',
+            'customer_id' => $otherCustomer->id,
+            'shopping_name' => 'Other Customer',
+            'shopping_phone' => '0938244326',
+            'shopping_city' => 'HN',
+            'shopping_district' => '2',
+            'shopping_ward' => '2',
+            'shopping_address_line' => '456 Test Street',
         ]);
 
         // Cố gắng xem đơn hàng của khách hàng khác
-        $response = $this->getJson('/api/v1/customer/orders/' . $otherOrder->id);
+        $response = $this->getJson('/api/v1/customer/orders/'.$otherOrder->id);
 
         $response->assertStatus(403);
     }
@@ -169,21 +169,21 @@ class CustomerOrderControllerTest extends TestCase
 
         // Giả lập dữ liệu đơn hàng hợp lệ
         $orderData = [
-          'data' => [
-            'attributes' => [
-              'method' => 'cod',
-            ],
-            'relationships' => [
-              'address' => [
-                'id' => $this->address->id,
-              ],
-              'items' => [
-                [
-                  'id' => $this->cartItem->id,
+            'data' => [
+                'attributes' => [
+                    'method' => 'cod',
                 ],
-              ],
+                'relationships' => [
+                    'address' => [
+                        'id' => $this->address->id,
+                    ],
+                    'items' => [
+                        [
+                            'id' => $this->cartItem->id,
+                        ],
+                    ],
+                ],
             ],
-          ],
         ];
 
         // Test tạo đơn hàng (bỏ qua validation để test trực tiếp service)
@@ -204,25 +204,25 @@ class CustomerOrderControllerTest extends TestCase
         Sanctum::actingAs($this->customer);
 
         $response = $this->postJson('/api/v1/customer/orders', [
-          'data' => [
-            'attributes' => [
-              'method' => 'cod',
-            ],
-            'relationships' => [
-              'address' => [
-                'id' => $this->address->id,
-              ],
-              'items' => [
-                [
-                  'id' => 999999, // ID không tồn tại
+            'data' => [
+                'attributes' => [
+                    'method' => 'cod',
                 ],
-              ],
+                'relationships' => [
+                    'address' => [
+                        'id' => $this->address->id,
+                    ],
+                    'items' => [
+                        [
+                            'id' => 999999, // ID không tồn tại
+                        ],
+                    ],
+                ],
             ],
-          ],
         ]);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['data.relationships.items.0.id']);
+            ->assertJsonValidationErrors(['data.relationships.items.0.id']);
     }
 
     #[Test]
@@ -233,34 +233,34 @@ class CustomerOrderControllerTest extends TestCase
 
         // Tạo cart item cho người dùng khác
         $otherCartItem = CartItem::create([
-          'user_id' => $anotherCustomer->id,
-          'book_id' => $this->book->id,
-          'quantity' => 1,
+            'user_id' => $anotherCustomer->id,
+            'book_id' => $this->book->id,
+            'quantity' => 1,
         ]);
 
         Sanctum::actingAs($this->customer);
 
         $response = $this->postJson('/api/v1/customer/orders', [
-          'data' => [
-            'attributes' => [
-              'method' => 'cod',
-            ],
-            'relationships' => [
-              'address' => [
-                'id' => $this->address->id,
-              ],
-              'items' => [
-                [
-                  'id' => $otherCartItem->id, // ID thuộc về người dùng khác
+            'data' => [
+                'attributes' => [
+                    'method' => 'cod',
                 ],
-              ],
+                'relationships' => [
+                    'address' => [
+                        'id' => $this->address->id,
+                    ],
+                    'items' => [
+                        [
+                            'id' => $otherCartItem->id, // ID thuộc về người dùng khác
+                        ],
+                    ],
+                ],
             ],
-          ],
         ]);
 
         // For debugging purposes
         if ($response->getStatusCode() !== 422) {
-            Log::debug('Response status: ' . $response->getStatusCode());
+            Log::debug('Response status: '.$response->getStatusCode());
         }
 
         $responseData = json_decode($response->getContent(), true);
@@ -279,23 +279,23 @@ class CustomerOrderControllerTest extends TestCase
         Sanctum::actingAs($this->customer);
 
         $response = $this->postJson('/api/v1/customer/orders', [
-          'data' => [
-            'attributes' => [
-              'method' => 'cod',
-            ],
-            'relationships' => [
-              // Thiếu trường address
-              'items' => [
-                [
-                  'id' => $this->cartItem->id,
+            'data' => [
+                'attributes' => [
+                    'method' => 'cod',
                 ],
-              ],
+                'relationships' => [
+                    // Thiếu trường address
+                    'items' => [
+                        [
+                            'id' => $this->cartItem->id,
+                        ],
+                    ],
+                ],
             ],
-          ],
         ]);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['data.relationships.address.id']);
+            ->assertJsonValidationErrors(['data.relationships.address.id']);
     }
 
     #[Test]
@@ -304,25 +304,25 @@ class CustomerOrderControllerTest extends TestCase
         Sanctum::actingAs($this->customer);
 
         $response = $this->postJson('/api/v1/customer/orders', [
-          'data' => [
-            'attributes' => [
-              'method' => 'cod',
-            ],
-            'relationships' => [
-              'address' => [
-                'id' => 99999, // Địa chỉ không tồn tại
-              ],
-              'items' => [
-                [
-                  'id' => $this->cartItem->id,
+            'data' => [
+                'attributes' => [
+                    'method' => 'cod',
                 ],
-              ],
+                'relationships' => [
+                    'address' => [
+                        'id' => 99999, // Địa chỉ không tồn tại
+                    ],
+                    'items' => [
+                        [
+                            'id' => $this->cartItem->id,
+                        ],
+                    ],
+                ],
             ],
-          ],
         ]);
 
         $response->assertStatus(422)
-          ->assertJsonValidationErrors(['data.relationships.address.id']);
+            ->assertJsonValidationErrors(['data.relationships.address.id']);
     }
 
     #[Test]
@@ -332,22 +332,22 @@ class CustomerOrderControllerTest extends TestCase
 
         // Tạo đơn hàng mới ở trạng thái DELIVERED
         $order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => 'Test Customer',
-          'shopping_phone' => '0938244325',
-          'shopping_city' => 'HCM',
-          'shopping_district' => '1',
-          'shopping_ward' => '1',
-          'shopping_address_line' => '123 Test Street',
-          'status' => OrderStatus::DELIVERED->value,
+            'customer_id' => $this->customer->id,
+            'shopping_name' => 'Test Customer',
+            'shopping_phone' => '0938244325',
+            'shopping_city' => 'HCM',
+            'shopping_district' => '1',
+            'shopping_ward' => '1',
+            'shopping_address_line' => '123 Test Street',
+            'status' => OrderStatus::DELIVERED->value,
         ]);
 
         // Gọi API hoàn tất đơn hàng
-        $response = $this->postJson('/api/v1/customer/orders/' . $order->id . '/complete');
+        $response = $this->postJson('/api/v1/customer/orders/'.$order->id.'/complete');
 
         // Để debug
         if ($response->getStatusCode() !== 200) {
-            Log::debug('Response content: ' . $response->getContent());
+            Log::debug('Response content: '.$response->getContent());
         }
 
         $response->assertStatus(200);
@@ -370,18 +370,18 @@ class CustomerOrderControllerTest extends TestCase
 
         // Tạo đơn hàng mới ở trạng thái PENDING
         $order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => 'Test Customer',
-          'shopping_phone' => '0938244325',
-          'shopping_city' => 'HCM',
-          'shopping_district' => '1',
-          'shopping_ward' => '1',
-          'shopping_address_line' => '123 Test Street',
-          'status' => OrderStatus::PENDING->value,
+            'customer_id' => $this->customer->id,
+            'shopping_name' => 'Test Customer',
+            'shopping_phone' => '0938244325',
+            'shopping_city' => 'HCM',
+            'shopping_district' => '1',
+            'shopping_ward' => '1',
+            'shopping_address_line' => '123 Test Street',
+            'status' => OrderStatus::PENDING->value,
         ]);
 
         // Gọi API hoàn tất đơn hàng
-        $response = $this->postJson('/api/v1/customer/orders/' . $order->id . '/complete');
+        $response = $this->postJson('/api/v1/customer/orders/'.$order->id.'/complete');
 
         $response->assertStatus(400);
         $this->assertEquals('Không thể hoàn tất đơn hàng ở trạng thái hiện tại.', $response->json('message'));
@@ -397,18 +397,18 @@ class CustomerOrderControllerTest extends TestCase
 
         // Tạo đơn hàng cho khách hàng khác ở trạng thái DELIVERED
         $otherOrder = Order::create([
-          'customer_id' => $otherCustomer->id,
-          'shopping_name' => 'Other Customer',
-          'shopping_phone' => '0938244326',
-          'shopping_city' => 'HN',
-          'shopping_district' => '2',
-          'shopping_ward' => '2',
-          'shopping_address_line' => '456 Test Street',
-          'status' => OrderStatus::DELIVERED->value,
+            'customer_id' => $otherCustomer->id,
+            'shopping_name' => 'Other Customer',
+            'shopping_phone' => '0938244326',
+            'shopping_city' => 'HN',
+            'shopping_district' => '2',
+            'shopping_ward' => '2',
+            'shopping_address_line' => '456 Test Street',
+            'status' => OrderStatus::DELIVERED->value,
         ]);
 
         // Gọi API hoàn tất đơn hàng
-        $response = $this->postJson('/api/v1/customer/orders/' . $otherOrder->id . '/complete');
+        $response = $this->postJson('/api/v1/customer/orders/'.$otherOrder->id.'/complete');
 
         $response->assertStatus(403);
         $this->assertEquals('Bạn không có quyền hoàn tất đơn hàng này.', $response->json('message'));
@@ -421,22 +421,22 @@ class CustomerOrderControllerTest extends TestCase
 
         // Tạo đơn hàng mới ở trạng thái PENDING
         $order = Order::create([
-          'customer_id' => $this->customer->id,
-          'shopping_name' => 'Test Customer',
-          'shopping_phone' => '0938244325',
-          'shopping_city' => 'HCM',
-          'shopping_district' => '1',
-          'shopping_ward' => '1',
-          'shopping_address_line' => '123 Test Street',
-          'status' => OrderStatus::PENDING->value,
+            'customer_id' => $this->customer->id,
+            'shopping_name' => 'Test Customer',
+            'shopping_phone' => '0938244325',
+            'shopping_city' => 'HCM',
+            'shopping_district' => '1',
+            'shopping_ward' => '1',
+            'shopping_address_line' => '123 Test Street',
+            'status' => OrderStatus::PENDING->value,
         ]);
 
         // Gọi API hủy đơn hàng
-        $response = $this->postJson('/api/v1/customer/orders/' . $order->id . '/cancel');
+        $response = $this->postJson('/api/v1/customer/orders/'.$order->id.'/cancel');
 
         // Để debug
         if ($response->getStatusCode() !== 200) {
-            Log::debug('Response content: ' . $response->getContent());
+            Log::debug('Response content: '.$response->getContent());
         }
 
         $response->assertStatus(200);

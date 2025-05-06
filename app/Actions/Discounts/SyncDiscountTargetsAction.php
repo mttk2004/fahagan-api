@@ -11,9 +11,8 @@ class SyncDiscountTargetsAction extends BaseAction
     /**
      * Đồng bộ các mối quan hệ targets của mã giảm giá
      *
-     * @param Discount $discount Mã giảm giá cần đồng bộ mối quan hệ
-     * @param array $targetIds Mảng chứa các target_id cần đồng bộ
-     * @return bool
+     * @param  Discount  $discount  Mã giảm giá cần đồng bộ mối quan hệ
+     * @param  array  $targetIds  Mảng chứa các target_id cần đồng bộ
      */
     public function execute(...$args): bool
     {
@@ -27,8 +26,8 @@ class SyncDiscountTargetsAction extends BaseAction
             $records = [];
             foreach ($targetIds as $targetId) {
                 $records[] = [
-                  'discount_id' => $discount->id,
-                  'target_id' => $targetId,
+                    'discount_id' => $discount->id,
+                    'target_id' => $targetId,
                 ];
             }
 
@@ -43,9 +42,6 @@ class SyncDiscountTargetsAction extends BaseAction
 
     /**
      * Trích xuất các target_ids từ request data
-     *
-     * @param array $requestData
-     * @return array
      */
     public function extractTargetsFromRequest(array $requestData): array
     {

@@ -11,7 +11,6 @@ abstract class BaseCollection extends ResourceCollection
     /**
      * Đánh dấu collection có phải là response trực tiếp hay không
      *
-     * @param bool $isDirectResponse
      * @return $this
      */
     public function isDirectResponse(bool $isDirectResponse = true): self
@@ -23,8 +22,6 @@ abstract class BaseCollection extends ResourceCollection
 
     /**
      * Kiểm tra collection có phải là response trực tiếp hay không
-     *
-     * @return bool
      */
     public function getIsDirectResponse(): bool
     {

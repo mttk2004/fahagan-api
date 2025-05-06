@@ -15,9 +15,9 @@ use MailerSend\LaravelDriver\MailerSendTrait;
 
 class ExampleEmail extends Mailable
 {
+    use MailerSendTrait;
     use Queueable;
     use SerializesModels;
-    use MailerSendTrait;
 
     /**
      * Create a new message instance.

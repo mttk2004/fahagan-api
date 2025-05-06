@@ -13,9 +13,9 @@ class RestoreBookAction extends BaseAction
     /**
      * Khôi phục sách đã bị xóa mềm và cập nhật thông tin mới
      *
-     * @param Book $trashedBook Sách đã bị xóa mềm
-     * @param BookDTO $bookDTO Dữ liệu để cập nhật
-     * @return Book
+     * @param  Book  $trashedBook  Sách đã bị xóa mềm
+     * @param  BookDTO  $bookDTO  Dữ liệu để cập nhật
+     *
      * @throws Exception
      */
     public function execute(...$args): Book
@@ -30,13 +30,13 @@ class RestoreBookAction extends BaseAction
 
             // Cập nhật thông tin mới
             $trashedBook->update([
-              'title' => $bookDTO->title,
-              'edition' => $bookDTO->edition,
-              'description' => $bookDTO->description,
-              'price' => $bookDTO->price,
-              'pages' => $bookDTO->pages ?? $bookDTO->number_of_pages ?? null,
-              'image_url' => $bookDTO->image_url ?? $bookDTO->cover_image ?? null,
-              'publication_date' => $bookDTO->publication_date ?? $bookDTO->published_date ?? null,
+                'title' => $bookDTO->title,
+                'edition' => $bookDTO->edition,
+                'description' => $bookDTO->description,
+                'price' => $bookDTO->price,
+                'pages' => $bookDTO->pages ?? $bookDTO->number_of_pages ?? null,
+                'image_url' => $bookDTO->image_url ?? $bookDTO->cover_image ?? null,
+                'publication_date' => $bookDTO->publication_date ?? $bookDTO->published_date ?? null,
             ]);
 
             // Cập nhật mối quan hệ

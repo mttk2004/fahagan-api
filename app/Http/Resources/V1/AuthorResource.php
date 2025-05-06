@@ -18,22 +18,22 @@ class AuthorResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-          'type' => 'author',
-          'id' => $this->id,
-          'attributes' => [
-            'name' => $this->name,
-            'image_url' => $this->image_url,
-            'biography' => $this->when(
+            'type' => 'author',
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'image_url' => $this->image_url,
+                'biography' => $this->when(
+                    $request->routeIs('authors.show', 'authors.store', 'authors.update'),
+                    $this->biography
+                ),
+            ],
+            'relationships' => $this->when(
                 $request->routeIs('authors.show', 'authors.store', 'authors.update'),
-                $this->biography
+                [
+                    'books' => new BookCollection($this->writtenBooks),
+                ]
             ),
-          ],
-          'relationships' => $this->when(
-              $request->routeIs('authors.show', 'authors.store', 'authors.update'),
-              [
-              'books' => new BookCollection($this->writtenBooks),
-        ]
-          ),
         ];
     }
 }

@@ -21,7 +21,7 @@ class PublisherService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new Publisher();
+        $this->model = new Publisher;
         $this->filterClass = PublisherFilter::class;
         $this->sortClass = PublisherSort::class;
         $this->with = ['publishedBooks'];
@@ -49,15 +49,15 @@ class PublisherService extends BaseService
 
             if ($existingPublisher) {
                 throw ValidationException::withMessages([
-                  'name' => ['Tên nhà xuất bản đã tồn tại. Vui lòng chọn tên khác.'],
+                    'name' => ['Tên nhà xuất bản đã tồn tại. Vui lòng chọn tên khác.'],
                 ]);
             }
 
             // Kiểm tra nhà xuất bản đã xóa mềm
             $trashedPublisher = Publisher::withTrashed()
-              ->where('name', $publisherDTO->name)
-              ->onlyTrashed()
-              ->first();
+                ->where('name', $publisherDTO->name)
+                ->onlyTrashed()
+                ->first();
 
             if ($trashedPublisher) {
                 // Khôi phục nhà xuất bản đã xóa mềm và cập nhật thông tin
@@ -106,9 +106,6 @@ class PublisherService extends BaseService
 
     /**
      * Find a trashed resource based on unique attributes
-     *
-     * @param BaseDTO $dto
-     * @return \Illuminate\Database\Eloquent\Model|null
      */
     protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
     {
@@ -118,8 +115,8 @@ class PublisherService extends BaseService
         }
 
         return Publisher::withTrashed()
-          ->where('name', $dto->name)
-          ->onlyTrashed()
-          ->first();
+            ->where('name', $dto->name)
+            ->onlyTrashed()
+            ->first();
     }
 }

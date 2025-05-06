@@ -23,19 +23,14 @@ class OrderService extends BaseService
     public function __construct(
         private readonly CartItemService $cartItemService,
         private readonly CreateOrderAction $createOrderAction,
-        protected Model $model = new Order(),
+        protected Model $model = new Order,
         protected string $filterClass = OrderFilter::class,
         protected string $sortClass = OrderSort::class,
         protected array $with = ['customer', 'employee', 'payment']
-    ) {
-    }
+    ) {}
 
     /**
      * Get all orders with pagination and filtering.
-     *
-     * @param Request $request
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     public function getAllOrders(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
@@ -44,9 +39,6 @@ class OrderService extends BaseService
 
     /**
      * Get order by ID.
-     *
-     * @param int $id
-     * @return Model
      */
     public function getOrderById(int $id): Model
     {
@@ -56,8 +48,6 @@ class OrderService extends BaseService
     /**
      * Create a new order.
      *
-     * @param OrderDTO $orderDTO
-     * @return Order
      * @throws Exception
      */
     public function createOrder(OrderDTO $orderDTO): Order
@@ -67,10 +57,6 @@ class OrderService extends BaseService
 
     /**
      * Get orders of a customer with pagination and filtering.
-     *
-     * @param Request $request
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     public function getCustomerOrders(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
@@ -98,9 +84,6 @@ class OrderService extends BaseService
 
     /**
      * Get order details including order items.
-     *
-     * @param int $order_id
-     * @return Order
      */
     public function getOrderDetails(int $order_id): Order
     {
@@ -110,8 +93,6 @@ class OrderService extends BaseService
     /**
      * Cancel an order (for customer only).
      *
-     * @param int $order_id
-     * @return Order
      * @throws Exception
      */
     public function cancelOrder(int $order_id): Order
@@ -133,8 +114,6 @@ class OrderService extends BaseService
     /**
      * Complete an order (for customer only).
      *
-     * @param int $order_id
-     * @return Order
      * @throws Exception
      */
     public function completeOrder(int $order_id): Order
@@ -156,9 +135,6 @@ class OrderService extends BaseService
     /**
      * Update the status of an order (for employee only).
      *
-     * @param int $order_id
-     * @param string $status
-     * @return Order
      * @throws Exception
      */
     public function updateOrderStatus(int $order_id, string $status): Order
@@ -170,7 +146,7 @@ class OrderService extends BaseService
 
         // Kiểm tra xem có thể chuyển từ trạng thái hiện tại sang trạng thái mới không
         if (! $currentStatus->canTransitionTo($newStatus)) {
-            throw new Exception('Không thể cập nhật từ trạng thái ' . $currentStatus->description() . ' sang ' . $newStatus->description());
+            throw new Exception('Không thể cập nhật từ trạng thái '.$currentStatus->description().' sang '.$newStatus->description());
         }
 
         // Nếu chuyển từ PENDING sang APPROVED hoặc CANCELED, thêm nhân viên xử lý

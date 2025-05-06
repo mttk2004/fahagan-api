@@ -23,24 +23,24 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    use HandlePagination;
     use HandleBookExceptions;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly BookService $bookService,
         private readonly string $entityName = 'book'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all books
      *
-     * @param Request $request
      *
      * @return BookCollection
+     *
      * @group Books
+     *
      * @unauthenticated
      */
     public function index(Request $request)
@@ -53,9 +53,9 @@ class BookController extends Controller
     /**
      * Create a new book
      *
-     * @param BookStoreRequest $request
      *
      * @return JsonResponse
+     *
      * @group Books
      */
     public function store(BookStoreRequest $request)
@@ -70,7 +70,7 @@ class BookController extends Controller
             );
 
             return ResponseUtils::created([
-              'book' => new BookResource($book),
+                'book' => new BookResource($book),
             ], ResponseMessage::CREATED_BOOK->value);
         } catch (Exception $e) {
             return $this->handleBookException($e, $request->validated(), null, 'tạo');
@@ -80,10 +80,11 @@ class BookController extends Controller
     /**
      * Get a book
      *
-     * @param $book_id
      *
      * @return JsonResponse
+     *
      * @group Books
+     *
      * @unauthenticated
      */
     public function show($book_id)
@@ -92,11 +93,11 @@ class BookController extends Controller
             $book = $this->bookService->getBookById($book_id);
 
             return ResponseUtils::success([
-              'book' => new BookResource($book),
+                'book' => new BookResource($book),
             ]);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'book_id' => $book_id,
+                'book_id' => $book_id,
             ]);
         }
     }
@@ -104,10 +105,9 @@ class BookController extends Controller
     /**
      * Update a book
      *
-     * @param BookUpdateRequest $request
-     * @param                   $book_id
      *
      * @return JsonResponse
+     *
      * @group Books
      */
     public function update(BookUpdateRequest $request, $book_id)
@@ -128,7 +128,7 @@ class BookController extends Controller
             $book = $this->bookService->updateBook($book_id, $bookDTO, $validatedData);
 
             return ResponseUtils::success([
-              'book' => new BookResource($book),
+                'book' => new BookResource($book),
             ], ResponseMessage::UPDATED_BOOK->value);
         } catch (ModelNotFoundException) {
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_BOOK->value);
@@ -140,9 +140,9 @@ class BookController extends Controller
     /**
      * Delete a book
      *
-     * @param         $bookId
      *
      * @return JsonResponse
+     *
      * @group Books
      */
     public function destroy($bookId)
@@ -156,11 +156,11 @@ class BookController extends Controller
             $this->bookService->deleteBook($bookId);
 
             return ResponseUtils::success([
-              'message' => ResponseMessage::DELETED_BOOK->value,
+                'message' => ResponseMessage::DELETED_BOOK->value,
             ], ResponseMessage::DELETED_BOOK->value);
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'book_id' => $bookId,
+                'book_id' => $bookId,
             ]);
         }
     }

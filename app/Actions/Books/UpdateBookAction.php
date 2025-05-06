@@ -12,11 +12,11 @@ class UpdateBookAction extends BaseAction
     /**
      * Cập nhật sách với dữ liệu và mối quan hệ mới
      *
-     * @param Book $book Sách cần cập nhật
-     * @param array $data Dữ liệu cập nhật
-     * @param array $relations Mối quan hệ cần cập nhật
-     * @param array $with Các mối quan hệ cần eager loading
-     * @return Book
+     * @param  Book  $book  Sách cần cập nhật
+     * @param  array  $data  Dữ liệu cập nhật
+     * @param  array  $relations  Mối quan hệ cần cập nhật
+     * @param  array  $with  Các mối quan hệ cần eager loading
+     *
      * @throws Exception
      */
     public function execute(...$args): Book

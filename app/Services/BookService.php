@@ -46,19 +46,19 @@ class BookService extends BaseService
      */
     public function __construct()
     {
-        $this->model = new Book();
+        $this->model = new Book;
         $this->filterClass = BookFilter::class;
         $this->sortClass = BookSort::class;
         $this->with = ['authors', 'genres', 'publisher'];
 
         // Khởi tạo các action
-        $this->createBookAction = new CreateBookAction();
-        $this->findTrashedBookAction = new FindTrashedBookAction();
-        $this->restoreBookAction = new RestoreBookAction();
-        $this->updateBookAction = new UpdateBookAction();
-        $this->deleteBookAction = new DeleteBookAction();
-        $this->validateBookAction = new ValidateBookAction();
-        $this->syncBookRelationsAction = new SyncBookRelationsAction();
+        $this->createBookAction = new CreateBookAction;
+        $this->findTrashedBookAction = new FindTrashedBookAction;
+        $this->restoreBookAction = new RestoreBookAction;
+        $this->updateBookAction = new UpdateBookAction;
+        $this->deleteBookAction = new DeleteBookAction;
+        $this->validateBookAction = new ValidateBookAction;
+        $this->syncBookRelationsAction = new SyncBookRelationsAction;
     }
 
     /**
@@ -142,9 +142,6 @@ class BookService extends BaseService
 
     /**
      * Find a trashed resource based on unique attributes
-     *
-     * @param BaseDTO $dto
-     * @return Model|null
      */
     protected function findTrashed(BaseDTO $dto): ?Model
     {
@@ -158,9 +155,6 @@ class BookService extends BaseService
 
     /**
      * Actions to perform before deleting a resource
-     *
-     * @param Model $resource
-     * @return void
      */
     protected function beforeDelete(Model $resource): void
     {
@@ -175,8 +169,6 @@ class BookService extends BaseService
 
     /**
      * Whether to return the deleted resource
-     *
-     * @return bool
      */
     protected function returnDeletedResource(): bool
     {
@@ -185,9 +177,6 @@ class BookService extends BaseService
 
     /**
      * Chuẩn bị dữ liệu cập nhật từ BookDTO
-     *
-     * @param BookDTO $bookDTO
-     * @return array
      */
     private function prepareUpdateData(BookDTO $bookDTO): array
     {

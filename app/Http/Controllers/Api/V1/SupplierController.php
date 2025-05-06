@@ -21,22 +21,21 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-    use HandlePagination;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly SupplierService $supplierService,
         private readonly string $entityName = 'supplier'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all suppliers
      *
-     * @param Request $request
      *
      * @return JsonResponse|SupplierCollection
+     *
      * @group Supplier
      */
     public function index(Request $request)
@@ -53,9 +52,9 @@ class SupplierController extends Controller
     /**
      * Create a new supplier
      *
-     * @param SupplierStoreRequest $request
      *
      * @return JsonResponse
+     *
      * @group Supplier
      */
     public function store(SupplierStoreRequest $request)
@@ -70,15 +69,15 @@ class SupplierController extends Controller
             );
 
             return ResponseUtils::created([
-              'supplier' => new SupplierResource($supplier),
+                'supplier' => new SupplierResource($supplier),
             ], ResponseMessage::CREATED_SUPPLIER->value);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'request_data' => $request->validated(),
-        ]
+                    'request_data' => $request->validated(),
+                ]
             );
         }
     }
@@ -86,9 +85,9 @@ class SupplierController extends Controller
     /**
      * Get a supplier
      *
-     * @param $supplier_id
      *
      * @return JsonResponse
+     *
      * @group Supplier
      */
     public function show($supplier_id)
@@ -101,15 +100,15 @@ class SupplierController extends Controller
             $supplier = $this->supplierService->getSupplierById($supplier_id);
 
             return ResponseUtils::success([
-              'supplier' => new SupplierResource($supplier),
+                'supplier' => new SupplierResource($supplier),
             ]);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'supplier_id' => $supplier_id,
-        ]
+                    'supplier_id' => $supplier_id,
+                ]
             );
         }
     }
@@ -117,11 +116,11 @@ class SupplierController extends Controller
     /**
      * Update a supplier
      *
-     * @param SupplierUpdateRequest $request
-     * @param                       $supplier_id
      *
      * @return JsonResponse
+     *
      * @group Supplier
+     *
      * @unauthenticated
      */
     public function update(SupplierUpdateRequest $request, $supplier_id)
@@ -144,16 +143,16 @@ class SupplierController extends Controller
             );
 
             return ResponseUtils::success([
-              'supplier' => new SupplierResource($supplier),
+                'supplier' => new SupplierResource($supplier),
             ], ResponseMessage::UPDATED_SUPPLIER->value);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'supplier_id' => $supplier_id,
-                'request_data' => $request->validated(),
-        ]
+                    'supplier_id' => $supplier_id,
+                    'request_data' => $request->validated(),
+                ]
             );
         }
     }
@@ -161,10 +160,11 @@ class SupplierController extends Controller
     /**
      * Delete a supplier
      *
-     * @param $supplier_id
      *
      * @return JsonResponse
+     *
      * @group Supplier
+     *
      * @authenticated
      */
     public function destroy($supplier_id)
@@ -182,8 +182,8 @@ class SupplierController extends Controller
                 $e,
                 $this->entityName,
                 [
-                'supplier_id' => $supplier_id,
-        ]
+                    'supplier_id' => $supplier_id,
+                ]
             );
         }
     }
@@ -191,10 +191,11 @@ class SupplierController extends Controller
     /**
      * Restore a soft deleted supplier
      *
-     * @param $supplier_id
      *
      * @return JsonResponse
+     *
      * @group Supplier
+     *
      * @authenticated
      */
     public function restore($supplier_id)
@@ -207,15 +208,15 @@ class SupplierController extends Controller
             $supplier = $this->supplierService->restoreSupplier($supplier_id);
 
             return ResponseUtils::success([
-              'supplier' => new SupplierResource($supplier),
+                'supplier' => new SupplierResource($supplier),
             ], ResponseMessage::RESTORED_SUPPLIER->value);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'supplier_id' => $supplier_id,
-        ]
+                    'supplier_id' => $supplier_id,
+                ]
             );
         }
     }

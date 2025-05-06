@@ -25,7 +25,7 @@ class ForgotPasswordMail extends Mailable
     {
         return $this->view('emails.forgot_password')
             ->with([
-                'url' => url('reset-password?token=' . $this->token . '&email=' . $this->email),
+                'url' => url('reset-password?token='.$this->token.'&email='.$this->email),
             ]);
     }
 }

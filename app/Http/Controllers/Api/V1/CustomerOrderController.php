@@ -30,15 +30,15 @@ class CustomerOrderController extends Controller
         private readonly OrderService $orderService,
         private readonly VNPayService $vnpayService,
         private readonly string $entityName = 'order'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all orders of the authenticated customer.
      *
-     * @param Request $request
      * @return JsonResponse|OrderCollection
+     *
      * @group Customer.Order
+     *
      * @authenticated
      */
     public function index(Request $request)
@@ -51,9 +51,10 @@ class CustomerOrderController extends Controller
     /**
      * Get order of the authenticated customer by ID.
      *
-     * @param Order $order
      * @return JsonResponse
+     *
      * @group Customer.Order
+     *
      * @authenticated
      */
     public function show(Order $order)
@@ -63,8 +64,8 @@ class CustomerOrderController extends Controller
         // Kiểm tra đơn hàng có thuộc về người dùng hiện tại không
         if ($order->customer_id != $user->id) {
             Log::error('loi forbidden', [
-              'user_id' => $user->id,
-              'order.customer_id' => $order->customer_id,
+                'user_id' => $user->id,
+                'order.customer_id' => $order->customer_id,
             ]);
 
             return ResponseUtils::forbidden();
@@ -73,16 +74,17 @@ class CustomerOrderController extends Controller
         $orderWithDetails = $this->orderService->getOrderDetails($order->id);
 
         return ResponseUtils::success([
-          'order' => new OrderResource($orderWithDetails),
+            'order' => new OrderResource($orderWithDetails),
         ]);
     }
 
     /**
      * Create a new order from the cart of the authenticated customer.
      *
-     * @param CustomerOrderStoreRequest $request
      * @return JsonResponse
+     *
      * @group Customer.Order
+     *
      * @authenticated
      */
     public function store(CustomerOrderStoreRequest $request)
@@ -96,24 +98,24 @@ class CustomerOrderController extends Controller
                 $paymentUrl = $this->vnpayService->createPaymentUrl($order, $order->payment);
 
                 return ResponseUtils::created([
-                  'order' => new OrderResource($order),
-                  'payment_url' => $paymentUrl,
-                  'redirect_required' => true,
-                  'client_success_url' => config('vnpay.clientSuccessUrl'),
-                  'client_failed_url' => config('vnpay.clientFailedUrl'),
+                    'order' => new OrderResource($order),
+                    'payment_url' => $paymentUrl,
+                    'redirect_required' => true,
+                    'client_success_url' => config('vnpay.clientSuccessUrl'),
+                    'client_failed_url' => config('vnpay.clientFailedUrl'),
                 ], 'Đơn hàng đã được tạo. Vui lòng thanh toán để hoàn tất.');
             }
 
             return ResponseUtils::created([
-              'order' => new OrderResource($order),
+                'order' => new OrderResource($order),
             ], ResponseMessage::CREATED_ORDER->value);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'order' => $request->validated(),
-        ],
+                    'order' => $request->validated(),
+                ],
             );
         }
     }
@@ -121,9 +123,10 @@ class CustomerOrderController extends Controller
     /**
      * Cancel an order of the authenticated customer.
      *
-     * @param Order $order
      * @return JsonResponse
+     *
      * @group Customer.Order
+     *
      * @authenticated
      */
     public function cancel(Order $order)
@@ -144,17 +147,17 @@ class CustomerOrderController extends Controller
             $cancelledOrder = $this->orderService->cancelOrder($order->id);
 
             return ResponseUtils::success([
-              'order' => new OrderResource($cancelledOrder),
+                'order' => new OrderResource($cancelledOrder),
             ], 'Đơn hàng đã được hủy thành công.');
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'customer_id' => $user->id,
-                'order' => $order->id,
-                'status' => $order->status,
-        ],
+                    'customer_id' => $user->id,
+                    'order' => $order->id,
+                    'status' => $order->status,
+                ],
             );
         }
     }
@@ -162,9 +165,10 @@ class CustomerOrderController extends Controller
     /**
      * Update the status of an order of the authenticated customer to COMPLETED.
      *
-     * @param Order $order
      * @return JsonResponse
+     *
      * @group Customer.Order
+     *
      * @authenticated
      */
     public function complete(Order $order)
@@ -185,13 +189,13 @@ class CustomerOrderController extends Controller
             $completedOrder = $this->orderService->completeOrder($order->id);
 
             return ResponseUtils::success([
-              'order' => new OrderResource($completedOrder),
+                'order' => new OrderResource($completedOrder),
             ], 'Đơn hàng đã được hoàn tất thành công.');
         } catch (Exception $e) {
             return $this->handleException($e, $this->entityName, [
-              'customer_id' => $user->id,
-              'order' => $order->id,
-              'status' => $order->status,
+                'customer_id' => $user->id,
+                'order' => $order->id,
+                'status' => $order->status,
             ]);
         }
     }

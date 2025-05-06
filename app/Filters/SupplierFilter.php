@@ -32,14 +32,14 @@ class SupplierFilter
     protected function filterByName(Builder $query): void
     {
         if (isset($this->filters['name'])) {
-            $query->where('name', 'like', '%' . $this->filters['name'] . '%');
+            $query->where('name', 'like', '%'.$this->filters['name'].'%');
         }
     }
 
     protected function filterByEmail(Builder $query): void
     {
         if (isset($this->filters['email'])) {
-            $query->where('email', 'like', '%' . $this->filters['email'] . '%');
+            $query->where('email', 'like', '%'.$this->filters['email'].'%');
         }
     }
 }

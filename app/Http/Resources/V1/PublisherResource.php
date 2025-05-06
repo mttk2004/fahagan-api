@@ -17,21 +17,21 @@ class PublisherResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-          'type' => 'publisher',
-          'id' => $this->id,
-          'attributes' => [
-            'name' => $this->name,
-            'biography' => $this->when(
-                $request->routeIs('publishers.*'),
-                $this->biography
+            'type' => 'publisher',
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'biography' => $this->when(
+                    $request->routeIs('publishers.*'),
+                    $this->biography
+                ),
+            ],
+            'relationships' => $this->when(
+                $request->routeIs('publishers.show', 'publishers.store', 'publishers.update'),
+                [
+                    'books' => new BookCollection($this->publishedBooks),
+                ]
             ),
-          ],
-          'relationships' => $this->when(
-              $request->routeIs('publishers.show', 'publishers.store', 'publishers.update'),
-              [
-              'books' => new BookCollection($this->publishedBooks),
-        ]
-          ),
         ];
     }
 }

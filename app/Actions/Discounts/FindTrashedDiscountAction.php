@@ -11,8 +11,7 @@ class FindTrashedDiscountAction extends BaseAction
     /**
      * Tìm mã giảm giá đã bị xóa mềm với tên cụ thể
      *
-     * @param DiscountDTO $discountDTO
-     * @return Discount|null
+     * @param  DiscountDTO  $discountDTO
      */
     public function execute(...$args): ?Discount
     {
@@ -23,8 +22,8 @@ class FindTrashedDiscountAction extends BaseAction
         }
 
         return Discount::withTrashed()
-          ->where('name', $discountDTO->name)
-          ->onlyTrashed()
-          ->first();
+            ->where('name', $discountDTO->name)
+            ->onlyTrashed()
+            ->first();
     }
 }

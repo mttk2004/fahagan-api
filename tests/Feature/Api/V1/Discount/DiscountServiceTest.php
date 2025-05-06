@@ -21,18 +21,18 @@ class DiscountServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->discountService = new DiscountService();
+        $this->discountService = new DiscountService;
     }
 
     public function test_it_can_get_all_discounts()
     {
         // Tạo một số mã giảm giá
         Discount::factory()->count(5)->create([
-          'target_type' => 'book',
+            'target_type' => 'book',
         ]);
 
         // Tạo request giả lập
-        $request = new Request();
+        $request = new Request;
 
         // Gọi method getAllDiscounts
         $result = $this->discountService->getAllDiscounts($request, 10);
@@ -47,10 +47,10 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một mã giảm giá
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá mùa hè',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
+            'name' => 'Giảm giá mùa hè',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
         ]);
 
         // Gọi method getDiscountById
@@ -80,15 +80,15 @@ class DiscountServiceTest extends TestCase
 
         // Tạo DiscountDTO
         $discountData = [
-          'name' => 'Giảm giá mùa hè',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
-          'min_purchase_amount' => 50000,
-          'max_discount_amount' => 10000,
-          'start_date' => '2023-06-01',
-          'end_date' => '2023-08-31',
-          'target_ids' => [$book->id],
+            'name' => 'Giảm giá mùa hè',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
+            'min_purchase_amount' => 50000,
+            'max_discount_amount' => 10000,
+            'start_date' => '2023-06-01',
+            'end_date' => '2023-08-31',
+            'target_ids' => [$book->id],
         ];
 
         $discountDTO = new DiscountDTO(
@@ -121,18 +121,18 @@ class DiscountServiceTest extends TestCase
 
         // Kiểm tra database
         $this->assertDatabaseHas('discounts', [
-          'name' => 'Giảm giá mùa hè',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
-          'min_purchase_amount' => 50000,
-          'max_discount_amount' => 10000,
+            'name' => 'Giảm giá mùa hè',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
+            'min_purchase_amount' => 50000,
+            'max_discount_amount' => 10000,
         ]);
 
         // Kiểm tra liên kết với sách
         $this->assertDatabaseHas('discount_targets', [
-          'discount_id' => $result->id,
-          'target_id' => $book->id,
+            'discount_id' => $result->id,
+            'target_id' => $book->id,
         ]);
     }
 
@@ -140,15 +140,15 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo DiscountDTO cho đơn hàng
         $discountData = [
-          'name' => 'Giảm giá đơn hàng',
-          'discount_type' => 'fixed',
-          'discount_value' => 50000,
-          'target_type' => 'order',
-          'min_purchase_amount' => 300000,
-          'max_discount_amount' => null,
-          'start_date' => '2023-06-01',
-          'end_date' => '2023-08-31',
-          'target_ids' => [], // Không cần target_ids cho đơn hàng
+            'name' => 'Giảm giá đơn hàng',
+            'discount_type' => 'fixed',
+            'discount_value' => 50000,
+            'target_type' => 'order',
+            'min_purchase_amount' => 300000,
+            'max_discount_amount' => null,
+            'start_date' => '2023-06-01',
+            'end_date' => '2023-08-31',
+            'target_ids' => [], // Không cần target_ids cho đơn hàng
         ];
 
         $discountDTO = new DiscountDTO(
@@ -179,16 +179,16 @@ class DiscountServiceTest extends TestCase
 
         // Kiểm tra database
         $this->assertDatabaseHas('discounts', [
-          'name' => 'Giảm giá đơn hàng',
-          'discount_type' => 'fixed',
-          'discount_value' => 50000,
-          'target_type' => 'order',
-          'min_purchase_amount' => 300000,
+            'name' => 'Giảm giá đơn hàng',
+            'discount_type' => 'fixed',
+            'discount_value' => 50000,
+            'target_type' => 'order',
+            'min_purchase_amount' => 300000,
         ]);
 
         // Kiểm tra không có liên kết với đối tượng nào
         $this->assertDatabaseMissing('discount_targets', [
-          'discount_id' => $result->id,
+            'discount_id' => $result->id,
         ]);
     }
 
@@ -199,17 +199,17 @@ class DiscountServiceTest extends TestCase
 
         // Tạo một mã giảm giá và soft delete nó
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá mùa hè',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
+            'name' => 'Giảm giá mùa hè',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
         ]);
         $discountId = $discount->id;
         $discount->delete();
 
         // Kiểm tra rằng mã giảm giá đã bị soft delete
         $this->assertSoftDeleted('discounts', [
-          'id' => $discountId,
+            'id' => $discountId,
         ]);
 
         // Tạo DiscountDTO với name giống mã giảm giá đã xóa và target_ids phù hợp
@@ -239,14 +239,14 @@ class DiscountServiceTest extends TestCase
 
         // Kiểm tra database rằng mã giảm giá không còn bị soft delete
         $this->assertDatabaseHas('discounts', [
-          'id' => $discountId,
-          'deleted_at' => null,
+            'id' => $discountId,
+            'deleted_at' => null,
         ]);
 
         // Kiểm tra liên kết với sách
         $this->assertDatabaseHas('discount_targets', [
-          'discount_id' => $discountId,
-          'target_id' => $book->id,
+            'discount_id' => $discountId,
+            'target_id' => $book->id,
         ]);
     }
 
@@ -254,12 +254,12 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một mã giảm giá
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá ban đầu',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
-          'start_date' => '2023-01-01',
-          'end_date' => '2023-03-31',
+            'name' => 'Giảm giá ban đầu',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
+            'start_date' => '2023-01-01',
+            'end_date' => '2023-03-31',
         ]);
 
         // Tạo DiscountDTO cho cập nhật
@@ -291,11 +291,11 @@ class DiscountServiceTest extends TestCase
 
         // Kiểm tra database
         $this->assertDatabaseHas('discounts', [
-          'id' => $discount->id,
-          'name' => 'Giảm giá đã cập nhật',
-          'discount_type' => 'fixed',
-          'discount_value' => 50000,
-          'target_type' => 'order',
+            'id' => $discount->id,
+            'name' => 'Giảm giá đã cập nhật',
+            'discount_type' => 'fixed',
+            'discount_value' => 50000,
+            'target_type' => 'order',
         ]);
     }
 
@@ -303,13 +303,13 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo hai mã giảm giá với name khác nhau
         $discount1 = Discount::factory()->create([
-          'name' => 'Giảm giá thứ nhất',
-          'target_type' => 'book',
+            'name' => 'Giảm giá thứ nhất',
+            'target_type' => 'book',
         ]);
 
         $discount2 = Discount::factory()->create([
-          'name' => 'Giảm giá thứ hai',
-          'target_type' => 'book',
+            'name' => 'Giảm giá thứ hai',
+            'target_type' => 'book',
         ]);
 
         // Tạo DiscountDTO cập nhật discount2 thành name của discount1
@@ -338,7 +338,7 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một mã giảm giá
         $discount = Discount::factory()->create([
-          'target_type' => 'book',
+            'target_type' => 'book',
         ]);
 
         // Gọi method deleteDiscount
@@ -349,7 +349,7 @@ class DiscountServiceTest extends TestCase
 
         // Kiểm tra rằng mã giảm giá đã bị soft delete
         $this->assertSoftDeleted('discounts', [
-          'id' => $discount->id,
+            'id' => $discount->id,
         ]);
     }
 
@@ -357,18 +357,18 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một sách
         $book = Book::factory()->create([
-          'price' => 100000,
+            'price' => 100000,
         ]);
 
         // Tạo một mã giảm giá phần trăm cho sách
         $percentDiscount = Discount::factory()->create([
-          'name' => 'Giảm giá 10%',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
-          'start_date' => now()->subDay(),
-          'end_date' => now()->addDay(),
-          'is_active' => true,
+            'name' => 'Giảm giá 10%',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'is_active' => true,
         ]);
 
         // Liên kết sách với mã giảm giá
@@ -385,28 +385,28 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một sách
         $book = Book::factory()->create([
-          'price' => 100000,
+            'price' => 100000,
         ]);
 
         // Tạo hai mã giảm giá với giá trị khác nhau
         $discount1 = Discount::factory()->create([
-          'name' => 'Giảm giá 10%',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
-          'start_date' => now()->subDay(),
-          'end_date' => now()->addDay(),
-          'is_active' => true,
+            'name' => 'Giảm giá 10%',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'is_active' => true,
         ]);
 
         $discount2 = Discount::factory()->create([
-          'name' => 'Giảm giá 20%',
-          'discount_type' => 'percentage',
-          'discount_value' => 20,
-          'target_type' => 'book',
-          'start_date' => now()->subDay(),
-          'end_date' => now()->addDay(),
-          'is_active' => true,
+            'name' => 'Giảm giá 20%',
+            'discount_type' => 'percentage',
+            'discount_value' => 20,
+            'target_type' => 'book',
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'is_active' => true,
         ]);
 
         // Liên kết sách với cả hai mã giảm giá
@@ -423,19 +423,19 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một sách với giá 80.000
         $book = Book::factory()->create([
-          'price' => 80000,
+            'price' => 80000,
         ]);
 
         // Tạo mã giảm giá với min_purchase_amount = 100.000 (lớn hơn giá sách)
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá điều kiện',
-          'discount_type' => 'percentage',
-          'discount_value' => 10,
-          'target_type' => 'book',
-          'min_purchase_amount' => 100000, // Chỉ áp dụng cho sách >= 100.000
-          'start_date' => now()->subDay(),
-          'end_date' => now()->addDay(),
-          'is_active' => true,
+            'name' => 'Giảm giá điều kiện',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'target_type' => 'book',
+            'min_purchase_amount' => 100000, // Chỉ áp dụng cho sách >= 100.000
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'is_active' => true,
         ]);
 
         // Liên kết sách với mã giảm giá
@@ -449,7 +449,7 @@ class DiscountServiceTest extends TestCase
 
         // Tạo một sách khác với giá cao hơn min_purchase_amount
         $expensiveBook = Book::factory()->create([
-          'price' => 150000,
+            'price' => 150000,
         ]);
 
         // Liên kết sách với cùng mã giảm giá
@@ -466,19 +466,19 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một sách với giá cao
         $book = Book::factory()->create([
-          'price' => 500000,
+            'price' => 500000,
         ]);
 
         // Tạo mã giảm giá PHẦN TRĂM với max_discount_amount = 30.000
         $percentageDiscount = Discount::factory()->create([
-          'name' => 'Giảm giá 20% tối đa 30.000',
-          'discount_type' => 'percentage',
-          'discount_value' => 20, // 20%
-          'target_type' => 'book',
-          'max_discount_amount' => 30000, // Giảm tối đa 30.000
-          'start_date' => now()->subDay(),
-          'end_date' => now()->addDay(),
-          'is_active' => true,
+            'name' => 'Giảm giá 20% tối đa 30.000',
+            'discount_type' => 'percentage',
+            'discount_value' => 20, // 20%
+            'target_type' => 'book',
+            'max_discount_amount' => 30000, // Giảm tối đa 30.000
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'is_active' => true,
         ]);
 
         // Liên kết sách với mã giảm giá
@@ -492,14 +492,14 @@ class DiscountServiceTest extends TestCase
 
         // Tạo mã giảm giá CỐ ĐỊNH với max_discount_amount = 40.000
         $fixedDiscount = Discount::factory()->create([
-          'name' => 'Giảm giá 50.000 tối đa 40.000',
-          'discount_type' => 'fixed',
-          'discount_value' => 50000, // Giảm 50.000
-          'target_type' => 'book',
-          'max_discount_amount' => 40000, // Giảm tối đa 40.000
-          'start_date' => now()->subDay(),
-          'end_date' => now()->addDay(),
-          'is_active' => true,
+            'name' => 'Giảm giá 50.000 tối đa 40.000',
+            'discount_type' => 'fixed',
+            'discount_value' => 50000, // Giảm 50.000
+            'target_type' => 'book',
+            'max_discount_amount' => 40000, // Giảm tối đa 40.000
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'is_active' => true,
         ]);
 
         // Xóa liên kết cũ và thêm liên kết mới
@@ -517,20 +517,20 @@ class DiscountServiceTest extends TestCase
     {
         // Tạo một sách với giá trung bình
         $book = Book::factory()->create([
-          'price' => 200000,
+            'price' => 200000,
         ]);
 
         // Tạo mã giảm giá với cả hai điều kiện
         $discount = Discount::factory()->create([
-          'name' => 'Giảm giá có điều kiện',
-          'discount_type' => 'percentage',
-          'discount_value' => 15, // 15%
-          'target_type' => 'book',
-          'min_purchase_amount' => 150000, // Chỉ áp dụng cho sách >= 150.000
-          'max_discount_amount' => 25000, // Giảm tối đa 25.000
-          'start_date' => now()->subDay(),
-          'end_date' => now()->addDay(),
-          'is_active' => true,
+            'name' => 'Giảm giá có điều kiện',
+            'discount_type' => 'percentage',
+            'discount_value' => 15, // 15%
+            'target_type' => 'book',
+            'min_purchase_amount' => 150000, // Chỉ áp dụng cho sách >= 150.000
+            'max_discount_amount' => 25000, // Giảm tối đa 25.000
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'is_active' => true,
         ]);
 
         // Liên kết sách với mã giảm giá
@@ -544,7 +544,7 @@ class DiscountServiceTest extends TestCase
 
         // Tạo một sách khác với giá thấp hơn min_purchase_amount
         $cheapBook = Book::factory()->create([
-          'price' => 100000,
+            'price' => 100000,
         ]);
 
         // Liên kết sách với cùng mã giảm giá

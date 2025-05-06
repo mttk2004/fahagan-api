@@ -17,38 +17,26 @@ abstract class BaseService
 {
     /**
      * Model class instance
-     *
-     * @var Model
      */
     protected Model $model;
 
     /**
      * Filter class name
-     *
-     * @var string
      */
     protected string $filterClass;
 
     /**
      * Sort class name
-     *
-     * @var string
      */
     protected string $sortClass;
 
     /**
      * Relations to eager load when retrieving a resource
-     *
-     * @var array
      */
     protected array $with = [];
 
     /**
      * Get all resources with pagination, filtering, and sorting
-     *
-     * @param Request $request
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     public function getAll(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
     {
@@ -78,10 +66,10 @@ abstract class BaseService
     /**
      * Create a new resource
      *
-     * @param BaseDTO    $dto       Data transfer object containing the resource data
-     * @param array|null $relations Optional relations to sync
-     *
+     * @param  BaseDTO  $dto  Data transfer object containing the resource data
+     * @param  array|null  $relations  Optional relations to sync
      * @return Model The created resource
+     *
      * @throws ValidationException
      * @throws Exception|Throwable
      */
@@ -132,8 +120,6 @@ abstract class BaseService
     /**
      * Get a specific resource by ID
      *
-     * @param string|int $id
-     * @return Model
      * @throws ModelNotFoundException
      */
     public function getById(string|int $id): Model
@@ -144,11 +130,9 @@ abstract class BaseService
     /**
      * Update an existing resource
      *
-     * @param string|int $id
-     * @param BaseDTO $dto
-     * @param array|null $relations Optional relations to sync
-     *
+     * @param  array|null  $relations  Optional relations to sync
      * @return Model The updated resource
+     *
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception|Throwable
@@ -182,9 +166,9 @@ abstract class BaseService
     /**
      * Delete a resource
      *
-     * @param string|int $id
      *
      * @return Model|void The deleted resource or void
+     *
      * @throws ModelNotFoundException
      * @throws Exception|Throwable
      */
@@ -217,9 +201,9 @@ abstract class BaseService
     /**
      * Restore a soft-deleted resource
      *
-     * @param string|int $id
      *
      * @return Model The restored resource
+     *
      * @throws ModelNotFoundException
      * @throws Exception*@throws Throwable
      * @throws Throwable
@@ -250,19 +234,14 @@ abstract class BaseService
 
     /**
      * Get the message when trying to restore a resource that is not deleted
-     *
-     * @return string
      */
     protected function getResourceNotDeletedMessage(): string
     {
-        return "This resource is not deleted.";
+        return 'This resource is not deleted.';
     }
 
     /**
      * Refresh a model with its relations
-     *
-     * @param Model $resource
-     * @return Model
      */
     protected function fresh(Model $resource): Model
     {
@@ -271,9 +250,6 @@ abstract class BaseService
 
     /**
      * Find a trashed resource based on unique attributes
-     *
-     * @param BaseDTO $dto
-     * @return Model|null
      */
     protected function findTrashed(BaseDTO $dto): ?Model
     {
@@ -284,10 +260,6 @@ abstract class BaseService
 
     /**
      * Sync relations for a resource
-     *
-     * @param Model $resource
-     * @param array $relations
-     * @return void
      */
     protected function syncRelations(Model $resource, array $relations): void
     {
@@ -302,9 +274,6 @@ abstract class BaseService
 
     /**
      * Actions to perform before deleting a resource
-     *
-     * @param Model $resource
-     * @return void
      */
     protected function beforeDelete(Model $resource): void
     {
@@ -313,8 +282,6 @@ abstract class BaseService
 
     /**
      * Whether to return the deleted resource
-     *
-     * @return bool
      */
     protected function returnDeletedResource(): bool
     {

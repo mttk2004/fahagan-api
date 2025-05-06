@@ -32,9 +32,9 @@ class DiscountController extends Controller
     /**
      * Get all discounts
      *
-     * @param Request $request
      *
      * @return JsonResponse|DiscountCollection
+     *
      * @group Discounts
      */
     public function index(Request $request)
@@ -51,9 +51,9 @@ class DiscountController extends Controller
     /**
      * Create a new discount
      *
-     * @param DiscountStoreRequest $request
      *
      * @return JsonResponse
+     *
      * @group Discounts
      */
     public function store(DiscountStoreRequest $request)
@@ -77,9 +77,9 @@ class DiscountController extends Controller
     /**
      * Get a discount
      *
-     * @param         $discount_id
      *
      * @return JsonResponse
+     *
      * @group Discounts
      */
     public function show($discount_id)
@@ -102,10 +102,9 @@ class DiscountController extends Controller
     /**
      * Update a discount
      *
-     * @param DiscountUpdateRequest $request
-     * @param                       $discount_id
      *
      * @return JsonResponse
+     *
      * @group Discounts
      */
     public function update(DiscountUpdateRequest $request, $discount_id)
@@ -131,9 +130,9 @@ class DiscountController extends Controller
     /**
      * Delete a discount
      *
-     * @param         $discount_id
      *
      * @return JsonResponse
+     *
      * @group Discounts
      */
     public function destroy($discount_id)

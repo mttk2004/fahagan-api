@@ -7,8 +7,7 @@ class CartItemDTO extends \App\DTOs\BaseDTO
     public function __construct(
         public readonly int $book_id,
         public readonly int $quantity,
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(array $validatedData): self
     {
@@ -21,8 +20,8 @@ class CartItemDTO extends \App\DTOs\BaseDTO
     public function toArray(): array
     {
         return [
-          'book_id' => $this->book_id,
-          'quantity' => $this->quantity,
+            'book_id' => $this->book_id,
+            'quantity' => $this->quantity,
         ];
     }
 }

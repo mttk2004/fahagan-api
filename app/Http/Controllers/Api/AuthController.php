@@ -29,16 +29,16 @@ class AuthController extends Controller
     public function __construct(
         private readonly UserService $userService,
         private readonly string $entityName = 'user'
-    ) {
-    }
+    ) {}
 
     /**
      * Register a new user
      *
-     * @param RegisterRequest $request
      *
      * @return JsonResponse
+     *
      * @group Auth
+     *
      * @unauthenticated
      */
     public function register(RegisterRequest $request)
@@ -74,10 +74,11 @@ class AuthController extends Controller
     /**
      * Login
      *
-     * @param LoginRequest $request
      *
      * @return JsonResponse
+     *
      * @group Auth
+     *
      * @unauthenticated
      */
     public function login(LoginRequest $request)
@@ -92,7 +93,7 @@ class AuthController extends Controller
         $user->update(['last_login' => now()]);
 
         $token = $user->createToken(
-            'API token for ' . $validated['email'],
+            'API token for '.$validated['email'],
             ['*'],
             now()->addWeek()
         )->plainTextToken;
@@ -107,6 +108,7 @@ class AuthController extends Controller
      * Logout
      *
      * @return JsonResponse
+     *
      * @group Auth
      */
     public function logout()
@@ -122,9 +124,9 @@ class AuthController extends Controller
     /**
      * Change password
      *
-     * @param ChangePasswordRequest $request
      *
      * @return JsonResponse
+     *
      * @group Auth
      */
     public function changePassword(ChangePasswordRequest $request)
@@ -168,9 +170,9 @@ class AuthController extends Controller
     /**
      * Forgot password
      *
-     * @param ForgotPasswordRequest $request
      *
      * @return JsonResponse
+     *
      * @group Auth
      */
     public function forgotPassword(ForgotPasswordRequest $request)
@@ -187,9 +189,9 @@ class AuthController extends Controller
     /**
      * Reset password
      *
-     * @param Request $request
      *
      * @return JsonResponse
+     *
      * @group Auth
      */
     public function resetPassword(Request $request)

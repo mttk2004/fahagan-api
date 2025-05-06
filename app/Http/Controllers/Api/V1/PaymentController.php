@@ -23,16 +23,14 @@ class PaymentController extends Controller
     public function __construct(
         private readonly VNPayService $vnpayService,
         private readonly string $entityName = 'payment'
-    ) {
-    }
+    ) {}
 
     /**
      * Tạo URL thanh toán VNPay và chuyển hướng
      *
-     * @param Order $order
-     * @return JsonResponse
      *
      * @group Payment
+     *
      * @authenticated
      */
     public function createVNPayPayment(Order $order): JsonResponse
@@ -62,8 +60,8 @@ class PaymentController extends Controller
             $payment->save();
 
             return ResponseUtils::success([
-              'payment_url' => $paymentUrl,
-              'order_id' => $order->id,
+                'payment_url' => $paymentUrl,
+                'order_id' => $order->id,
             ], ResponseMessage::PAYMENT_PENDING->value);
         } catch (Exception $e) {
             return $this->handleException(
@@ -77,10 +75,10 @@ class PaymentController extends Controller
     /**
      * Xử lý kết quả thanh toán từ VNPay
      *
-     * @param Request $request
      * @return \Illuminate\Http\Response
      *
      * @group Payment
+     *
      * @authenticated
      */
     public function handleVNPayReturn(Request $request)
@@ -97,7 +95,7 @@ class PaymentController extends Controller
 
             if (! $result['isValidSignature']) {
                 // Chuyển hướng đến trang thất bại với thông báo lỗi
-                $clientFailedUrl = config('vnpay.clientFailedUrl') . '?message=' . urlencode(ResponseMessage::INVALID_PAYMENT_SIGNATURE->value);
+                $clientFailedUrl = config('vnpay.clientFailedUrl').'?message='.urlencode(ResponseMessage::INVALID_PAYMENT_SIGNATURE->value);
 
                 return $this->redirectWithBrowserSupport($clientFailedUrl);
             }
@@ -107,7 +105,7 @@ class PaymentController extends Controller
 
             if (! $payment) {
                 // Chuyển hướng đến trang thất bại với thông báo lỗi
-                $clientFailedUrl = config('vnpay.clientFailedUrl') . '?message=' . urlencode(ResponseMessage::NOT_FOUND_PAYMENT->value);
+                $clientFailedUrl = config('vnpay.clientFailedUrl').'?message='.urlencode(ResponseMessage::NOT_FOUND_PAYMENT->value);
 
                 return $this->redirectWithBrowserSupport($clientFailedUrl);
             }
@@ -117,7 +115,7 @@ class PaymentController extends Controller
 
             if (! $order) {
                 // Chuyển hướng đến trang thất bại với thông báo lỗi
-                $clientFailedUrl = config('vnpay.clientFailedUrl') . '?message=' . urlencode(ResponseMessage::NOT_FOUND_ORDER->value);
+                $clientFailedUrl = config('vnpay.clientFailedUrl').'?message='.urlencode(ResponseMessage::NOT_FOUND_ORDER->value);
 
                 return $this->redirectWithBrowserSupport($clientFailedUrl);
             }
@@ -133,23 +131,23 @@ class PaymentController extends Controller
                 // Đơn hàng vẫn ở trạng thái PENDING chờ nhân viên xét duyệt
 
                 // Chuyển hướng đến trang thành công với thông tin đơn hàng
-                $clientSuccessUrl = config('vnpay.clientSuccessUrl') . '?orderId=' . $order->id;
+                $clientSuccessUrl = config('vnpay.clientSuccessUrl').'?orderId='.$order->id;
 
                 return $this->redirectWithBrowserSupport($clientSuccessUrl);
             }
 
             // Nếu thanh toán thất bại, chuyển hướng đến trang thất bại
-            $clientFailedUrl = config('vnpay.clientFailedUrl') . '?orderId=' . $order->id;
+            $clientFailedUrl = config('vnpay.clientFailedUrl').'?orderId='.$order->id;
 
             return $this->redirectWithBrowserSupport($clientFailedUrl);
         } catch (Exception $e) {
             Log::error('VNPay Payment Error', [
-              'error' => $e->getMessage(),
-              'vnpay_data' => $request->all(),
+                'error' => $e->getMessage(),
+                'vnpay_data' => $request->all(),
             ]);
 
             // Chuyển hướng đến trang thất bại với thông báo lỗi
-            $clientFailedUrl = config('vnpay.clientFailedUrl') . '?message=' . urlencode('Đã xảy ra lỗi khi xử lý thanh toán');
+            $clientFailedUrl = config('vnpay.clientFailedUrl').'?message='.urlencode('Đã xảy ra lỗi khi xử lý thanh toán');
 
             return $this->redirectWithBrowserSupport($clientFailedUrl);
         }
@@ -158,7 +156,7 @@ class PaymentController extends Controller
     /**
      * Hàm hỗ trợ chuyển hướng với cả API response và browser redirect
      *
-     * @param string $url URL đích để chuyển hướng
+     * @param  string  $url  URL đích để chuyển hướng
      * @return \Illuminate\Http\Response
      */
     private function redirectWithBrowserSupport(string $url)
@@ -166,13 +164,13 @@ class PaymentController extends Controller
         // Kiểm tra nếu là request API (có Accept: application/json)
         if (request()->expectsJson()) {
             return ResponseUtils::success([
-              'redirect_url' => $url,
-              'redirect_required' => true,
+                'redirect_url' => $url,
+                'redirect_required' => true,
             ]);
         }
 
         // Nếu là request từ trình duyệt, trả về HTML với script chuyển hướng
         return response($this->vnpayService->createRedirectScript($url))
-          ->header('Content-Type', 'text/html');
+            ->header('Content-Type', 'text/html');
     }
 }

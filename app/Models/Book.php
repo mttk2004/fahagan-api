@@ -36,25 +36,25 @@ class Book extends Model implements HasBookRelations
 
     protected $fillable
         = [
-          'title',
-          'description',
-          'price',
-          'edition',
-          'pages',
-          'publication_date',
-          'image_url',
-          'sold_count',
-          'available_count',
-          'publisher_id',
+            'title',
+            'description',
+            'price',
+            'edition',
+            'pages',
+            'publication_date',
+            'image_url',
+            'sold_count',
+            'available_count',
+            'publisher_id',
         ];
 
     protected function casts(): array
     {
         return [
-          'publication_date' => 'date',
-          'created_at' => 'datetime',
-          'updated_at' => 'datetime',
-          'deleted_at' => 'datetime',
+            'publication_date' => 'date',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 
@@ -95,19 +95,19 @@ class Book extends Model implements HasBookRelations
 
         // Lấy các discount trực tiếp liên kết với sách này
         $directDiscounts = $this->discounts()
-          ->where('target_type', 'book')
-          ->where('is_active', true)
-          ->where('start_date', '<=', $now)
-          ->where('end_date', '>=', $now)
-          ->get();
+            ->where('target_type', 'book')
+            ->where('is_active', true)
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->get();
 
         // Lấy tất cả discount áp dụng cho tất cả sách (không cần liên kết qua bảng discount_targets)
         $globalBookDiscounts = Discount::where('target_type', 'book')
-          ->whereDoesntHave('targets')
-          ->where('is_active', true)
-          ->where('start_date', '<=', $now)
-          ->where('end_date', '>=', $now)
-          ->get();
+            ->whereDoesntHave('targets')
+            ->where('is_active', true)
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->get();
 
         // Kết hợp hai tập hợp mã giảm giá
         return $directDiscounts->concat($globalBookDiscounts);
@@ -182,6 +182,6 @@ class Book extends Model implements HasBookRelations
     public function usersWithBookInCart(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'cart_items', 'book_id', 'user_id')
-          ->withPivot('quantity');
+            ->withPivot('quantity');
     }
 }

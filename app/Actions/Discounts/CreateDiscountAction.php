@@ -14,9 +14,9 @@ class CreateDiscountAction extends BaseAction
     /**
      * Tạo mã giảm giá mới
      *
-     * @param DiscountDTO $discountDTO
-     * @param array $relations Các mối quan hệ cần eager loading
-     * @return Discount
+     * @param  DiscountDTO  $discountDTO
+     * @param  array  $relations  Các mối quan hệ cần eager loading
+     *
      * @throws Exception
      */
     public function execute(...$args): Discount
@@ -28,16 +28,16 @@ class CreateDiscountAction extends BaseAction
         try {
             // Tạo mã giảm giá mới
             $discount = Discount::create([
-              'name' => $discountDTO->name,
-              'discount_type' => $discountDTO->discount_type,
-              'discount_value' => $discountDTO->discount_value,
-              'target_type' => $discountDTO->target_type ?? 'book',
-              'min_purchase_amount' => $discountDTO->min_purchase_amount ?? 0,
-              'max_discount_amount' => $discountDTO->max_discount_amount,
-              'start_date' => $discountDTO->start_date,
-              'end_date' => $discountDTO->end_date,
-              'description' => $discountDTO->description,
-              'is_active' => $discountDTO->is_active ?? true,
+                'name' => $discountDTO->name,
+                'discount_type' => $discountDTO->discount_type,
+                'discount_value' => $discountDTO->discount_value,
+                'target_type' => $discountDTO->target_type ?? 'book',
+                'min_purchase_amount' => $discountDTO->min_purchase_amount ?? 0,
+                'max_discount_amount' => $discountDTO->max_discount_amount,
+                'start_date' => $discountDTO->start_date,
+                'end_date' => $discountDTO->end_date,
+                'description' => $discountDTO->description,
+                'is_active' => $discountDTO->is_active ?? true,
             ]);
 
             // Thêm targets nếu có và nếu là discount theo sách
@@ -58,18 +58,14 @@ class CreateDiscountAction extends BaseAction
 
     /**
      * Đồng bộ targets với mã giảm giá
-     *
-     * @param Discount $discount
-     * @param array $targetIds
-     * @return void
      */
     private function syncTargets(Discount $discount, array $targetIds): void
     {
         $records = [];
         foreach ($targetIds as $targetId) {
             $records[] = [
-              'discount_id' => $discount->id,
-              'target_id' => $targetId,
+                'discount_id' => $discount->id,
+                'target_id' => $targetId,
             ];
         }
 

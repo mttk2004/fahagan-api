@@ -19,16 +19,16 @@ class AddressResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-          'type' => 'address',
-          'id' => $this->id,
-          'attributes' => [
-            'name' => $this->name,
-            'phone' => $this->phone,
-            'city' => $this->city,
-            'district' => $this->district,
-            'ward' => $this->ward,
-            'address_line' => $this->address_line,
-          ],
+            'type' => 'address',
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'city' => $this->city,
+                'district' => $this->district,
+                'ward' => $this->ward,
+                'address_line' => $this->address_line,
+            ],
         ];
     }
 }

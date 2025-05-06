@@ -14,11 +14,10 @@ trait HandleBookExceptions
     /**
      * Xử lý các ngoại lệ liên quan đến Book
      *
-     * @param Exception $e Exception cần xử lý
-     * @param array $requestData Dữ liệu từ request (đã validate)
-     * @param string|int|null $bookId ID của sách (nếu có)
-     * @param string $action Hành động đang thực hiện (tạo/cập nhật)
-     * @return JsonResponse
+     * @param  Exception  $e  Exception cần xử lý
+     * @param  array  $requestData  Dữ liệu từ request (đã validate)
+     * @param  string|int|null  $bookId  ID của sách (nếu có)
+     * @param  string  $action  Hành động đang thực hiện (tạo/cập nhật)
      */
     protected function handleBookException(
         Exception $e,
@@ -28,7 +27,7 @@ trait HandleBookExceptions
     ): JsonResponse {
         // Xử lý ValidationException từ BookService
         if ($e instanceof ValidationException) {
-            Log::info("Lỗi validation từ BookService khi {$action} sách: " . $e->getMessage());
+            Log::info("Lỗi validation từ BookService khi {$action} sách: ".$e->getMessage());
 
             return ResponseUtils::validationError(
                 'Dữ liệu không hợp lệ.',
@@ -38,7 +37,7 @@ trait HandleBookExceptions
 
         // Xử lý lỗi ràng buộc unique
         if ($e instanceof \Illuminate\Database\UniqueConstraintViolationException) {
-            Log::info("Lỗi ràng buộc unique khi {$action} sách: " . $e->getMessage());
+            Log::info("Lỗi ràng buộc unique khi {$action} sách: ".$e->getMessage());
 
             // Kiểm tra xem lỗi liên quan đến title-edition hay không
             if (strpos($e->getMessage(), 'books_title_edition_unique') !== false) {
@@ -72,7 +71,7 @@ trait HandleBookExceptions
                 $logData['book_id'] = $bookId;
             }
 
-            Log::error("Lỗi PDO khi {$action} sách: " . $e->getMessage(), $logData);
+            Log::error("Lỗi PDO khi {$action} sách: ".$e->getMessage(), $logData);
 
             return ResponseUtils::serverError("Đã xảy ra lỗi khi {$action} sách. Vui lòng thử lại sau.");
         }
@@ -88,7 +87,7 @@ trait HandleBookExceptions
                 $logData['book_id'] = $bookId;
             }
 
-            Log::error("Lỗi khi {$action} sách: " . $e->getMessage(), $logData);
+            Log::error("Lỗi khi {$action} sách: ".$e->getMessage(), $logData);
 
             return ResponseUtils::serverError("Đã xảy ra lỗi khi {$action} sách. Vui lòng thử lại sau.");
         }
@@ -103,8 +102,8 @@ trait HandleBookExceptions
             $logData['book_id'] = $bookId;
         }
 
-        Log::error("Lỗi không xác định khi {$action} sách: " . $e->getMessage(), $logData);
+        Log::error("Lỗi không xác định khi {$action} sách: ".$e->getMessage(), $logData);
 
-        return ResponseUtils::serverError("Đã xảy ra lỗi không xác định. Vui lòng thử lại sau.");
+        return ResponseUtils::serverError('Đã xảy ra lỗi không xác định. Vui lòng thử lại sau.');
     }
 }

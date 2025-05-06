@@ -19,7 +19,7 @@ class UserServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->userService = new UserService();
+        $this->userService = new UserService;
     }
 
     public function test_it_can_get_all_users()
@@ -28,7 +28,7 @@ class UserServiceTest extends TestCase
         User::factory()->count(5)->create();
 
         // Tạo request rỗng
-        $request = new Request();
+        $request = new Request;
 
         // Lấy danh sách người dùng
         $users = $this->userService->getAllUsers($request);
@@ -115,10 +115,10 @@ class UserServiceTest extends TestCase
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('users', [
-          'first_name' => 'Nguyễn',
-          'last_name' => 'Văn A',
-          'email' => 'nguyenvana@example.com',
-          'phone' => '0123456789',
+            'first_name' => 'Nguyễn',
+            'last_name' => 'Văn A',
+            'email' => 'nguyenvana@example.com',
+            'phone' => '0123456789',
         ]);
     }
 
@@ -126,8 +126,8 @@ class UserServiceTest extends TestCase
     {
         // Tạo người dùng
         $user = User::factory()->create([
-          'first_name' => 'Trần',
-          'last_name' => 'Thị B',
+            'first_name' => 'Trần',
+            'last_name' => 'Thị B',
         ]);
 
         // Lấy thông tin người dùng
@@ -149,9 +149,9 @@ class UserServiceTest extends TestCase
     {
         // Tạo người dùng
         $user = User::factory()->create([
-          'first_name' => 'Lê',
-          'last_name' => 'Văn C',
-          'email' => 'levanc@example.com',
+            'first_name' => 'Lê',
+            'last_name' => 'Văn C',
+            'email' => 'levanc@example.com',
         ]);
 
         // Tạo UserDTO với thông tin cập nhật
@@ -175,9 +175,9 @@ class UserServiceTest extends TestCase
 
         // Kiểm tra trong database
         $this->assertDatabaseHas('users', [
-          'id' => $user->id,
-          'last_name' => 'Văn C (Đã cập nhật)',
-          'email' => 'levanc_updated@example.com',
+            'id' => $user->id,
+            'last_name' => 'Văn C (Đã cập nhật)',
+            'email' => 'levanc_updated@example.com',
         ]);
     }
 
@@ -192,7 +192,7 @@ class UserServiceTest extends TestCase
 
         // Kiểm tra rằng user đã bị soft delete
         $this->assertSoftDeleted('users', [
-          'id' => $userId,
+            'id' => $userId,
         ]);
     }
 

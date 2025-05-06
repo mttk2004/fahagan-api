@@ -32,27 +32,27 @@ class Discount extends Model
 
     protected $fillable
         = [
-          'name',
-          'discount_type',
-          'discount_value',
-          'target_type',
-          'min_purchase_amount',
-          'max_discount_amount',
-          'start_date',
-          'end_date',
-          'description',
-          'is_active',
+            'name',
+            'discount_type',
+            'discount_value',
+            'target_type',
+            'min_purchase_amount',
+            'max_discount_amount',
+            'start_date',
+            'end_date',
+            'description',
+            'is_active',
         ];
 
     protected function casts(): array
     {
         return [
-          'start_date' => 'datetime',
-          'end_date' => 'datetime',
-          'created_at' => 'datetime',
-          'updated_at' => 'datetime',
-          'deleted_at' => 'datetime',
-          'is_active' => 'boolean',
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 

@@ -13,9 +13,9 @@ class CreateBookAction extends BaseAction
     /**
      * Tạo sách mới
      *
-     * @param BookDTO $bookDTO
-     * @param array $relations Các mối quan hệ cần eager loading
-     * @return Book
+     * @param  BookDTO  $bookDTO
+     * @param  array  $relations  Các mối quan hệ cần eager loading
+     *
      * @throws Exception
      */
     public function execute(...$args): Book
@@ -27,14 +27,14 @@ class CreateBookAction extends BaseAction
         try {
             // Tạo sách mới
             $book = Book::create([
-              'title' => $bookDTO->title,
-              'edition' => $bookDTO->edition,
-              'description' => $bookDTO->description,
-              'price' => $bookDTO->price,
-              'pages' => $bookDTO->pages ?? $bookDTO->number_of_pages ?? null,
-              'image_url' => $bookDTO->image_url ?? $bookDTO->cover_image ?? null,
-              'publication_date' => $bookDTO->publication_date ?? $bookDTO->published_date ?? null,
-              'publisher_id' => $bookDTO->publisher_id,
+                'title' => $bookDTO->title,
+                'edition' => $bookDTO->edition,
+                'description' => $bookDTO->description,
+                'price' => $bookDTO->price,
+                'pages' => $bookDTO->pages ?? $bookDTO->number_of_pages ?? null,
+                'image_url' => $bookDTO->image_url ?? $bookDTO->cover_image ?? null,
+                'publication_date' => $bookDTO->publication_date ?? $bookDTO->published_date ?? null,
+                'publisher_id' => $bookDTO->publisher_id,
             ]);
 
             // Thiết lập mối quan hệ authors nếu có

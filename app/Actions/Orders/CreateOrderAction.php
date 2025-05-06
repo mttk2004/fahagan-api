@@ -17,9 +17,9 @@ class CreateOrderAction extends BaseAction
     /**
      * Tạo order mới
      *
-     * @param OrderDTO $orderDTO
-     * @param array $relations Các mối quan hệ cần eager loading
-     * @return Order
+     * @param  OrderDTO  $orderDTO
+     * @param  array  $relations  Các mối quan hệ cần eager loading
+     *
      * @throws Exception
      */
     public function execute(...$args): Order
@@ -34,27 +34,27 @@ class CreateOrderAction extends BaseAction
                 $cartItem = CartItem::find($item['id']);
                 $book = Book::find($cartItem->book_id);
                 if ($book->available_count < $cartItem->quantity) {
-                    throw new Exception('Số lượng trong kho không đủ cho sách ' . $book->title);
+                    throw new Exception('Số lượng trong kho không đủ cho sách '.$book->title);
                 }
             }
 
             // Kiểm tra địa chỉ giao hàng
             $address = Address::where('id', $orderDTO->address_id)
-              ->where('user_id', AuthUtils::user()->id)
-              ->first();
+                ->where('user_id', AuthUtils::user()->id)
+                ->first();
             if (! $address) {
                 throw new Exception('Địa chỉ giao hàng không tồn tại.');
             }
 
             // Tạo order mới
             $order = Order::create([
-              'customer_id' => AuthUtils::user()->id,
-              'shopping_name' => $address->name,
-              'shopping_phone' => $address->phone,
-              'shopping_city' => $address->city,
-              'shopping_district' => $address->district,
-              'shopping_ward' => $address->ward,
-              'shopping_address_line' => $address->address_line,
+                'customer_id' => AuthUtils::user()->id,
+                'shopping_name' => $address->name,
+                'shopping_phone' => $address->phone,
+                'shopping_city' => $address->city,
+                'shopping_district' => $address->district,
+                'shopping_ward' => $address->ward,
+                'shopping_address_line' => $address->address_line,
             ]);
 
             $totalAmount = 0.0;
@@ -79,10 +79,10 @@ class CreateOrderAction extends BaseAction
                 $cartItem->delete();
 
                 $order->items()->create([
-                  'book_id' => $book_id,
-                  'quantity' => $quantity,
-                  'price_at_time' => $book_price,
-                  'discount_value' => $discount_value,
+                    'book_id' => $book_id,
+                    'quantity' => $quantity,
+                    'price_at_time' => $book_price,
+                    'discount_value' => $discount_value,
                 ]);
             }
 
@@ -107,10 +107,10 @@ class CreateOrderAction extends BaseAction
 
             // Tạo payment cho order
             $order->payment()->create([
-              'method' => $orderDTO->method,
-              'total_amount' => $finalAmount,
-              'discount_value' => $orderDiscountValue,
-              'status' => $paymentStatus,
+                'method' => $orderDTO->method,
+                'total_amount' => $finalAmount,
+                'discount_value' => $orderDiscountValue,
+                'status' => $paymentStatus,
             ]);
 
             DB::commit();

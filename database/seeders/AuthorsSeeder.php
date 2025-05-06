@@ -17,7 +17,7 @@ class AuthorsSeeder extends Seeder
 
         foreach ($books as $book) {
             $book->authors()
-                 ->attach($authors->random(rand(1, 3))->pluck('id')->toArray());
+                ->attach($authors->random(rand(1, 3))->pluck('id')->toArray());
         }
     }
 }

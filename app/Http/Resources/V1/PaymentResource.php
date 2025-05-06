@@ -22,18 +22,18 @@ class PaymentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-          'type' => 'payment',
-          'id' => $this->id,
-          'attributes' => [
-            'status' => $this->status,
-            'method' => $this->method,
-            'total_amount' => $this->total_amount,
-            'discount_value' => $this->discount_value,
-            'transaction_ref' => $this->transaction_ref,
-            'gateway_response' => $this->gateway_response,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-          ],
+            'type' => 'payment',
+            'id' => $this->id,
+            'attributes' => [
+                'status' => $this->status,
+                'method' => $this->method,
+                'total_amount' => $this->total_amount,
+                'discount_value' => $this->discount_value,
+                'transaction_ref' => $this->transaction_ref,
+                'gateway_response' => $this->gateway_response,
+                'created_at' => $this->created_at,
+                'updated_at' => $this->updated_at,
+            ],
         ];
     }
 }

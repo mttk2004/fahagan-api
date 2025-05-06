@@ -22,7 +22,7 @@ class SupplierServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->supplierService = new SupplierService();
+        $this->supplierService = new SupplierService;
     }
 
     public function test_it_can_get_all_suppliers()
@@ -31,7 +31,7 @@ class SupplierServiceTest extends TestCase
         Supplier::factory(5)->create();
 
         // Gọi service để lấy tất cả nhà cung cấp
-        $result = $this->supplierService->getAllSuppliers(new Request());
+        $result = $this->supplierService->getAllSuppliers(new Request);
 
         // Kiểm tra kết quả
         $this->assertEquals(5, $result->total());
@@ -99,14 +99,14 @@ class SupplierServiceTest extends TestCase
 
         // Kiểm tra kết quả
         $this->assertDatabaseHas('suppliers', [
-          'id' => $result->id,
-          'name' => 'Nhà Sách Test',
-          'phone' => '0123456789',
-          'email' => 'test@example.com',
-          'city' => 'Hà Nội',
-          'district' => 'Cầu Giấy',
-          'ward' => 'Dịch Vọng',
-          'address_line' => 'Số 1 Đường ABC',
+            'id' => $result->id,
+            'name' => 'Nhà Sách Test',
+            'phone' => '0123456789',
+            'email' => 'test@example.com',
+            'city' => 'Hà Nội',
+            'district' => 'Cầu Giấy',
+            'ward' => 'Dịch Vọng',
+            'address_line' => 'Số 1 Đường ABC',
         ]);
 
         // Kiểm tra quan hệ với sách
@@ -169,9 +169,9 @@ class SupplierServiceTest extends TestCase
     {
         // Tạo một nhà cung cấp
         $supplier = Supplier::factory()->create([
-          'name' => 'Nhà Sách Original',
-          'phone' => '0123456789',
-          'email' => 'original@example.com',
+            'name' => 'Nhà Sách Original',
+            'phone' => '0123456789',
+            'email' => 'original@example.com',
         ]);
 
         // Tạo DTO chỉ cập nhật email
@@ -208,12 +208,12 @@ class SupplierServiceTest extends TestCase
 
         // Kiểm tra nhà cung cấp đã bị xóa (soft delete)
         $this->assertSoftDeleted('suppliers', [
-          'id' => $supplier->id,
+            'id' => $supplier->id,
         ]);
 
         // Kiểm tra quan hệ với sách đã bị xóa
         $this->assertDatabaseMissing('book_supplier', [
-          'supplier_id' => $supplier->id,
+            'supplier_id' => $supplier->id,
         ]);
     }
 
@@ -225,7 +225,7 @@ class SupplierServiceTest extends TestCase
 
         // Kiểm tra đã bị xóa
         $this->assertSoftDeleted('suppliers', [
-          'id' => $supplier->id,
+            'id' => $supplier->id,
         ]);
 
         // Gọi service để khôi phục nhà cung cấp
@@ -233,8 +233,8 @@ class SupplierServiceTest extends TestCase
 
         // Kiểm tra đã được khôi phục
         $this->assertDatabaseHas('suppliers', [
-          'id' => $supplier->id,
-          'deleted_at' => null,
+            'id' => $supplier->id,
+            'deleted_at' => null,
         ]);
     }
 

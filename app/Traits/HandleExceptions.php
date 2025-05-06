@@ -15,10 +15,9 @@ trait HandleExceptions
     /**
      * Xử lý các ngoại lệ phổ biến trong controller
      *
-     * @param Exception $e Exception cần xử lý
-     * @param string $entityName Tên của entity (VD: 'publisher', 'author', 'book', etc.)
-     * @param array $logData Dữ liệu bổ sung để log (optional)
-     * @return JsonResponse
+     * @param  Exception  $e  Exception cần xử lý
+     * @param  string  $entityName  Tên của entity (VD: 'publisher', 'author', 'book', etc.)
+     * @param  array  $logData  Dữ liệu bổ sung để log (optional)
      */
     protected function handleException(
         Exception $e,
@@ -34,14 +33,14 @@ trait HandleExceptions
 
         // Xử lý ValidationException
         if ($e instanceof ValidationException) {
-            Log::info("Lỗi validation cho {$entityName}: " . $e->getMessage(), $logData);
+            Log::info("Lỗi validation cho {$entityName}: ".$e->getMessage(), $logData);
 
             return ResponseUtils::validationError('Dữ liệu không hợp lệ.', $e->errors());
         }
 
         // Xử lý các Exception còn lại
         $logContext = array_merge(['exception' => get_class($e)], $logData);
-        Log::error("Lỗi xử lý {$entityName}: " . $e->getMessage(), $logContext);
+        Log::error("Lỗi xử lý {$entityName}: ".$e->getMessage(), $logContext);
 
         return ResponseUtils::serverError($e->getMessage());
     }
@@ -49,8 +48,7 @@ trait HandleExceptions
     /**
      * Lấy thông báo not found cho từng loại entity
      *
-     * @param string $entityName Tên của entity
-     * @return string
+     * @param  string  $entityName  Tên của entity
      */
     private function getNotFoundMessageForEntity(string $entityName): string
     {

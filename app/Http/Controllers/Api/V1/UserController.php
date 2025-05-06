@@ -20,23 +20,23 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    use HandlePagination;
     use HandleExceptions;
+    use HandlePagination;
     use HandleValidation;
 
     public function __construct(
         private readonly UserService $userService,
         private readonly string $entityName = 'user'
-    ) {
-    }
+    ) {}
 
     /**
      * Get all users
      *
-     * @param Request $request
      *
      * @return UserCollection|JsonResponse
+     *
      * @group Users
+     *
      * @authenticated
      */
     public function index(Request $request)
@@ -60,10 +60,11 @@ class UserController extends Controller
     /**
      * Get a user
      *
-     * @param $user_id
      *
      * @return JsonResponse
+     *
      * @group Users
+     *
      * @authenticated
      */
     public function show($user_id)
@@ -74,7 +75,7 @@ class UserController extends Controller
                 $user = $this->userService->getUserById($user_id);
 
                 return ResponseUtils::success([
-                  'user' => new UserResource($user),
+                    'user' => new UserResource($user),
                 ]);
             }
 
@@ -88,15 +89,15 @@ class UserController extends Controller
             $user = $this->userService->getUserById($user_id);
 
             return ResponseUtils::success([
-              'user' => new UserResource($user),
+                'user' => new UserResource($user),
             ]);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'user_id' => $user_id,
-        ]
+                    'user_id' => $user_id,
+                ]
             );
         }
     }
@@ -104,11 +105,11 @@ class UserController extends Controller
     /**
      * Update a user
      *
-     * @param UserUpdateRequest $request
-     * @param                   $user_id
      *
      * @return JsonResponse
+     *
      * @group Users
+     *
      * @authenticated
      */
     public function update(UserUpdateRequest $request, $user_id)
@@ -124,16 +125,16 @@ class UserController extends Controller
             $user = $this->userService->updateUser($user_id, UserDTO::fromRequest($validatedData));
 
             return ResponseUtils::success([
-              'user' => new UserResource($user),
+                'user' => new UserResource($user),
             ], ResponseMessage::UPDATED_USER->value);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'user_id' => $user_id,
-                'request_data' => $request->validated(),
-        ]
+                    'user_id' => $user_id,
+                    'request_data' => $request->validated(),
+                ]
             );
         }
     }
@@ -141,10 +142,11 @@ class UserController extends Controller
     /**
      * Delete a user
      *
-     * @param         $user_id
      *
      * @return JsonResponse
+     *
      * @group Users
+     *
      * @authenticated
      */
     public function destroy($user_id)
@@ -160,8 +162,8 @@ class UserController extends Controller
                     $e,
                     $this->entityName,
                     [
-                    'user_id' => $user_id,
-          ]
+                        'user_id' => $user_id,
+                    ]
                 );
             }
         }
@@ -182,8 +184,8 @@ class UserController extends Controller
                 $e,
                 $this->entityName,
                 [
-                'user_id' => $user_id,
-        ]
+                    'user_id' => $user_id,
+                ]
             );
         }
     }

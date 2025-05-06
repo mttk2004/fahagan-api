@@ -43,23 +43,23 @@ class OrderFilter
     protected function filterByShoppingAddress(Builder $query): void
     {
         if (isset($this->filters['city'])) {
-            $query->where('shopping_city', 'like', '%' . $this->filters['city'] . '%');
+            $query->where('shopping_city', 'like', '%'.$this->filters['city'].'%');
         }
 
         if (isset($this->filters['district'])) {
-            $query->where('shopping_district', 'like', '%' . $this->filters['district'] . '%');
+            $query->where('shopping_district', 'like', '%'.$this->filters['district'].'%');
         }
 
         if (isset($this->filters['ward'])) {
-            $query->where('shopping_ward', 'like', '%' . $this->filters['ward'] . '%');
+            $query->where('shopping_ward', 'like', '%'.$this->filters['ward'].'%');
         }
 
         if (isset($this->filters['address_line'])) {
-            $query->where('shopping_address_line', 'like', '%' . $this->filters['address'] . '%');
+            $query->where('shopping_address_line', 'like', '%'.$this->filters['address'].'%');
         }
 
         if (isset($this->filters['phone'])) {
-            $query->where('shopping_phone', 'like', '%' . $this->filters['phone'] . '%');
+            $query->where('shopping_phone', 'like', '%'.$this->filters['phone'].'%');
         }
     }
 

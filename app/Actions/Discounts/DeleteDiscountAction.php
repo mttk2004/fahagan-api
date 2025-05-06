@@ -12,8 +12,9 @@ class DeleteDiscountAction extends BaseAction
     /**
      * Xóa mã giảm giá (soft delete)
      *
-     * @param Discount $discount Mã giảm giá cần xóa
+     * @param  Discount  $discount  Mã giảm giá cần xóa
      * @return Discount Mã giảm giá đã xóa
+     *
      * @throws Exception
      */
     public function execute(...$args): Discount
