@@ -9,7 +9,6 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-
 class CreateDiscountAction extends BaseAction
 {
     /**

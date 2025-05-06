@@ -6,7 +6,6 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\MessageBag;
 
-
 class ResponseUtils
 {
     /**
