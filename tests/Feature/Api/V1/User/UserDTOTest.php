@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\V1\User;
 use App\DTOs\UserDTO;
 use Tests\TestCase;
 
-
 class UserDTOTest extends TestCase
 {
     public function test_it_creates_user_dto_from_request()

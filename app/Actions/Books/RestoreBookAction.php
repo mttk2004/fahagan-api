@@ -8,7 +8,6 @@ use App\Models\Book;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-
 class RestoreBookAction extends BaseAction
 {
     /**

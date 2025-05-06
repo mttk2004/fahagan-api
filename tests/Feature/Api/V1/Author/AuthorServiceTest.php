@@ -10,7 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
-
 class AuthorServiceTest extends TestCase
 {
     use RefreshDatabase;

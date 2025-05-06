@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
-
 class DiscountServiceTest extends TestCase
 {
     use RefreshDatabase;

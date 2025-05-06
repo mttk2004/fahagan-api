@@ -19,7 +19,6 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 
-
 class CustomerAddressController extends Controller
 {
     use HandleExceptions;

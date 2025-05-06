@@ -6,7 +6,6 @@ use App\Actions\BaseAction;
 use App\DTOs\DiscountDTO;
 use App\Models\Discount;
 
-
 class FindTrashedDiscountAction extends BaseAction
 {
     /**

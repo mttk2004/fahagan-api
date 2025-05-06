@@ -15,7 +15,6 @@ use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
-
 class CustomerOrderControllerTest extends TestCase
 {
     use RefreshDatabase;

@@ -7,7 +7,6 @@ use App\DTOs\DiscountDTO;
 use App\Models\Discount;
 use Illuminate\Validation\ValidationException;
 
-
 class ValidateDiscountAction extends BaseAction
 {
     /**

@@ -10,7 +10,6 @@ use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-
 class CartItemServiceTest extends TestCase
 {
     use RefreshDatabase;

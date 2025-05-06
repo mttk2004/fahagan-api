@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\V1\CartItem;
 use App\DTOs\CartItemDTO;
 use PHPUnit\Framework\TestCase;
 
-
 class CartItemDTOTest extends TestCase
 {
     public function test_it_creates_cart_item_dto_from_request()

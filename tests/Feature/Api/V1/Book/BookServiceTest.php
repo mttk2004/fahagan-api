@@ -18,7 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
-
 class BookServiceTest extends TestCase
 {
     use RefreshDatabase;

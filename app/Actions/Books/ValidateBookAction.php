@@ -7,7 +7,6 @@ use App\DTOs\BookDTO;
 use App\Models\Book;
 use Illuminate\Validation\ValidationException;
 
-
 class ValidateBookAction extends BaseAction
 {
     /**

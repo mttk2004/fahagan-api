@@ -13,7 +13,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-
 class AddressService extends BaseService
 {
     /**

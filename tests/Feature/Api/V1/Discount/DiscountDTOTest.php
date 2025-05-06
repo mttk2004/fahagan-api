@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\V1\Discount;
 use App\DTOs\DiscountDTO;
 use PHPUnit\Framework\TestCase;
 
-
 class DiscountDTOTest extends TestCase
 {
     public function test_it_can_create_discount_dto_with_all_properties()

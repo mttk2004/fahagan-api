@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\V1\Address;
 use App\DTOs\AddressDTO;
 use PHPUnit\Framework\TestCase;
 
-
 class AddressDTOTest extends TestCase
 {
     public function test_it_creates_address_dto_from_direct_format_request()

@@ -6,7 +6,6 @@ use App\DTOs\GenreDTO;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-
 class GenreDTOTest extends TestCase
 {
     use RefreshDatabase;

@@ -9,7 +9,6 @@ use App\Models\DiscountTarget;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-
 class RestoreDiscountAction extends BaseAction
 {
     /**

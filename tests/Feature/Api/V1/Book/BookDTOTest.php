@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\V1\Book;
 use App\DTOs\BookDTO;
 use PHPUnit\Framework\TestCase;
 
-
 class BookDTOTest extends TestCase
 {
     public function test_it_can_create_book_dto_with_all_properties()

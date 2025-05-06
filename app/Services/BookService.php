@@ -22,7 +22,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 
-
 class BookService extends BaseService
 {
     /**

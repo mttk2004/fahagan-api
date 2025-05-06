@@ -19,7 +19,6 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-
 class PublisherController extends Controller
 {
     use HandleExceptions;

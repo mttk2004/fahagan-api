@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\V1\Publisher;
 use App\DTOs\PublisherDTO;
 use Tests\TestCase;
 
-
 class PublisherDTOTest extends TestCase
 {
     public function test_it_creates_publisher_dto_from_request()

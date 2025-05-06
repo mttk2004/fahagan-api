@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\V1\Supplier;
 use App\DTOs\SupplierDTO;
 use PHPUnit\Framework\TestCase;
 
-
 class SupplierDTOTest extends TestCase
 {
     public function test_it_creates_supplier_dto_from_request()

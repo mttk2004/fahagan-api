@@ -11,7 +11,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
-
 class AddressServiceTest extends TestCase
 {
     use RefreshDatabase;

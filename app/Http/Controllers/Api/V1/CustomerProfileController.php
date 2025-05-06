@@ -15,7 +15,6 @@ use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-
 class CustomerProfileController extends Controller
 {
     use HandleExceptions;

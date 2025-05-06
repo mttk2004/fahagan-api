@@ -14,7 +14,6 @@ use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-
 class CustomerCartItemController extends Controller
 {
     public function __construct(
