@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Constants\ApplicationConstants;
-use App\DTOs\Supplier\SupplierDTO;
+use App\DTOs\SupplierDTO;
 use App\Filters\SupplierFilter;
 use App\Http\Sorts\V1\SupplierSort;
 use App\Models\Supplier;
@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+
 
 class SupplierService extends BaseService
 {

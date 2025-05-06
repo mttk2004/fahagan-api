@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\Address;
 
-use App\DTOs\Address\AddressDTO;
+use App\DTOs\AddressDTO;
 use PHPUnit\Framework\TestCase;
+
 
 class AddressDTOTest extends TestCase
 {

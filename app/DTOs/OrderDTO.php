@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOs\Order;
+namespace App\DTOs;
 
-class OrderDTO extends \App\DTOs\BaseDTO
+class OrderDTO extends BaseDTO
 {
     public function __construct(
         public readonly ?string $method,
@@ -24,7 +24,7 @@ class OrderDTO extends \App\DTOs\BaseDTO
             $items
         );
 
-        $address_id = isset($relationships['address']['id']) ? $relationships['address']['id'] : null;
+        $address_id = $relationships['address']['id'] ?? null;
 
         return new self(
             method: $attributes['method'] ?? null,

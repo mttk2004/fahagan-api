@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\User;
 
-use App\DTOs\User\UserDTO;
+use App\DTOs\UserDTO;
 use Tests\TestCase;
+
 
 class UserDTOTest extends TestCase
 {

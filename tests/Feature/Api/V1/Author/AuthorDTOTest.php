@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\Author;
 
-use App\DTOs\Author\AuthorDTO;
+use App\DTOs\AuthorDTO;
 use Tests\TestCase;
+
 
 class AuthorDTOTest extends TestCase
 {

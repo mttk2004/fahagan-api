@@ -1,12 +1,13 @@
 <?php
 
-namespace App\DTOs\Publisher;
+namespace App\DTOs;
 
-class PublisherDTO extends \App\DTOs\BaseDTO
+class GenreDTO extends BaseDTO
 {
     public function __construct(
         public readonly ?string $name,
-        public readonly ?string $biography,
+        public readonly ?string $slug,
+        public readonly ?string $description,
     ) {
     }
 
@@ -14,7 +15,8 @@ class PublisherDTO extends \App\DTOs\BaseDTO
     {
         return new self(
             name: $validatedData['name'] ?? null,
-            biography: $validatedData['biography'] ?? null,
+            slug: $validatedData['slug'] ?? null,
+            description: $validatedData['description'] ?? null,
         );
     }
 
@@ -26,8 +28,12 @@ class PublisherDTO extends \App\DTOs\BaseDTO
             $data['name'] = $this->name;
         }
 
-        if ($this->biography !== null) {
-            $data['biography'] = $this->biography;
+        if ($this->slug !== null) {
+            $data['slug'] = $this->slug;
+        }
+
+        if ($this->description !== null) {
+            $data['description'] = $this->description;
         }
 
         return $data;

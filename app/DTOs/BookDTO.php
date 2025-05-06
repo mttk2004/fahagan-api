@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOs\Book;
+namespace App\DTOs;
 
-class BookDTO extends \App\DTOs\BaseDTO
+class BookDTO extends BaseDTO
 {
     public function __construct(
         public ?string $title,

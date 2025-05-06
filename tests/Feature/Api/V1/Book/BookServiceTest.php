@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api\V1\Book;
 
-use App\DTOs\Book\BookDTO;
+use App\DTOs\BookDTO;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Discount;
@@ -17,6 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
+
 
 class BookServiceTest extends TestCase
 {

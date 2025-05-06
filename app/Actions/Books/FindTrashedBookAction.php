@@ -3,8 +3,9 @@
 namespace App\Actions\Books;
 
 use App\Actions\BaseAction;
-use App\DTOs\Book\BookDTO;
+use App\DTOs\BookDTO;
 use App\Models\Book;
+
 
 class FindTrashedBookAction extends BaseAction
 {

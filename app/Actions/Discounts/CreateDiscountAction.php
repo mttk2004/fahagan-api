@@ -3,11 +3,12 @@
 namespace App\Actions\Discounts;
 
 use App\Actions\BaseAction;
-use App\DTOs\Discount\DiscountDTO;
+use App\DTOs\DiscountDTO;
 use App\Models\Discount;
 use App\Models\DiscountTarget;
 use Exception;
 use Illuminate\Support\Facades\DB;
+
 
 class CreateDiscountAction extends BaseAction
 {

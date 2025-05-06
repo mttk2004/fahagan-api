@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api\V1\Supplier;
 
-use App\DTOs\Supplier\SupplierDTO;
+use App\DTOs\SupplierDTO;
 use App\Models\Book;
 use App\Models\Publisher;
 use App\Models\Supplier;
@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
+
 
 class SupplierServiceTest extends TestCase
 {

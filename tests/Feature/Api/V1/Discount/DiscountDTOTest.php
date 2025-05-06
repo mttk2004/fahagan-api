@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\Discount;
 
-use App\DTOs\Discount\DiscountDTO;
+use App\DTOs\DiscountDTO;
 use PHPUnit\Framework\TestCase;
+
 
 class DiscountDTOTest extends TestCase
 {

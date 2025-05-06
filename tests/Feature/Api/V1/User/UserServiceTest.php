@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Api\V1\User;
 
-use App\DTOs\User\UserDTO;
+use App\DTOs\UserDTO;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
+
 
 class UserServiceTest extends TestCase
 {

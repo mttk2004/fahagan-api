@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOs\Author;
+namespace App\DTOs;
 
-class AuthorDTO extends \App\DTOs\BaseDTO
+class AuthorDTO extends BaseDTO
 {
     public function __construct(
         public readonly ?string $name,

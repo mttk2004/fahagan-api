@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\DTOs\Address\AddressDTO;
+use App\DTOs\AddressDTO;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddressStoreRequest;
@@ -18,6 +18,7 @@ use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Throwable;
+
 
 class CustomerAddressController extends Controller
 {

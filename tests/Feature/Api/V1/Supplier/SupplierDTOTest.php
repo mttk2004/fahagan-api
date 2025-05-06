@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\Supplier;
 
-use App\DTOs\Supplier\SupplierDTO;
+use App\DTOs\SupplierDTO;
 use PHPUnit\Framework\TestCase;
+
 
 class SupplierDTOTest extends TestCase
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOs\CartItem;
+namespace App\DTOs;
 
-class CartItemDTO extends \App\DTOs\BaseDTO
+class CartItemDTO extends BaseDTO
 {
     public function __construct(
         public readonly int $book_id,

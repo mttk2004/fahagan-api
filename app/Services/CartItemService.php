@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use App\DTOs\CartItem\CartItemDTO;
+use App\DTOs\CartItemDTO;
 use App\Models\CartItem;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+
 
 class CartItemService
 {

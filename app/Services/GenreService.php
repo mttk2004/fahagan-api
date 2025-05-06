@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Constants\ApplicationConstants;
 use App\DTOs\BaseDTO;
-use App\DTOs\Genre\GenreDTO;
+use App\DTOs\GenreDTO;
 use App\Filters\GenreFilter;
 use App\Http\Sorts\V1\GenreSort;
 use App\Models\Genre;
@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+
 
 class GenreService extends BaseService
 {

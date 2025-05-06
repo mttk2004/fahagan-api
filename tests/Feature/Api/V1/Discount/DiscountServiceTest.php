@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api\V1\Discount;
 
-use App\DTOs\Discount\DiscountDTO;
+use App\DTOs\DiscountDTO;
 use App\Models\Book;
 use App\Models\Discount;
 use App\Services\DiscountService;
@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
+
 
 class DiscountServiceTest extends TestCase
 {

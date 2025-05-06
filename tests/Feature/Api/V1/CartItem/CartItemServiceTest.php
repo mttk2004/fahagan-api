@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Api\V1\CartItem;
 
-use App\DTOs\CartItem\CartItemDTO;
+use App\DTOs\CartItemDTO;
 use App\Models\Book;
 use App\Models\User;
 use App\Services\CartItemService;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+
 
 class CartItemServiceTest extends TestCase
 {

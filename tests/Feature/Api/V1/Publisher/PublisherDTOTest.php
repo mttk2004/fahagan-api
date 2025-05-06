@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\Publisher;
 
-use App\DTOs\Publisher\PublisherDTO;
+use App\DTOs\PublisherDTO;
 use Tests\TestCase;
+
 
 class PublisherDTOTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\DTOs\Order\OrderDTO;
+use App\DTOs\OrderDTO;
 use App\Enums\OrderStatus;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
@@ -20,6 +20,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+
 
 class CustomerOrderController extends Controller
 {

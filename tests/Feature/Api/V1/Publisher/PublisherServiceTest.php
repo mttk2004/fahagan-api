@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Api\V1\Publisher;
 
-use App\DTOs\Publisher\PublisherDTO;
+use App\DTOs\PublisherDTO;
 use App\Models\Publisher;
 use App\Services\PublisherService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
+
 
 class PublisherServiceTest extends TestCase
 {

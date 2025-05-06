@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
+
 class DiscountControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -93,7 +94,7 @@ class DiscountControllerTest extends TestCase
         $book = \App\Models\Book::factory()->create();
 
         // Tạo DiscountDTO từ constructor thay vì yêu cầu API
-        $discountDTO = new \App\DTOs\Discount\DiscountDTO(
+        $discountDTO = new \App\DTOs\DiscountDTO(
             'Test Discount',
             'percentage',
             10,
@@ -457,7 +458,7 @@ class DiscountControllerTest extends TestCase
         $discountService = app(\App\Services\DiscountService::class);
 
         // Tạo DiscountDTO
-        $discountDTO = new \App\DTOs\Discount\DiscountDTO(
+        $discountDTO = new \App\DTOs\DiscountDTO(
             'Conditional Discount',
             'percentage',
             20.0,
@@ -507,7 +508,7 @@ class DiscountControllerTest extends TestCase
         $discountService = app(\App\Services\DiscountService::class);
 
         // Tạo DiscountDTO cho cập nhật
-        $discountDTO = new \App\DTOs\Discount\DiscountDTO(
+        $discountDTO = new \App\DTOs\DiscountDTO(
             null, // không cập nhật name
             null, // không cập nhật discount_type
             null, // không cập nhật discount_value

@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Api\V1\Address;
 
-use App\DTOs\Address\AddressDTO;
+use App\DTOs\AddressDTO;
 use App\Models\Address;
 use App\Models\User;
 use App\Services\AddressService;
-use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
+
 
 class AddressServiceTest extends TestCase
 {

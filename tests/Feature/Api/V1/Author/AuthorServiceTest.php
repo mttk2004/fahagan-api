@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Api\V1\Author;
 
-use App\DTOs\Author\AuthorDTO;
+use App\DTOs\AuthorDTO;
 use App\Models\Author;
 use App\Services\AuthorService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
+
 
 class AuthorServiceTest extends TestCase
 {

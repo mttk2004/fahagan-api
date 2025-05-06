@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Constants\ApplicationConstants;
 use App\DTOs\BaseDTO;
-use App\DTOs\Publisher\PublisherDTO;
+use App\DTOs\PublisherDTO;
 use App\Filters\PublisherFilter;
 use App\Http\Sorts\V1\PublisherSort;
 use App\Models\Publisher;
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+
 
 class PublisherService extends BaseService
 {

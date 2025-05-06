@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Actions\Orders\CreateOrderAction;
 use App\Constants\ApplicationConstants;
-use App\DTOs\Order\OrderDTO;
+use App\DTOs\OrderDTO;
 use App\Enums\OrderStatus;
 use App\Filters\OrderFilter;
 use App\Http\Sorts\V1\OrderSort;
@@ -14,6 +14,7 @@ use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+
 
 class OrderService extends BaseService
 {

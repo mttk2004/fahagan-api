@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\DTOs\CartItem\CartItemDTO;
+use App\DTOs\CartItemDTO;
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddToCartRequest;
@@ -13,6 +13,7 @@ use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
+
 
 class CustomerCartItemController extends Controller
 {

@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\Book;
 
-use App\DTOs\Book\BookDTO;
+use App\DTOs\BookDTO;
 use PHPUnit\Framework\TestCase;
+
 
 class BookDTOTest extends TestCase
 {

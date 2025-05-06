@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Api\V1\CartItem;
 
-use App\DTOs\CartItem\CartItemDTO;
+use App\DTOs\CartItemDTO;
 use PHPUnit\Framework\TestCase;
+
 
 class CartItemDTOTest extends TestCase
 {

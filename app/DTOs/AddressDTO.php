@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOs\Address;
+namespace App\DTOs;
 
-class AddressDTO extends \App\DTOs\BaseDTO
+class AddressDTO extends BaseDTO
 {
     public function __construct(
         public readonly ?string $name = null,

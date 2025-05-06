@@ -3,9 +3,10 @@
 namespace App\Actions\Discounts;
 
 use App\Actions\BaseAction;
-use App\DTOs\Discount\DiscountDTO;
+use App\DTOs\DiscountDTO;
 use App\Models\Discount;
 use Illuminate\Validation\ValidationException;
+
 
 class ValidateDiscountAction extends BaseAction
 {

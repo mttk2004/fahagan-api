@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Constants\ApplicationConstants;
-use App\DTOs\Address\AddressDTO;
+use App\DTOs\AddressDTO;
 use App\Models\Address;
 use App\Models\User;
 use Exception;
@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+
 
 class AddressService extends BaseService
 {

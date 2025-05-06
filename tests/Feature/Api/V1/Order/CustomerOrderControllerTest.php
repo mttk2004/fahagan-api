@@ -15,6 +15,7 @@ use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+
 class CustomerOrderControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -187,7 +188,7 @@ class CustomerOrderControllerTest extends TestCase
         ];
 
         // Test tạo đơn hàng (bỏ qua validation để test trực tiếp service)
-        $orderDTO = \App\DTOs\Order\OrderDTO::fromRequest($orderData);
+        $orderDTO = \App\DTOs\OrderDTO::fromRequest($orderData);
         $orderService = app(\App\Services\OrderService::class);
         $order = $orderService->createOrder($orderDTO, $this->customer);
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTOs\Discount;
+namespace App\DTOs;
 
-class DiscountDTO extends \App\DTOs\BaseDTO
+class DiscountDTO extends BaseDTO
 {
     public function __construct(
         public readonly ?string $name,

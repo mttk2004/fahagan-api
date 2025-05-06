@@ -11,7 +11,7 @@ use App\Actions\Discounts\UpdateDiscountAction;
 use App\Actions\Discounts\ValidateDiscountAction;
 use App\Constants\ApplicationConstants;
 use App\DTOs\BaseDTO;
-use App\DTOs\Discount\DiscountDTO;
+use App\DTOs\DiscountDTO;
 use App\Filters\DiscountFilter;
 use App\Http\Sorts\V1\DiscountSort;
 use App\Models\Book;
@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
+
 
 class DiscountService extends BaseService
 {
