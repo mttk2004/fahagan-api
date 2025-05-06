@@ -8,7 +8,8 @@ class GenreDTO extends \App\DTOs\BaseDTO
         public readonly ?string $name,
         public readonly ?string $slug,
         public readonly ?string $description,
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(array $validatedData): self
     {

@@ -30,7 +30,8 @@ class CustomerOrderController extends Controller
         private readonly OrderService $orderService,
         private readonly VNPayService $vnpayService,
         private readonly string $entityName = 'order'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all orders of the authenticated customer.

@@ -28,7 +28,8 @@ class PublisherController extends Controller
     public function __construct(
         private readonly PublisherService $publisherService,
         private readonly string $entityName = 'publisher'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all publishers

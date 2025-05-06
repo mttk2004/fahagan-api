@@ -11,7 +11,8 @@ class AddressDTO extends \App\DTOs\BaseDTO
         public readonly ?string $district = null,
         public readonly ?string $ward = null,
         public readonly ?string $address_line = null,
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(array $validatedData): self
     {

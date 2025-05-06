@@ -11,7 +11,8 @@ class UserDTO extends \App\DTOs\BaseDTO
         public readonly ?string $phone,
         public readonly ?string $password,
         public readonly ?bool $is_customer = true,
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(array $validatedData): self
     {

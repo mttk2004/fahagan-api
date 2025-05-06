@@ -7,7 +7,8 @@ class CartItemDTO extends \App\DTOs\BaseDTO
     public function __construct(
         public readonly int $book_id,
         public readonly int $quantity,
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(array $validatedData): self
     {

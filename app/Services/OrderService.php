@@ -27,7 +27,8 @@ class OrderService extends BaseService
         protected string $filterClass = OrderFilter::class,
         protected string $sortClass = OrderSort::class,
         protected array $with = ['customer', 'employee', 'payment']
-    ) {}
+    ) {
+    }
 
     /**
      * Get all orders with pagination and filtering.

@@ -23,7 +23,8 @@ class CustomerProfileController extends Controller
     public function __construct(
         private readonly UserService $userService,
         private readonly string $entityName = 'user'
-    ) {}
+    ) {
+    }
 
     /**
      * Xem thông tin profile của customer đang đăng nhập

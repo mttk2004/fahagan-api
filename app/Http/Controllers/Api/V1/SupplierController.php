@@ -28,7 +28,8 @@ class SupplierController extends Controller
     public function __construct(
         private readonly SupplierService $supplierService,
         private readonly string $entityName = 'supplier'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all suppliers

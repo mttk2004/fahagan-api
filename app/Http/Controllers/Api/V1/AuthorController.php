@@ -28,7 +28,8 @@ class AuthorController extends Controller
     public function __construct(
         private readonly AuthorService $authorService,
         private readonly string $entityName = 'author'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all authors

@@ -18,7 +18,8 @@ class CustomerCartItemController extends Controller
 {
     public function __construct(
         private readonly CartItemService $cartItemService
-    ) {}
+    ) {
+    }
 
     /**
      * Get all cart items of the customer.

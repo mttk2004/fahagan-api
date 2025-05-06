@@ -23,7 +23,8 @@ class PaymentController extends Controller
     public function __construct(
         private readonly VNPayService $vnpayService,
         private readonly string $entityName = 'payment'
-    ) {}
+    ) {
+    }
 
     /**
      * Tạo URL thanh toán VNPay và chuyển hướng

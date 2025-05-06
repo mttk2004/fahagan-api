@@ -31,7 +31,8 @@ class BookController extends Controller
     public function __construct(
         private readonly BookService $bookService,
         private readonly string $entityName = 'book'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all books

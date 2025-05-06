@@ -8,7 +8,8 @@ class OrderDTO extends \App\DTOs\BaseDTO
         public readonly ?string $method,
         public readonly ?int $address_id = null,
         public readonly array $items = [],
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(array $validatedData): self
     {

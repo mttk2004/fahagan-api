@@ -27,7 +27,8 @@ class OrderController extends Controller
     public function __construct(
         private readonly OrderService $orderService,
         private readonly string $entityName = 'order'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all orders

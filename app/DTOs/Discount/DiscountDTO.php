@@ -16,7 +16,8 @@ class DiscountDTO extends \App\DTOs\BaseDTO
         public readonly ?string $description = null,
         public readonly ?bool $is_active = true,
         public readonly array $target_ids = [],
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(array $validatedData): self
     {

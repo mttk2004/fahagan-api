@@ -27,7 +27,8 @@ class UserController extends Controller
     public function __construct(
         private readonly UserService $userService,
         private readonly string $entityName = 'user'
-    ) {}
+    ) {
+    }
 
     /**
      * Get all users
