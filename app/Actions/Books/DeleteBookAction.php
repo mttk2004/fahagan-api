@@ -6,16 +6,18 @@ use App\Actions\BaseAction;
 use App\Models\Book;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class DeleteBookAction extends BaseAction
 {
     /**
      * Xóa sách (soft delete)
      *
-     * @param  Book  $book  Sách cần xóa
+     * @param mixed ...$args
+     *
      * @return Book Sách đã xóa
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function execute(...$args): Book
     {

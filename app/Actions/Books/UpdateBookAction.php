@@ -6,18 +6,17 @@ use App\Actions\BaseAction;
 use App\Models\Book;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class UpdateBookAction extends BaseAction
 {
     /**
      * Cập nhật sách với dữ liệu và mối quan hệ mới
      *
-     * @param  Book  $book  Sách cần cập nhật
-     * @param  array  $data  Dữ liệu cập nhật
-     * @param  array  $relations  Mối quan hệ cần cập nhật
-     * @param  array  $with  Các mối quan hệ cần eager loading
+     * @param mixed ...$args
      *
-     * @throws Exception
+     * @return Book
+     * @throws Throwable
      */
     public function execute(...$args): Book
     {

@@ -12,11 +12,9 @@ class ValidateBookAction extends BaseAction
     /**
      * Xác thực dữ liệu sách
      *
-     * @param  BookDTO  $bookDTO
-     * @param  bool  $forUpdate  Xác thực cho cập nhật hay tạo mới
-     * @param  Book|null  $book  Đối tượng Book hiện tại (chỉ khi $forUpdate = true)
+     * @param mixed ...$args
      *
-     * @throws ValidationException
+     * @return bool
      */
     public function execute(...$args): bool
     {

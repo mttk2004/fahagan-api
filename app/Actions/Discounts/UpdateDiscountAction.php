@@ -7,17 +7,18 @@ use App\Models\Discount;
 use App\Models\DiscountTarget;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
+
 
 class UpdateDiscountAction extends BaseAction
 {
     /**
      * Cập nhật mã giảm giá với dữ liệu và mối quan hệ mới
      *
-     * @param  Discount  $discount  Mã giảm giá cần cập nhật
-     * @param  array  $data  Dữ liệu cập nhật
-     * @param  array  $relations  Mối quan hệ cần cập nhật
+     * @param mixed ...$args
      *
-     * @throws Exception
+     * @return Discount
+     * @throws Throwable
      */
     public function execute(...$args): Discount
     {

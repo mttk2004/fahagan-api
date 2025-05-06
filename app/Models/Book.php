@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\App;
 /**
  * @method static findOrFail($book_id)
  * @method static create(mixed $bookData)
+ * @method static find($book_id)
  */
 class Book extends Model implements HasBookRelations
 {

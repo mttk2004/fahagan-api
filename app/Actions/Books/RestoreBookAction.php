@@ -3,20 +3,21 @@
 namespace App\Actions\Books;
 
 use App\Actions\BaseAction;
-use App\DTOs\BookDTO;
 use App\Models\Book;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
+
 
 class RestoreBookAction extends BaseAction
 {
     /**
      * Khôi phục sách đã bị xóa mềm và cập nhật thông tin mới
      *
-     * @param  Book  $trashedBook  Sách đã bị xóa mềm
-     * @param  BookDTO  $bookDTO  Dữ liệu để cập nhật
+     * @param mixed ...$args
      *
-     * @throws Exception
+     * @return Book
+     * @throws Throwable
      */
     public function execute(...$args): Book
     {

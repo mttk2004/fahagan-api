@@ -3,20 +3,21 @@
 namespace App\Actions\Books;
 
 use App\Actions\BaseAction;
-use App\DTOs\BookDTO;
 use App\Models\Book;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
+
 
 class CreateBookAction extends BaseAction
 {
     /**
      * Tạo sách mới
      *
-     * @param  BookDTO  $bookDTO
-     * @param  array  $relations  Các mối quan hệ cần eager loading
+     * @param mixed ...$args
      *
-     * @throws Exception
+     * @return Book
+     * @throws Throwable
      */
     public function execute(...$args): Book
     {

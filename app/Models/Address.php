@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @method static factory()
+ * @method static where(string $string, $address_id)
  */
 class Address extends Model
 {

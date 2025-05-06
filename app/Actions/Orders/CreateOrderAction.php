@@ -11,16 +11,16 @@ use App\Models\Order;
 use App\Utils\AuthUtils;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class CreateOrderAction extends BaseAction
 {
     /**
      * Tạo order mới
      *
-     * @param  OrderDTO  $orderDTO
-     * @param  array  $relations  Các mối quan hệ cần eager loading
-     *
-     * @throws Exception
+     * @param mixed ...$args
+     * @return Order
+     * @throws Throwable
      */
     public function execute(...$args): Order
     {

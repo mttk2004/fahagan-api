@@ -3,7 +3,6 @@
 namespace App\Actions\Discounts;
 
 use App\Actions\BaseAction;
-use App\DTOs\DiscountDTO;
 use App\Models\Discount;
 use Illuminate\Validation\ValidationException;
 
@@ -12,11 +11,8 @@ class ValidateDiscountAction extends BaseAction
     /**
      * Xác thực dữ liệu mã giảm giá
      *
-     * @param  DiscountDTO  $discountDTO
-     * @param  bool  $forUpdate  Xác thực cho cập nhật hay tạo mới
-     * @param  Discount|null  $discount  Đối tượng Discount hiện tại (chỉ khi $forUpdate = true)
-     *
-     * @throws ValidationException
+     * @param mixed ...$args
+     * @return bool
      */
     public function execute(...$args): bool
     {

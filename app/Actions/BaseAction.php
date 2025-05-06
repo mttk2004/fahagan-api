@@ -13,5 +13,5 @@ abstract class BaseAction
      * @param  mixed  ...$args  Các tham số cần thiết cho action
      * @return mixed
      */
-    abstract public function execute(...$args);
+    abstract public function execute(...$args): mixed;
 }

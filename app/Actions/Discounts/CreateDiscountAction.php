@@ -3,21 +3,22 @@
 namespace App\Actions\Discounts;
 
 use App\Actions\BaseAction;
-use App\DTOs\DiscountDTO;
 use App\Models\Discount;
 use App\Models\DiscountTarget;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
+
 
 class CreateDiscountAction extends BaseAction
 {
     /**
      * Tạo mã giảm giá mới
      *
-     * @param  DiscountDTO  $discountDTO
-     * @param  array  $relations  Các mối quan hệ cần eager loading
+     * @param mixed ...$args
      *
-     * @throws Exception
+     * @return Discount
+     * @throws Throwable
      */
     public function execute(...$args): Discount
     {

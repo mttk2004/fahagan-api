@@ -3,7 +3,6 @@
 namespace App\Actions\Books;
 
 use App\Actions\BaseAction;
-use App\DTOs\BookDTO;
 use App\Models\Book;
 
 class FindTrashedBookAction extends BaseAction
@@ -11,7 +10,9 @@ class FindTrashedBookAction extends BaseAction
     /**
      * Tìm sách đã bị xóa mềm với title và edition cụ thể
      *
-     * @param  BookDTO  $bookDTO
+     * @param mixed ...$args
+     *
+     * @return Book|null
      */
     public function execute(...$args): ?Book
     {

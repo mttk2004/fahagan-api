@@ -6,16 +6,17 @@ use App\Actions\BaseAction;
 use App\Models\Discount;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
+
 
 class DeleteDiscountAction extends BaseAction
 {
     /**
      * Xóa mã giảm giá (soft delete)
      *
-     * @param  Discount  $discount  Mã giảm giá cần xóa
+     * @param mixed ...$args
      * @return Discount Mã giảm giá đã xóa
-     *
-     * @throws Exception
+     * @throws Throwable
      */
     public function execute(...$args): Discount
     {

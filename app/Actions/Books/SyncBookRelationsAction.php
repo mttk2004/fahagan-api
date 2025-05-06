@@ -3,15 +3,14 @@
 namespace App\Actions\Books;
 
 use App\Actions\BaseAction;
-use App\Models\Book;
 
 class SyncBookRelationsAction extends BaseAction
 {
     /**
      * Đồng bộ các mối quan hệ với sách
      *
-     * @param  Book  $book  Sách cần đồng bộ mối quan hệ
-     * @param  array  $relations  Mảng chứa các mối quan hệ cần đồng bộ
+     * @param mixed ...$args
+     * @return bool
      */
     public function execute(...$args): bool
     {

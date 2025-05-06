@@ -3,7 +3,6 @@
 namespace App\Actions\Discounts;
 
 use App\Actions\BaseAction;
-use App\DTOs\DiscountDTO;
 use App\Models\Discount;
 
 class FindTrashedDiscountAction extends BaseAction
@@ -11,7 +10,9 @@ class FindTrashedDiscountAction extends BaseAction
     /**
      * Tìm mã giảm giá đã bị xóa mềm với tên cụ thể
      *
-     * @param  DiscountDTO  $discountDTO
+     * @param mixed ...$args
+     *
+     * @return Discount|null
      */
     public function execute(...$args): ?Discount
     {

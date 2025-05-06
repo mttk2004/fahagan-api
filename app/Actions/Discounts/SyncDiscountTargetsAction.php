@@ -3,7 +3,6 @@
 namespace App\Actions\Discounts;
 
 use App\Actions\BaseAction;
-use App\Models\Discount;
 use App\Models\DiscountTarget;
 
 class SyncDiscountTargetsAction extends BaseAction
@@ -11,8 +10,8 @@ class SyncDiscountTargetsAction extends BaseAction
     /**
      * Đồng bộ các mối quan hệ targets của mã giảm giá
      *
-     * @param  Discount  $discount  Mã giảm giá cần đồng bộ mối quan hệ
-     * @param  array  $targetIds  Mảng chứa các target_id cần đồng bộ
+     * @param mixed ...$args
+     * @return bool
      */
     public function execute(...$args): bool
     {
