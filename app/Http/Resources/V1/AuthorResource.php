@@ -12,6 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $biography
  * @property mixed $books
  * @property mixed $image_url
+ * @property mixed $writtenBooks
  */
 class AuthorResource extends JsonResource
 {

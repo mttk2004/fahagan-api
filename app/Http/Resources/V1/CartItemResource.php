@@ -6,7 +6,11 @@ use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin CartItem */
+/** @mixin CartItem
+ * @property mixed $id
+ * @property mixed $quantity
+ * @property mixed $book
+ */
 class CartItemResource extends JsonResource
 {
     public function toArray(Request $request): array

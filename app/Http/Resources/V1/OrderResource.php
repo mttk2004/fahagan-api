@@ -23,6 +23,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $delivered_at
  * @property mixed $created_at
  * @property mixed $updated_at
+ * @property mixed $completed_at
+ * @property mixed $customer
+ *
+ * @property mixed $employee
+ * @property mixed $payment
+ * @property mixed $items
  */
 class OrderResource extends JsonResource
 {

@@ -17,6 +17,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $created_at
  * @property mixed $updated_at
  * @property mixed $books
+ * @property mixed $suppliedBooks
  */
 class SupplierResource extends JsonResource
 {

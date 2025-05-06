@@ -12,6 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property mixed $book_count
  * @property mixed $description
  * @property mixed $books
+ * @property mixed $slug
  */
 class GenreResource extends JsonResource
 {

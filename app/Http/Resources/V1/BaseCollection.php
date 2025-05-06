@@ -6,7 +6,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 abstract class BaseCollection extends ResourceCollection
 {
-    protected $isDirectResponse = true;
+    protected bool $isDirectResponse = true;
 
     /**
      * Đánh dấu collection có phải là response trực tiếp hay không
