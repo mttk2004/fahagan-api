@@ -31,7 +31,7 @@ class AuthUtils
         $hasPermission = $user->hasPermissionTo($permission);
 
         // Debug information
-        Log::debug("Permission check for [{$permission}]", [
+        Log::debug("Permission check for [$permission]", [
             'user_id' => $user->id,
             'user_roles' => $user->getRoleNames(),
             'has_permission' => $hasPermission,

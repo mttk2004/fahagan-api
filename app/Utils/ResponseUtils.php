@@ -2,7 +2,10 @@
 
 namespace App\Utils;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\MessageBag;
+
 
 class ResponseUtils
 {
@@ -97,10 +100,10 @@ class ResponseUtils
         array $errors = [],
     ): JsonResponse {
         // Nếu thông báo lỗi là một đối tượng MessageBag hoặc Validator
-        if ($message instanceof \Illuminate\Support\MessageBag) {
+        if ($message instanceof MessageBag) {
             $errors = $message->getMessages();
             $message = 'Dữ liệu không hợp lệ.';
-        } elseif ($message instanceof \Illuminate\Contracts\Validation\Validator) {
+        } elseif ($message instanceof Validator) {
             $errors = $message->errors()->getMessages();
             $message = 'Dữ liệu không hợp lệ.';
         }
