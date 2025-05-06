@@ -18,7 +18,8 @@
         "laravel/tinker": "^2.10.1",
         "mailersend/laravel-driver": "^2.8",
         "nunomaduro/termwind": "*",
-        "spatie/laravel-permission": "^6.16"
+        "spatie/laravel-permission": "^6.16",
+      "ext-pdo": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -33,14 +33,14 @@ trait HandleExceptions
 
         // Xử lý ValidationException
         if ($e instanceof ValidationException) {
-            Log::info("Lỗi validation cho {$entityName}: ".$e->getMessage(), $logData);
+            Log::info("Lỗi validation cho $entityName: ".$e->getMessage(), $logData);
 
             return ResponseUtils::validationError('Dữ liệu không hợp lệ.', $e->errors());
         }
 
         // Xử lý các Exception còn lại
         $logContext = array_merge(['exception' => get_class($e)], $logData);
-        Log::error("Lỗi xử lý {$entityName}: ".$e->getMessage(), $logContext);
+        Log::error("Lỗi xử lý $entityName: ".$e->getMessage(), $logContext);
 
         return ResponseUtils::serverError($e->getMessage());
     }
@@ -62,7 +62,7 @@ trait HandleExceptions
             'discount' => ResponseMessage::NOT_FOUND_DISCOUNT->value,
             'address' => ResponseMessage::NOT_FOUND_ADDRESS->value,
             'cart_item' => ResponseMessage::NOT_FOUND_CART_ITEM->value,
-            default => "Không tìm thấy {$entityName}.",
+            default => "Không tìm thấy $entityName.",
         };
     }
 }
