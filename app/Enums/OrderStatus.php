@@ -31,10 +31,9 @@ enum OrderStatus: string
     {
         return match ($this) {
             self::PENDING => in_array($status, [self::APPROVED, self::CANCELED]),
-            self::APPROVED => in_array($status, [self::DELIVERED]),
-            self::DELIVERED => in_array($status, [self::COMPLETED]),
-            self::COMPLETED => false,
-            self::CANCELED => false,
+            self::APPROVED => $status == self::DELIVERED,
+            self::DELIVERED => $status == self::COMPLETED,
+            self::COMPLETED, self::CANCELED => false,
         };
     }
 }
