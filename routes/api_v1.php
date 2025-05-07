@@ -137,9 +137,9 @@ Route::middleware('auth.*')->group(function () {
       )->name('admin.employees.permissions.sync');
 
       // Role routes
-      Route::post('/{employee}/roles', [EmployeeController::class, 'addRole'])->name('admin.employees.add-role');
-      Route::post('/{employee}/roles', [EmployeeController::class, 'removeRole'])->name('admin.employees.remove-role');
-      Route::post('/{employee}/roles', [EmployeeController::class, 'syncRoles'])->name('admin.employees.sync-roles');
+      Route::post('/{employee}/roles/add', [EmployeeController::class, 'addRole'])->name('admin.employees.add-role');
+      Route::post('/{employee}/roles/remove', [EmployeeController::class, 'removeRole'])->name('admin.employees.remove-role');
+      Route::post('/{employee}/roles/sync', [EmployeeController::class, 'syncRoles'])->name('admin.employees.sync-roles');
     });
   });
 });
