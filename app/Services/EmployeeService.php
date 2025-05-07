@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Constants\ApplicationConstants;
 use App\DTOs\UserDTO;
-use App\Filters\UserFilter;
+use App\Http\Filters\V1\UserFilter;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use Exception;
@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+
 
 class EmployeeService extends BaseService
 {

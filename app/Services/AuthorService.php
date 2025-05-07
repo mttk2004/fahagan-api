@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Constants\ApplicationConstants;
 use App\DTOs\AuthorDTO;
 use App\DTOs\BaseDTO;
-use App\Filters\AuthorFilter;
+use App\Http\Filters\V1\AuthorFilter;
 use App\Http\Sorts\V1\AuthorSort;
 use App\Models\Author;
 use Exception;
@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+
 
 class AuthorService extends BaseService
 {

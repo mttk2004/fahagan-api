@@ -12,7 +12,7 @@ use App\Actions\Books\ValidateBookAction;
 use App\Constants\ApplicationConstants;
 use App\DTOs\BaseDTO;
 use App\DTOs\BookDTO;
-use App\Filters\BookFilter;
+use App\Http\Filters\V1\BookFilter;
 use App\Http\Sorts\V1\BookSort;
 use App\Models\Book;
 use Exception;
@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+
 
 class BookService extends BaseService
 {

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Filters;
+namespace App\Http\Filters\V1;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-class SupplierFilter
+
+class AuthorFilter
 {
     protected Request $request;
 
@@ -24,7 +25,7 @@ class SupplierFilter
         }
 
         $this->filterByName($query);
-        $this->filterByEmail($query);
+        $this->filterByBooks($query);
 
         return $query;
     }
@@ -36,10 +37,13 @@ class SupplierFilter
         }
     }
 
-    protected function filterByEmail(Builder $query): void
+    protected function filterByBooks(Builder $query): void
     {
-        if (isset($this->filters['email'])) {
-            $query->where('email', 'like', '%'.$this->filters['email'].'%');
+        if (isset($this->filters['books'])) {
+            $bookIds = explode(',', $this->filters['books']);
+            $query->whereHas('writtenBooks', function ($q) use ($bookIds) {
+                $q->whereIn('books.id', $bookIds);
+            });
         }
     }
 }
