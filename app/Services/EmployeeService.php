@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 
-
 class EmployeeService extends BaseService
 {
     /**

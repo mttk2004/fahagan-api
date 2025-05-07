@@ -5,7 +5,6 @@ namespace App\Http\Filters\V1;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-
 class BookFilter
 {
     protected Request $request;

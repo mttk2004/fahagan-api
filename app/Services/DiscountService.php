@@ -24,7 +24,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
-
 class DiscountService extends BaseService
 {
     /**
