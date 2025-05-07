@@ -38,94 +38,108 @@ Route::get('/payments/vnpay-return', [PaymentController::class, 'handleVNPayRetu
  * AUTHENTICATED ROUTES
  */
 Route::middleware('auth.*')->group(function () {
-    /**
-     * CUSTOMER ROUTES
-     */
-    Route::middleware('auth.customer')->prefix('customer')->group(function () {
-        // Cart routes
-        Route::prefix('cart')->controller(CustomerCartItemController::class)->group(function () {
-            Route::get('/', 'index')->name('customer.cart.index');
-            Route::post('/add', 'addToCart')->name('customer.cart.add');
-            Route::post('/update-quantity', 'updateCartItemQuantity')->name('customer.cart.update-quantity');
-            Route::delete('/remove/{book_id}', 'removeFromCart')->whereNumber('book_id')->name('customer.cart.remove');
-        });
-
-        // Address routes
-        Route::prefix('addresses')->controller(CustomerAddressController::class)->group(function () {
-            Route::get('/', 'index')->name('customer.addresses.index');
-            Route::post('/', 'store')->name('customer.addresses.store');
-            Route::patch('/{address}', 'update')->name('customer.addresses.update');
-            Route::delete('/{address}', 'destroy')->name('customer.addresses.destroy');
-        });
-
-        // Profile routes
-        Route::controller(CustomerProfileController::class)->group(function () {
-            Route::get('/profile', 'show')->name('customer.profile.show');
-            Route::patch('/profile', 'update')->name('customer.profile.update');
-            Route::delete('/profile', 'destroy')->name('customer.profile.destroy');
-        });
-
-        // Customer orders routes
-        Route::prefix('orders')->controller(CustomerOrderController::class)->group(function () {
-            Route::get('/', 'index')->name('customer.orders.index');
-            Route::get('/{order}', 'show')->name('customer.orders.show');
-            Route::post('/', 'store')->name('customer.orders.store');
-            Route::post('/{order}/cancel', 'cancel')->name('customer.orders.cancel');
-            Route::post('/{order}/complete', 'complete')->name('customer.orders.complete');
-        });
-
-        // Payment routes
-        Route::get('/orders/{order}/pay-vnpay', [PaymentController::class, 'createVNPayPayment'])
-          ->name('customer.order.pay-vnpay');
+  /**
+   * CUSTOMER ROUTES
+   */
+  Route::middleware('auth.customer')->prefix('customer')->group(function () {
+    // Cart routes
+    Route::prefix('cart')->controller(CustomerCartItemController::class)->group(function () {
+      Route::get('/', 'index')->name('customer.cart.index');
+      Route::post('/add', 'addToCart')->name('customer.cart.add');
+      Route::post('/update-quantity', 'updateCartItemQuantity')->name('customer.cart.update-quantity');
+      Route::delete('/remove/{book_id}', 'removeFromCart')->whereNumber('book_id')->name('customer.cart.remove');
     });
 
-    /**
-     * EMPLOYEE ROUTES
-     */
-    Route::middleware('auth.employee')->group(function () {
-        // CRUD resources except index and show (which are public)
-        Route::apiResources([
-          'books' => BookController::class,
-          'authors' => AuthorController::class,
-          'publishers' => PublisherController::class,
-          'genres' => GenreController::class,
-        ], ['except' => ['index', 'show']]);
-
-        // Full CRUD resources (employee only)
-        Route::apiResources([
-          'discounts' => DiscountController::class,
-          'suppliers' => SupplierController::class,
-        ]);
-
-        // Additional genre routes
-        Route::prefix('genres')->controller(GenreController::class)->group(function () {
-            Route::post('restore/{genre}', 'restore')->name('genres.restore');
-        });
-
-        // Additional supplier routes
-        Route::post('suppliers/restore/{supplier}', [SupplierController::class, 'restore'])
-          ->name('suppliers.restore');
-
-        // Full routes for users
-        Route::apiResource('users', UserController::class)->except('store');
-
-        // Full routes for orders
-        Route::prefix('orders')->controller(OrderController::class)->group(function () {
-            Route::get('/', 'index')->name('orders.index');
-            Route::get('/{order_id}', 'show')->name('orders.show');
-            Route::patch('/{order_id}/status', [OrderController::class, 'updateStatus']);
-        });
+    // Address routes
+    Route::prefix('addresses')->controller(CustomerAddressController::class)->group(function () {
+      Route::get('/', 'index')->name('customer.addresses.index');
+      Route::post('/', 'store')->name('customer.addresses.store');
+      Route::patch('/{address}', 'update')->name('customer.addresses.update');
+      Route::delete('/{address}', 'destroy')->name('customer.addresses.destroy');
     });
 
-    /**
-     * ADMIN ROUTES
-     */
-    Route::middleware('auth.admin')->prefix('admin')->group(function () {
-        Route::prefix('employees')->group(function () {
-            Route::get('/', [EmployeeController::class, 'index'])->name('admin.employees.index');
-            Route::get('/{employee}', [EmployeeController::class, 'show'])->name('admin.employees.show');
-            Route::post('/{employee}/permissions', [EmployeeController::class, 'updatePermissions'])->name('admin.employees.update-permissions');
-            Route::post('/{employee}/roles', [EmployeeController::class, 'updateRoles'])->name('admin.employees.update-roles');
-        });
+    // Profile routes
+    Route::controller(CustomerProfileController::class)->group(function () {
+      Route::get('/profile', 'show')->name('customer.profile.show');
+      Route::patch('/profile', 'update')->name('customer.profile.update');
+      Route::delete('/profile', 'destroy')->name('customer.profile.destroy');
     });
+
+    // Customer orders routes
+    Route::prefix('orders')->controller(CustomerOrderController::class)->group(function () {
+      Route::get('/', 'index')->name('customer.orders.index');
+      Route::get('/{order}', 'show')->name('customer.orders.show');
+      Route::post('/', 'store')->name('customer.orders.store');
+      Route::post('/{order}/cancel', 'cancel')->name('customer.orders.cancel');
+      Route::post('/{order}/complete', 'complete')->name('customer.orders.complete');
+    });
+
+    // Payment routes
+    Route::get('/orders/{order}/pay-vnpay', [PaymentController::class, 'createVNPayPayment'])
+      ->name('customer.order.pay-vnpay');
+  });
+
+  /**
+   * EMPLOYEE ROUTES
+   */
+  Route::middleware('auth.employee')->group(function () {
+    // CRUD resources except index and show (which are public)
+    Route::apiResources([
+      'books' => BookController::class,
+      'authors' => AuthorController::class,
+      'publishers' => PublisherController::class,
+      'genres' => GenreController::class,
+    ], ['except' => ['index', 'show']]);
+
+    // Full CRUD resources (employee only)
+    Route::apiResources([
+      'discounts' => DiscountController::class,
+      'suppliers' => SupplierController::class,
+    ]);
+
+    // Additional genre routes
+    Route::prefix('genres')->controller(GenreController::class)->group(function () {
+      Route::post('restore/{genre}', 'restore')->name('genres.restore');
+    });
+
+    // Additional supplier routes
+    Route::post('suppliers/restore/{supplier}', [SupplierController::class, 'restore'])
+      ->name('suppliers.restore');
+
+    // Full routes for users
+    Route::apiResource('users', UserController::class)->except('store');
+
+    // Full routes for orders
+    Route::prefix('orders')->controller(OrderController::class)->group(function () {
+      Route::get('/', 'index')->name('orders.index');
+      Route::get('/{order_id}', 'show')->name('orders.show');
+      Route::patch('/{order_id}/status', [OrderController::class, 'updateStatus']);
+    });
+  });
+
+  /**
+   * ADMIN ROUTES
+   */
+  Route::middleware('auth.admin')->prefix('admin')->group(function () {
+    Route::prefix('employees')->group(function () {
+      Route::get('/', [EmployeeController::class, 'index'])->name('admin.employees.index');
+      Route::get('/{employee}', [EmployeeController::class, 'show'])->name('admin.employees.show');
+
+      // Permission routes
+      Route::post(
+        '/{employee}/permissions/add',
+        [EmployeeController::class, 'addPermissions']
+      )->name('admin.employees.permissions.add');
+      Route::post('/{employee}/permissions/remove', [EmployeeController::class, 'removePermissions'])->name('admin.employees.permissions.remove');
+      Route::post(
+        '/{employee}/permissions/sync',
+        [EmployeeController::class, 'syncPermissions']
+      )->name('admin.employees.permissions.sync');
+
+      // Role routes
+      Route::post('/{employee}/roles', [EmployeeController::class, 'addRole'])->name('admin.employees.add-role');
+      Route::post('/{employee}/roles', [EmployeeController::class, 'removeRole'])->name('admin.employees.remove-role');
+      Route::post('/{employee}/roles', [EmployeeController::class, 'syncRoles'])->name('admin.employees.sync-roles');
+    });
+  });
 });
