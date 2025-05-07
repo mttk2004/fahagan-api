@@ -4,51 +4,36 @@ namespace App\DTOs;
 
 class OrderDTO extends BaseDTO
 {
-    public function __construct(
-        public readonly ?string $method,
-        public readonly ?int $address_id = null,
-        public readonly array $items = [],
-    ) {
+  public function __construct(
+    public readonly ?string $method = 'cod',
+    public readonly ?int $address_id = null,
+  ) {}
+
+  public static function fromRequest(array $validatedData): self
+  {
+    $attributes = $validatedData['data']['attributes'] ?? [];
+    $relationships = $validatedData['data']['relationships'] ?? [];
+
+    $address_id = $relationships['address']['id'] ?? null;
+
+    return new self(
+      method: $attributes['method'] ?? null,
+      address_id: $address_id,
+    );
+  }
+
+  public function toArray(): array
+  {
+    $data = [];
+
+    if ($this->method !== null) {
+      $data['method'] = $this->method;
     }
 
-    public static function fromRequest(array $validatedData): self
-    {
-        $attributes = $validatedData['data']['attributes'] ?? [];
-        $relationships = $validatedData['data']['relationships'] ?? [];
-        $items = $relationships['items'] ?? [];
-
-        $items = array_map(
-            fn ($item) => [
-                'id' => $item['id'],
-            ],
-            $items
-        );
-
-        $address_id = $relationships['address']['id'] ?? null;
-
-        return new self(
-            method: $attributes['method'] ?? null,
-            address_id: $address_id,
-            items: $items
-        );
+    if ($this->address_id !== null) {
+      $data['address_id'] = $this->address_id;
     }
 
-    public function toArray(): array
-    {
-        $data = [];
-
-        if ($this->method !== null) {
-            $data['method'] = $this->method;
-        }
-
-        if ($this->address_id !== null) {
-            $data['address_id'] = $this->address_id;
-        }
-
-        if (! empty($this->items)) {
-            $data['items'] = $this->items;
-        }
-
-        return $data;
-    }
+    return $data;
+  }
 }
