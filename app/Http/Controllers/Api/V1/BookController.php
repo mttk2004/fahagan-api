@@ -74,7 +74,7 @@ class BookController extends Controller
                 'book' => new BookResource($book),
             ], ResponseMessage::CREATED_BOOK->value);
         } catch (Exception $e) {
-            return $this->handleBookException($e, $request->validated(), null, 'tạo');
+            return $this->handleBookException($e, $request->validated());
         }
     }
 

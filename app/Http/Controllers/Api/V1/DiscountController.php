@@ -13,6 +13,7 @@ use App\Services\DiscountService;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,7 +70,7 @@ class DiscountController extends Controller
             ], ResponseMessage::CREATED_DISCOUNT->value);
         } catch (ValidationException $e) {
             return ResponseUtils::validationError($e->validator->errors());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseUtils::serverError($e->getMessage());
         }
     }
@@ -122,7 +123,7 @@ class DiscountController extends Controller
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
         } catch (ValidationException $e) {
             return ResponseUtils::validationError($e->validator->errors());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseUtils::serverError($e->getMessage());
         }
     }
@@ -148,10 +149,10 @@ class DiscountController extends Controller
 
             // Nếu không có lỗi, trả về 204 No Content
             return ResponseUtils::noContent(ResponseMessage::DELETED_DISCOUNT->value);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException) {
             // Nếu không tìm thấy discount, trả về 404 Not Found
             return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Bắt các lỗi khác và trả về lỗi server 500
             return ResponseUtils::serverError($e->getMessage());
         }

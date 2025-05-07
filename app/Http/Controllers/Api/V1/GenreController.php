@@ -27,17 +27,16 @@ class GenreController extends Controller
 
     public function __construct(
         private readonly GenreService $genreService,
-        private string $entityName = 'genre'
+        private readonly string $entityName = 'genre'
     ) {
     }
 
     /**
      * Get all genres
      *
-     *
-     * @return GenreCollection|JsonResponse
-     *
+     * @return GenreCollection
      * @group Genres
+     * @unauthenticated
      */
     public function index(Request $request)
     {

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\App;
 
 /**
  * @method static create(array $array)
+ * @method static findOrFail(int $order_id)
  */
 class Order extends Model
 {

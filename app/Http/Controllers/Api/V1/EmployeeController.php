@@ -32,7 +32,7 @@ class EmployeeController extends Controller
     /**
      * Get all employees
      *
-     * @return UserCollection|JsonResponse
+     * @return UserCollection
      * @group Admin.Employees
      * @authenticated
      */
@@ -47,11 +47,12 @@ class EmployeeController extends Controller
      * Get a employee
      *
      * @param int $employee_id
+     *
      * @return JsonResponse
      * @group Admin.Employees
      * @authenticated
      */
-    public function show($employee_id)
+    public function show(int $employee_id)
     {
         try {
             $employee = $this->employeeService->getEmployeeById($employee_id);
@@ -79,8 +80,12 @@ class EmployeeController extends Controller
      * @param string $resourceType 'permission' or 'role'
      * @return JsonResponse
      */
-    private function handleEmployeeResourceOperation($request, $employee_id, string $operation, string $resourceType)
-    {
+    private function handleEmployeeResourceOperation(
+        Request $request,
+        int $employee_id,
+        string $operation,
+        string $resourceType
+    ) {
         $resourceKey = $resourceType === 'permission' ? 'permissions' : 'roles';
         $resources = $request->validated()[$resourceKey];
 
@@ -159,8 +164,11 @@ class EmployeeController extends Controller
      * @param string $operation
      * @return JsonResponse
      */
-    private function handlePermissionOperation(PermissionAdjustRequest $request, $employee_id, string $operation)
-    {
+    private function handlePermissionOperation(
+        PermissionAdjustRequest $request,
+        int $employee_id,
+        string $operation
+    ) {
         return $this->handleEmployeeResourceOperation($request, $employee_id, $operation, 'permission');
     }
 
@@ -172,7 +180,8 @@ class EmployeeController extends Controller
      * @param string $operation
      * @return JsonResponse
      */
-    private function handleRoleOperation(RoleAdjustRequest $request, $employee_id, string $operation)
+    private function handleRoleOperation(RoleAdjustRequest $request, int $employee_id, string
+    $operation)
     {
         return $this->handleEmployeeResourceOperation($request, $employee_id, $operation, 'role');
     }
@@ -186,7 +195,7 @@ class EmployeeController extends Controller
      * @group Admin.Employees
      * @authenticated
      */
-    public function addPermissions(PermissionAdjustRequest $request, $employee_id)
+    public function addPermissions(PermissionAdjustRequest $request, int $employee_id)
     {
         return $this->handlePermissionOperation($request, $employee_id, 'add');
     }
@@ -200,7 +209,7 @@ class EmployeeController extends Controller
      * @group Admin.Employees
      * @authenticated
      */
-    public function removePermissions(PermissionAdjustRequest $request, $employee_id)
+    public function removePermissions(PermissionAdjustRequest $request, int $employee_id)
     {
         return $this->handlePermissionOperation($request, $employee_id, 'remove');
     }
@@ -214,7 +223,7 @@ class EmployeeController extends Controller
      * @group Admin.Employees
      * @authenticated
      */
-    public function syncPermissions(PermissionAdjustRequest $request, $employee_id)
+    public function syncPermissions(PermissionAdjustRequest $request, int $employee_id)
     {
         return $this->handlePermissionOperation($request, $employee_id, 'sync');
     }
@@ -228,7 +237,7 @@ class EmployeeController extends Controller
      * @group Admin.Employees
      * @authenticated
      */
-    public function addRole(RoleAdjustRequest $request, $employee_id)
+    public function addRole(RoleAdjustRequest $request, int $employee_id)
     {
         return $this->handleRoleOperation($request, $employee_id, 'add');
     }
@@ -242,7 +251,7 @@ class EmployeeController extends Controller
      * @group Admin.Employees
      * @authenticated
      */
-    public function removeRole(RoleAdjustRequest $request, $employee_id)
+    public function removeRole(RoleAdjustRequest $request, int $employee_id)
     {
         return $this->handleRoleOperation($request, $employee_id, 'remove');
     }
@@ -256,7 +265,7 @@ class EmployeeController extends Controller
      * @group Admin.Employees
      * @authenticated
      */
-    public function syncRoles(RoleAdjustRequest $request, $employee_id)
+    public function syncRoles(RoleAdjustRequest $request, int $employee_id)
     {
         return $this->handleRoleOperation($request, $employee_id, 'sync');
     }

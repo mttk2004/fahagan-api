@@ -36,7 +36,7 @@ class CustomerOrderController extends Controller
     /**
      * Get all orders of the authenticated customer.
      *
-     * @return JsonResponse|OrderCollection
+     * @return OrderCollection
      *
      * @group Customer.Order
      *
@@ -140,7 +140,7 @@ class CustomerOrderController extends Controller
         }
 
         // Chỉ cho phép hủy đơn hàng khi đơn hàng đang ở trạng thái chờ xác nhận
-        if (! in_array($order->status, [OrderStatus::PENDING->value])) {
+        if ($order->status != OrderStatus::PENDING->value) {
             return ResponseUtils::badRequest('Không thể hủy đơn hàng ở trạng thái hiện tại.');
         }
 

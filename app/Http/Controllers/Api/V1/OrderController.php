@@ -80,10 +80,10 @@ class OrderController extends Controller
     /**
      * Update order status
      *
-     * @param  Request  $request
-     *
+     * @param OrderStatusUpdateRequest $request
+     * @param int                      $order_id
+     * @return JsonResponse
      * @group Orders
-     *
      * @authenticated
      */
     public function updateStatus(OrderStatusUpdateRequest $request, int $order_id): JsonResponse
