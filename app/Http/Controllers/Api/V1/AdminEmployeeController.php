@@ -17,7 +17,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class EmployeeController extends Controller
+class AdminEmployeeController extends Controller
 {
     use HandleExceptions;
     use HandlePagination;

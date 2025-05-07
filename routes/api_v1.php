@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\V1\CustomerCartItemController;
 use App\Http\Controllers\Api\V1\CustomerOrderController;
 use App\Http\Controllers\Api\V1\CustomerProfileController;
 use App\Http\Controllers\Api\V1\DiscountController;
-use App\Http\Controllers\Api\V1\EmployeeController;
+use App\Http\Controllers\Api\V1\AdminEmployeeController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -122,24 +122,24 @@ Route::middleware('auth.*')->group(function () {
      */
     Route::middleware('auth.admin')->prefix('admin')->group(function () {
         Route::prefix('employees')->group(function () {
-            Route::get('/', [EmployeeController::class, 'index'])->name('admin.employees.index');
-            Route::get('/{employee}', [EmployeeController::class, 'show'])->name('admin.employees.show');
+            Route::get('/', [AdminEmployeeController::class, 'index'])->name('admin.employees.index');
+            Route::get('/{employee}', [AdminEmployeeController::class, 'show'])->name('admin.employees.show');
 
             // Permission routes
             Route::post(
                 '/{employee}/permissions/add',
-                [EmployeeController::class, 'addPermissions']
+                [AdminEmployeeController::class, 'addPermissions']
             )->name('admin.employees.permissions.add');
-            Route::post('/{employee}/permissions/remove', [EmployeeController::class, 'removePermissions'])->name('admin.employees.permissions.remove');
+            Route::post('/{employee}/permissions/remove', [AdminEmployeeController::class, 'removePermissions'])->name('admin.employees.permissions.remove');
             Route::post(
                 '/{employee}/permissions/sync',
-                [EmployeeController::class, 'syncPermissions']
+                [AdminEmployeeController::class, 'syncPermissions']
             )->name('admin.employees.permissions.sync');
 
             // Role routes
-            Route::post('/{employee}/roles/add', [EmployeeController::class, 'addRole'])->name('admin.employees.add-role');
-            Route::post('/{employee}/roles/remove', [EmployeeController::class, 'removeRole'])->name('admin.employees.remove-role');
-            Route::post('/{employee}/roles/sync', [EmployeeController::class, 'syncRoles'])->name('admin.employees.sync-roles');
+            Route::post('/{employee}/roles/add', [AdminEmployeeController::class, 'addRole'])->name('admin.employees.add-role');
+            Route::post('/{employee}/roles/remove', [AdminEmployeeController::class, 'removeRole'])->name('admin.employees.remove-role');
+            Route::post('/{employee}/roles/sync', [AdminEmployeeController::class, 'syncRoles'])->name('admin.employees.sync-roles');
         });
     });
 });
