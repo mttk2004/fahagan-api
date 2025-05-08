@@ -17,41 +17,42 @@ use Exception;
 
 class StockImportController extends Controller
 {
-  use HandleExceptions;
-  use HandlePagination;
-  use HandleValidation;
+    use HandleExceptions;
+    use HandlePagination;
+    use HandleValidation;
 
-  public function __construct(
-    private readonly StockImportService $stockImportService,
-    private readonly string $entityName = 'stock_import'
-  ) {}
-
-  /**
-   * Create a new stock import
-   *
-   * @param StockImportStoreRequest $request
-   * @return JsonResponse
-   * @group StockImport
-   * @authenticated
-   */
-  public function store(StockImportStoreRequest $request)
-  {
-    if (! AuthUtils::userCan('create_stock_imports')) {
-      return ResponseUtils::forbidden();
+    public function __construct(
+        private readonly StockImportService $stockImportService,
+        private readonly string $entityName = 'stock_import'
+    ) {
     }
 
-    try {
-      $stockImport = $this->stockImportService->createStockImport(
-        StockImportDTO::fromRequest($request->validated())
-      );
+    /**
+     * Create a new stock import
+     *
+     * @param StockImportStoreRequest $request
+     * @return JsonResponse
+     * @group StockImport
+     * @authenticated
+     */
+    public function store(StockImportStoreRequest $request)
+    {
+        if (! AuthUtils::userCan('create_stock_imports')) {
+            return ResponseUtils::forbidden();
+        }
 
-      return ResponseUtils::success([
-        'stock_import' => new StockImportResource($stockImport),
-      ], ResponseMessage::STOCK_IMPORT_CREATED->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'request_data' => $request->validated(),
-      ]);
+        try {
+            $stockImport = $this->stockImportService->createStockImport(
+                StockImportDTO::fromRequest($request->validated())
+            );
+
+            return ResponseUtils::success([
+              'stock_import' => new StockImportResource($stockImport),
+            ], ResponseMessage::STOCK_IMPORT_CREATED->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'request_data' => $request->validated(),
+            ]);
+        }
     }
-  }
 }
