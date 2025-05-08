@@ -10,50 +10,50 @@ use Illuminate\Support\Facades\App;
 
 class StockImport extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
+  public $incrementing = false;  // Vô hiệu hóa tự động tăng ID
 
-    protected $keyType = 'string'; // Kiểu khóa chính là string
+  protected $keyType = 'string'; // Kiểu khóa chính là string
 
-    protected static function boot(): void
-    {
-        parent::boot();
+  protected static function boot(): void
+  {
+    parent::boot();
 
-        static::creating(function ($model) {
-            $model->{$model->getKeyName()} = App::make('snowflake')->id();
-        });
-    }
+    static::creating(function ($model) {
+      $model->{$model->getKeyName()} = App::make('snowflake')->id();
+    });
+  }
 
-    protected $fillable
-        = [
-            'user_id',
-            'supplier_id',
-            'total_cost',
-            'imported_at',
-        ];
+  protected $fillable
+  = [
+    'employee_id',
+    'supplier_id',
+    'discount_value',
+    'imported_at',
+  ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+  public function employee(): BelongsTo
+  {
+    return $this->belongsTo(User::class, 'employee_id');
+  }
 
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class);
-    }
+  public function supplier(): BelongsTo
+  {
+    return $this->belongsTo(Supplier::class);
+  }
 
-    protected function casts(): array
-    {
-        return [
-            'imported_at' => 'datetime',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
-    }
+  protected function casts(): array
+  {
+    return [
+      'imported_at' => 'datetime',
+      'created_at' => 'datetime',
+      'updated_at' => 'datetime',
+    ];
+  }
 
-    public function stockImportItems(): HasMany
-    {
-        return $this->hasMany(StockImportItem::class);
-    }
+  public function stockImportItems(): HasMany
+  {
+    return $this->hasMany(StockImportItem::class);
+  }
 }
