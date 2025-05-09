@@ -8,30 +8,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StockImportItem extends Model
 {
-  public $timestamps = false;
+    public $timestamps = false;
 
-  protected $fillable
-  = [
-    'stock_import_id',
-    'book_id',
-    'quantity',
-    'unit_price',
-  ];
+    protected $fillable
+        = [
+          'stock_import_id',
+          'book_id',
+          'quantity',
+          'unit_price',
+        ];
 
-  protected function subTotal(): Attribute
-  {
-    return Attribute::make(
-      get: fn() => $this->unit_price * $this->quantity
-    );
-  }
+    protected function subTotal(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->unit_price * $this->quantity
+        );
+    }
 
-  public function stockImport(): BelongsTo
-  {
-    return $this->belongsTo(StockImport::class);
-  }
+    public function stockImport(): BelongsTo
+    {
+        return $this->belongsTo(StockImport::class);
+    }
 
-  public function book(): BelongsTo
-  {
-    return $this->belongsTo(Book::class);
-  }
+    public function book(): BelongsTo
+    {
+        return $this->belongsTo(Book::class);
+    }
 }
