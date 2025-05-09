@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\EmployeeStoreRequest;
 use App\Http\Requests\V1\PermissionAdjustRequest;
 use App\Http\Requests\V1\RoleAdjustRequest;
 use App\Http\Resources\V1\UserCollection;
@@ -19,254 +20,280 @@ use Illuminate\Http\Request;
 
 class AdminEmployeeController extends Controller
 {
-    use HandleExceptions;
-    use HandlePagination;
-    use HandleValidation;
+  use HandleExceptions;
+  use HandlePagination;
+  use HandleValidation;
 
-    public function __construct(
-        private readonly EmployeeService $employeeService,
-        private readonly string $entityName = 'user'
-    ) {
-    }
+  public function __construct(
+    private readonly EmployeeService $employeeService,
+    private readonly string $entityName = 'user'
+  ) {}
 
-    /**
-     * Get all employees
-     *
-     * @return UserCollection
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function index(Request $request)
-    {
-        $users = $this->employeeService->getAllEmployees($request, $this->getPerPage($request));
+  /**
+   * Get all employees
+   *
+   * @return UserCollection
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function index(Request $request)
+  {
+    $users = $this->employeeService->getAllEmployees($request, $this->getPerPage($request));
 
-        return new UserCollection($users);
-    }
+    return new UserCollection($users);
+  }
 
-    /**
-     * Get a employee
-     *
-     * @param int $employee_id
-     *
-     * @return JsonResponse
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function show(int $employee_id)
-    {
-        try {
-            $employee = $this->employeeService->getEmployeeById($employee_id);
+  /**
+   * Get a employee
+   *
+   * @param int $employee_id
+   *
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function show(int $employee_id)
+  {
+    try {
+      $employee = $this->employeeService->getEmployeeById($employee_id);
 
-            return ResponseUtils::success([
-              'employee' => new UserResource($employee),
-            ]);
-        } catch (Exception $e) {
-            return $this->handleException(
-                $e,
-                $this->entityName,
-                [
-                'employee_id' => $employee_id,
+      return ResponseUtils::success([
+        'employee' => new UserResource($employee),
+      ]);
+    } catch (Exception $e) {
+      return $this->handleException(
+        $e,
+        $this->entityName,
+        [
+          'employee_id' => $employee_id,
         ]
-            );
-        }
+      );
     }
+  }
 
-    /**
-     * Handle employee resource operations (permissions or roles)
-     *
-     * @param mixed $request
-     * @param int $employee_id
-     * @param string $operation
-     * @param string $resourceType 'permission' or 'role'
-     * @return JsonResponse
-     */
-    private function handleEmployeeResourceOperation(
-        Request $request,
-        int $employee_id,
-        string $operation,
-        string $resourceType
-    ) {
-        $resourceKey = $resourceType === 'permission' ? 'permissions' : 'roles';
-        $resources = $request->validated()[$resourceKey];
+  /**
+   * Create a new employee
+   *
+   * @param EmployeeStoreRequest $request
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function store(EmployeeStoreRequest $request)
+  {
+    try {
+      $employee = $this->employeeService->createEmployee($request);
 
-        try {
-            $employee = User::find($employee_id);
+      return ResponseUtils::success([
+        'employee' => new UserResource($employee),
+      ]);
+    } catch (Exception $e) {
+      return $this->handleException(
+        $e,
+        $this->entityName,
+        [
+          "data" => $request->all(),
+        ]
+      );
+    }
+  }
 
-            if (! $employee) {
-                throw new Exception("Employee not found");
-            }
+  /**
+   * Handle employee resource operations (permissions or roles)
+   *
+   * @param mixed $request
+   * @param int $employee_id
+   * @param string $operation
+   * @param string $resourceType 'permission' or 'role'
+   * @return JsonResponse
+   */
+  private function handleEmployeeResourceOperation(
+    Request $request,
+    int $employee_id,
+    string $operation,
+    string $resourceType
+  ) {
+    $resourceKey = $resourceType === 'permission' ? 'permissions' : 'roles';
+    $resources = $request->validated()[$resourceKey];
 
-            if ($resourceType === 'permission') {
-                switch ($operation) {
-                    case 'add':
-                        $employee->givePermissionTo($resources);
+    try {
+      $employee = User::find($employee_id);
 
-                        break;
-                    case 'remove':
-                        $employee->revokePermissionTo($resources);
+      if (! $employee) {
+        throw new Exception("Employee not found");
+      }
 
-                        break;
-                    case 'sync':
-                        $employee->syncPermissions($resources);
+      if ($resourceType === 'permission') {
+        switch ($operation) {
+          case 'add':
+            $employee->givePermissionTo($resources);
 
-                        break;
-                    default:
-                        throw new Exception("Invalid $resourceType operation");
-                }
+            break;
+          case 'remove':
+            $employee->revokePermissionTo($resources);
+
+            break;
+          case 'sync':
+            $employee->syncPermissions($resources);
+
+            break;
+          default:
+            throw new Exception("Invalid $resourceType operation");
+        }
+      } else {
+        switch ($operation) {
+          case 'add':
+            $employee->assignRole($resources);
+
+            break;
+          case 'remove':
+            // removeRole không hỗ trợ mảng, phải xử lý từng role một
+            if (is_array($resources)) {
+              foreach ($resources as $role) {
+                $employee->removeRole($role);
+              }
             } else {
-                switch ($operation) {
-                    case 'add':
-                        $employee->assignRole($resources);
-
-                        break;
-                    case 'remove':
-                        // removeRole không hỗ trợ mảng, phải xử lý từng role một
-                        if (is_array($resources)) {
-                            foreach ($resources as $role) {
-                                $employee->removeRole($role);
-                            }
-                        } else {
-                            $employee->removeRole($resources);
-                        }
-
-                        break;
-                    case 'sync':
-                        $employee->syncRoles($resources);
-
-                        break;
-                    default:
-                        throw new Exception("Invalid $resourceType operation");
-                }
+              $employee->removeRole($resources);
             }
 
-            return ResponseUtils::success([
-              "employee" => new UserResource($employee),
-            ]);
-        } catch (Exception $e) {
-            return $this->handleException(
-                $e,
-                $this->entityName,
-                [
-                "data" => $resources,
-                "employee_id" => $employee_id,
-                "operation" => $operation,
-                "resource_type" => $resourceType,
-        ]
-            );
+            break;
+          case 'sync':
+            $employee->syncRoles($resources);
+
+            break;
+          default:
+            throw new Exception("Invalid $resourceType operation");
         }
-    }
+      }
 
-    /**
-     * Handle permission operations for an employee
-     *
-     * @param PermissionAdjustRequest $request
-     * @param int $employee_id
-     * @param string $operation
-     * @return JsonResponse
-     */
-    private function handlePermissionOperation(
-        PermissionAdjustRequest $request,
-        int $employee_id,
-        string $operation
-    ) {
-        return $this->handleEmployeeResourceOperation($request, $employee_id, $operation, 'permission');
+      return ResponseUtils::success([
+        "employee" => new UserResource($employee),
+      ]);
+    } catch (Exception $e) {
+      return $this->handleException(
+        $e,
+        $this->entityName,
+        [
+          "data" => $resources,
+          "employee_id" => $employee_id,
+          "operation" => $operation,
+          "resource_type" => $resourceType,
+        ]
+      );
     }
+  }
 
-    /**
-     * Handle role operations for an employee
-     *
-     * @param RoleAdjustRequest $request
-     * @param int $employee_id
-     * @param string $operation
-     * @return JsonResponse
-     */
-    private function handleRoleOperation(RoleAdjustRequest $request, int $employee_id, string
-    $operation)
-    {
-        return $this->handleEmployeeResourceOperation($request, $employee_id, $operation, 'role');
-    }
+  /**
+   * Handle permission operations for an employee
+   *
+   * @param PermissionAdjustRequest $request
+   * @param int $employee_id
+   * @param string $operation
+   * @return JsonResponse
+   */
+  private function handlePermissionOperation(
+    PermissionAdjustRequest $request,
+    int $employee_id,
+    string $operation
+  ) {
+    return $this->handleEmployeeResourceOperation($request, $employee_id, $operation, 'permission');
+  }
 
-    /**
-     * Add permissions to an employee
-     *
-     * @param PermissionAdjustRequest $request
-     * @param int $employee_id
-     * @return JsonResponse
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function addPermissions(PermissionAdjustRequest $request, int $employee_id)
-    {
-        return $this->handlePermissionOperation($request, $employee_id, 'add');
-    }
+  /**
+   * Handle role operations for an employee
+   *
+   * @param RoleAdjustRequest $request
+   * @param int $employee_id
+   * @param string $operation
+   * @return JsonResponse
+   */
+  private function handleRoleOperation(RoleAdjustRequest $request, int $employee_id, string
+  $operation)
+  {
+    return $this->handleEmployeeResourceOperation($request, $employee_id, $operation, 'role');
+  }
 
-    /**
-     * Remove permissions from an employee
-     *
-     * @param PermissionAdjustRequest $request
-     * @param int $employee_id
-     * @return JsonResponse
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function removePermissions(PermissionAdjustRequest $request, int $employee_id)
-    {
-        return $this->handlePermissionOperation($request, $employee_id, 'remove');
-    }
+  /**
+   * Add permissions to an employee
+   *
+   * @param PermissionAdjustRequest $request
+   * @param int $employee_id
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function addPermissions(PermissionAdjustRequest $request, int $employee_id)
+  {
+    return $this->handlePermissionOperation($request, $employee_id, 'add');
+  }
 
-    /**
-     * Sync permissions for an employee
-     *
-     * @param PermissionAdjustRequest $request
-     * @param int $employee_id
-     * @return JsonResponse
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function syncPermissions(PermissionAdjustRequest $request, int $employee_id)
-    {
-        return $this->handlePermissionOperation($request, $employee_id, 'sync');
-    }
+  /**
+   * Remove permissions from an employee
+   *
+   * @param PermissionAdjustRequest $request
+   * @param int $employee_id
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function removePermissions(PermissionAdjustRequest $request, int $employee_id)
+  {
+    return $this->handlePermissionOperation($request, $employee_id, 'remove');
+  }
 
-    /**
-     * Add roles to an employee
-     *
-     * @param RoleAdjustRequest $request
-     * @param int $employee_id
-     * @return JsonResponse
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function addRole(RoleAdjustRequest $request, int $employee_id)
-    {
-        return $this->handleRoleOperation($request, $employee_id, 'add');
-    }
+  /**
+   * Sync permissions for an employee
+   *
+   * @param PermissionAdjustRequest $request
+   * @param int $employee_id
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function syncPermissions(PermissionAdjustRequest $request, int $employee_id)
+  {
+    return $this->handlePermissionOperation($request, $employee_id, 'sync');
+  }
 
-    /**
-     * Remove roles from an employee
-     *
-     * @param RoleAdjustRequest $request
-     * @param int $employee_id
-     * @return JsonResponse
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function removeRole(RoleAdjustRequest $request, int $employee_id)
-    {
-        return $this->handleRoleOperation($request, $employee_id, 'remove');
-    }
+  /**
+   * Add roles to an employee
+   *
+   * @param RoleAdjustRequest $request
+   * @param int $employee_id
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function addRole(RoleAdjustRequest $request, int $employee_id)
+  {
+    return $this->handleRoleOperation($request, $employee_id, 'add');
+  }
 
-    /**
-     * Sync roles for an employee
-     *
-     * @param RoleAdjustRequest $request
-     * @param int $employee_id
-     * @return JsonResponse
-     * @group Admin.Employees
-     * @authenticated
-     */
-    public function syncRoles(RoleAdjustRequest $request, int $employee_id)
-    {
-        return $this->handleRoleOperation($request, $employee_id, 'sync');
-    }
+  /**
+   * Remove roles from an employee
+   *
+   * @param RoleAdjustRequest $request
+   * @param int $employee_id
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function removeRole(RoleAdjustRequest $request, int $employee_id)
+  {
+    return $this->handleRoleOperation($request, $employee_id, 'remove');
+  }
+
+  /**
+   * Sync roles for an employee
+   *
+   * @param RoleAdjustRequest $request
+   * @param int $employee_id
+   * @return JsonResponse
+   * @group Admin.Employees
+   * @authenticated
+   */
+  public function syncRoles(RoleAdjustRequest $request, int $employee_id)
+  {
+    return $this->handleRoleOperation($request, $employee_id, 'sync');
+  }
 }
