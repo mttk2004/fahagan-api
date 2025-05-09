@@ -10,6 +10,8 @@ use App\Http\Sorts\V1\StockImportSort;
 use App\Models\StockImport;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Throwable;
+
 
 class StockImportService extends BaseService
 {
@@ -35,6 +37,7 @@ class StockImportService extends BaseService
 
     /**
      * Create a new stock import
+     * @throws Throwable
      */
     public function createStockImport(StockImportDTO $stockImportDTO): StockImport
     {

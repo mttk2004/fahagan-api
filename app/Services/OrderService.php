@@ -14,6 +14,8 @@ use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Throwable;
+
 
 class OrderService extends BaseService
 {
@@ -50,6 +52,7 @@ class OrderService extends BaseService
      * Create a new order.
      *
      * @throws Exception
+     * @throws Throwable
      */
     public function createOrder(OrderDTO $orderDTO): Order
     {
@@ -101,7 +104,7 @@ class OrderService extends BaseService
         $order = $this->getOrderById($order_id);
 
         // Kiểm tra trạng thái đơn hàng
-        if (! in_array($order->status, [OrderStatus::PENDING->value])) {
+        if ($order->status != OrderStatus::PENDING->value) {
             throw new Exception('Không thể hủy đơn hàng ở trạng thái hiện tại.');
         }
 

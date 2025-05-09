@@ -8,6 +8,7 @@ use App\Http\Requests\V1\EmployeeStoreRequest;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -80,7 +81,7 @@ class EmployeeService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getEmployeeById(string|int $userId): User
+    public function getEmployeeById(string|int $userId): Model
     {
         $employee = $this->getById($userId);
 

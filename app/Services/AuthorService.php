@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class AuthorService extends BaseService
 {
@@ -41,6 +42,7 @@ class AuthorService extends BaseService
      *
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
     public function createAuthor(AuthorDTO $authorDTO): Author
     {
@@ -52,7 +54,7 @@ class AuthorService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getAuthorById(string|int $authorId): Author
+    public function getAuthorById(string|int $authorId): Model
     {
         return $this->getById($authorId);
     }
@@ -63,8 +65,9 @@ class AuthorService extends BaseService
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
-    public function updateAuthor(string|int $authorId, AuthorDTO $authorDTO): Author
+    public function updateAuthor(string|int $authorId, AuthorDTO $authorDTO): Model
     {
         return $this->update($authorId, $authorDTO);
     }
@@ -74,6 +77,7 @@ class AuthorService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
     public function deleteAuthor(string|int $authorId): void
     {

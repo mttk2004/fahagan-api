@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @method static findOrFail($genre_id)
  * @method static create(mixed $genreData)
+ * @method static where(string $string, string $slug)
  */
 class Genre extends Model
 {

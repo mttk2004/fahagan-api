@@ -17,12 +17,14 @@ use App\Http\Sorts\V1\DiscountSort;
 use App\Models\Book;
 use App\Models\Discount;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class DiscountService extends BaseService
 {
@@ -76,6 +78,7 @@ class DiscountService extends BaseService
      *
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
     public function createDiscount(DiscountDTO $discountDTO): Discount
     {
@@ -95,7 +98,7 @@ class DiscountService extends BaseService
             return $this->createDiscountAction->execute($discountDTO, $this->with);
         } catch (QueryException $e) {
             // Nếu là lỗi ràng buộc duy nhất, chuyển nó thành ValidationException
-            if ($e->getCode() == 23000 && strpos($e->getMessage(), 'discounts_name_unique') !== false) {
+            if ($e->getCode() == 23000 && str_contains($e->getMessage(), 'discounts_name_unique')) {
                 throw ValidationException::withMessages([
                     'data.attributes.name' => ['Đã tồn tại mã giảm giá với tên này. Vui lòng sử dụng tên khác.'],
                 ]);
@@ -110,7 +113,7 @@ class DiscountService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getDiscountById(string|int $discountId): Discount
+    public function getDiscountById(string|int $discountId): Model
     {
         return $this->getById($discountId);
     }
@@ -120,7 +123,7 @@ class DiscountService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws ValidationException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function updateDiscount(string|int $discountId, DiscountDTO $discountDTO, array $originalRequest = []): Discount
     {
@@ -164,8 +167,9 @@ class DiscountService extends BaseService
      * Xóa mã giảm giá
      *
      * @throws ModelNotFoundException
+     * @throws Throwable
      */
-    public function deleteDiscount(string|int $discountId): Discount
+    public function deleteDiscount(string|int $discountId): Model
     {
         // Tìm discount trước khi xóa
         $discount = $this->getById($discountId);
@@ -206,19 +210,16 @@ class DiscountService extends BaseService
         $highestDiscount = $validDiscounts->sortByDesc(function ($discount) use ($originalPrice) {
             if ($discount->discount_type === 'fixed') {
                 // Tính toán giá trị thực tế sau khi áp dụng giới hạn max_discount_amount
-                $discountValue = $discount->max_discount_amount
+                return $discount->max_discount_amount
                   ? min($discount->discount_value, $discount->max_discount_amount)
                   : $discount->discount_value;
-
-                return $discountValue;
             } else {
                 // Tính toán giá trị thực tế sau khi áp dụng giới hạn max_discount_amount
                 $discountAmount = ($originalPrice * $discount->discount_value) / 100;
-                $discountValue = $discount->max_discount_amount
+
+                return $discount->max_discount_amount
                   ? min($discountAmount, $discount->max_discount_amount)
                   : $discountAmount;
-
-                return $discountValue;
             }
         })->first();
 
@@ -245,9 +246,11 @@ class DiscountService extends BaseService
     /**
      * Lấy tất cả mã giảm giá đang hoạt động cho một sách
      *
-     * @param  int|string  $bookId
+     * @param int|string $bookId
+     *
+     * @return Collection
      */
-    public function getActiveBookDiscounts($bookId): Collection
+    public function getActiveBookDiscounts(int|string $bookId): Collection
     {
         $now = now();
 
@@ -264,7 +267,7 @@ class DiscountService extends BaseService
     /**
      * Find a trashed resource based on unique attributes
      */
-    protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+    protected function findTrashed(BaseDTO $dto): ?Model
     {
         // Đảm bảo DTO là kiểu DiscountDTO trước khi tiếp tục
         if (! ($dto instanceof DiscountDTO) || ! isset($dto->name)) {

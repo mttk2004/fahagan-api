@@ -9,10 +9,12 @@ use App\Http\Filters\V1\PublisherFilter;
 use App\Http\Sorts\V1\PublisherSort;
 use App\Models\Publisher;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class PublisherService extends BaseService
 {
@@ -39,7 +41,7 @@ class PublisherService extends BaseService
      * Tạo nhà xuất bản mới
      *
      * @throws ValidationException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function createPublisher(PublisherDTO $publisherDTO): Publisher
     {
@@ -76,7 +78,7 @@ class PublisherService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getPublisherById(string|int $publisherId): Publisher
+    public function getPublisherById(string|int $publisherId): Model
     {
         return $this->getById($publisherId);
     }
@@ -87,8 +89,9 @@ class PublisherService extends BaseService
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
-    public function updatePublisher(string|int $publisherId, PublisherDTO $publisherDTO): Publisher
+    public function updatePublisher(string|int $publisherId, PublisherDTO $publisherDTO): Model
     {
         return $this->update($publisherId, $publisherDTO);
     }
@@ -98,6 +101,7 @@ class PublisherService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
     public function deletePublisher(string|int $publisherId): void
     {
@@ -107,7 +111,7 @@ class PublisherService extends BaseService
     /**
      * Find a trashed resource based on unique attributes
      */
-    protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+    protected function findTrashed(BaseDTO $dto): ?Model
     {
         // Đảm bảo DTO là kiểu PublisherDTO trước khi tiếp tục
         if (! ($dto instanceof PublisherDTO) || ! isset($dto->name)) {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Database\Eloquent\Collection;
 use Spatie\Permission\Models\Role;
 
 class RoleService
@@ -9,9 +10,9 @@ class RoleService
     /**
      * Lấy tất cả các role
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
-    public function getAllRoles()
+    public function getAllRoles(): Collection
     {
         return Role::with('permissions')->get();
     }
@@ -19,11 +20,12 @@ class RoleService
     /**
      * Thêm quyền cho role
      *
-     * @param Role|int|string $role
-     * @param array $permissions
+     * @param int|string|Role $role
+     * @param array           $permissions
+     *
      * @return Role
      */
-    public function addPermissions($role, array $permissions)
+    public function addPermissions(Role|int|string $role, array $permissions): Role
     {
         if (! $role instanceof Role) {
             $role = Role::findById($role);
@@ -37,11 +39,12 @@ class RoleService
     /**
      * Xóa quyền khỏi role
      *
-     * @param Role|int|string $role
-     * @param array $permissions
+     * @param int|string|Role $role
+     * @param array           $permissions
+     *
      * @return Role
      */
-    public function removePermissions($role, array $permissions)
+    public function removePermissions(Role|int|string $role, array $permissions): Role
     {
         if (! $role instanceof Role) {
             $role = Role::findById($role);
@@ -55,12 +58,15 @@ class RoleService
     /**
      * Đồng bộ quyền cho role
      *
-     * @param Role|int|string $role
-     * @param array $permissions
+     * @param int|string|Role $role
+     * @param array           $permissions
+     *
      * @return Role
      */
-    public function syncPermissions($role, array $permissions)
-    {
+    public function syncPermissions(
+        Role|int|string $role,
+        array $permissions
+    ): Role {
         if (! $role instanceof Role) {
             $role = Role::findById($role);
         }

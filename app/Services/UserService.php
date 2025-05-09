@@ -9,10 +9,12 @@ use App\Http\Filters\V1\UserFilter;
 use App\Http\Sorts\V1\UserSort;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class UserService extends BaseService
 {
@@ -40,6 +42,7 @@ class UserService extends BaseService
      *
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
     public function createUser(UserDTO $userDTO): User
     {
@@ -51,7 +54,7 @@ class UserService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getUserById(string|int $userId): User
+    public function getUserById(string|int $userId): Model
     {
         return $this->getById($userId);
     }
@@ -62,8 +65,9 @@ class UserService extends BaseService
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
-    public function updateUser(string|int $userId, UserDTO $userDTO): User
+    public function updateUser(string|int $userId, UserDTO $userDTO): Model
     {
         return $this->update($userId, $userDTO);
     }
@@ -73,6 +77,7 @@ class UserService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
     public function deleteUser(string|int $userId): void
     {
@@ -82,7 +87,7 @@ class UserService extends BaseService
     /**
      * Find a trashed resource based on unique attributes
      */
-    protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+    protected function findTrashed(BaseDTO $dto): ?Model
     {
         // Đảm bảo DTO là kiểu UserDTO trước khi tiếp tục
         if (! ($dto instanceof UserDTO) || ! isset($dto->email)) {

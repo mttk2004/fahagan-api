@@ -8,10 +8,12 @@ use App\Http\Filters\V1\SupplierFilter;
 use App\Http\Sorts\V1\SupplierSort;
 use App\Models\Supplier;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class SupplierService extends BaseService
 {
@@ -39,6 +41,7 @@ class SupplierService extends BaseService
      *
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
     public function createSupplier(SupplierDTO $supplierDTO, ?array $bookIds = null): Supplier
     {
@@ -58,7 +61,7 @@ class SupplierService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getSupplierById(string|int $supplierId): Supplier
+    public function getSupplierById(string|int $supplierId): Model
     {
         return $this->getById($supplierId);
     }
@@ -69,8 +72,9 @@ class SupplierService extends BaseService
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
-    public function updateSupplier(string|int $supplierId, SupplierDTO $supplierDTO, ?array $bookIds = null): Supplier
+    public function updateSupplier(string|int $supplierId, SupplierDTO $supplierDTO, ?array $bookIds = null): Model
     {
         // Sử dụng bookIds từ tham số hoặc từ DTO nếu tham số không có
         $bookIdsToUse = $bookIds ?? $supplierDTO->book_ids;
@@ -88,6 +92,7 @@ class SupplierService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
     public function deleteSupplier(string|int $supplierId): void
     {
@@ -99,8 +104,9 @@ class SupplierService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
-    public function restoreSupplier(string|int $supplierId): Supplier
+    public function restoreSupplier(string|int $supplierId): Model
     {
         return $this->restore($supplierId);
     }
@@ -108,7 +114,7 @@ class SupplierService extends BaseService
     /**
      * Actions to perform before deleting a resource
      */
-    protected function beforeDelete(\Illuminate\Database\Eloquent\Model $resource): void
+    protected function beforeDelete(Model $resource): void
     {
         // Đảm bảo tài nguyên là đối tượng Supplier trước khi tiếp tục
         if ($resource instanceof Supplier) {

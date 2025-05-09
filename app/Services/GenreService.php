@@ -9,11 +9,13 @@ use App\Http\Filters\V1\GenreFilter;
 use App\Http\Sorts\V1\GenreSort;
 use App\Models\Genre;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class GenreService extends BaseService
 {
@@ -41,6 +43,7 @@ class GenreService extends BaseService
      *
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
     public function createGenre(GenreDTO $genreDTO): Genre
     {
@@ -66,7 +69,7 @@ class GenreService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getGenreById(string|int $genreId): Genre
+    public function getGenreById(string|int $genreId): Model
     {
         return $this->getById($genreId);
     }
@@ -87,8 +90,9 @@ class GenreService extends BaseService
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
-    public function updateGenre(string|int $genreId, GenreDTO $genreDTO): Genre
+    public function updateGenre(string|int $genreId, GenreDTO $genreDTO): Model
     {
         // Tìm thể loại hiện tại trước khi cập nhật
         $genre = $this->getById($genreId);
@@ -114,7 +118,7 @@ class GenreService extends BaseService
      * Xóa thể loại
      *
      * @throws ModelNotFoundException
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function deleteGenre(string|int $genreId): void
     {
@@ -126,8 +130,9 @@ class GenreService extends BaseService
      *
      * @throws ModelNotFoundException
      * @throws Exception
+     * @throws Throwable
      */
-    public function restoreGenre(string|int $genreId): Genre
+    public function restoreGenre(string|int $genreId): Model
     {
         return $this->restore($genreId);
     }
@@ -135,7 +140,7 @@ class GenreService extends BaseService
     /**
      * Find a trashed resource based on unique attributes
      */
-    protected function findTrashed(BaseDTO $dto): ?\Illuminate\Database\Eloquent\Model
+    protected function findTrashed(BaseDTO $dto): ?Model
     {
         // Đảm bảo DTO là kiểu GenreDTO trước khi tiếp tục
         if (! ($dto instanceof GenreDTO) || ! isset($dto->slug)) {

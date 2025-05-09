@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\App;
  * @method static findOrFail($discount_id)
  * @method static create(mixed $discountData)
  * @method static where(string $string, string $name)
+ * @method static whereHas(string $string, \Closure $param)
  *
  * @property mixed $id
  */

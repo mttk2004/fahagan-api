@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @method static findOrFail($publisher_id)
  * @method static create(mixed $publisherData)
+ * @method static where(string $string, string|null $name)
  */
 class Publisher extends Model
 {

@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class CartItemService
 {
@@ -37,6 +38,7 @@ class CartItemService
      * Thêm sản phẩm vào giỏ hàng không cần kiểm tra tồn tại
      *
      * @throws Exception
+     * @throws Throwable
      */
     public function addToCartNoChecking(User $user, CartItemDTO $cartItemDTO): CartItem
     {
@@ -63,6 +65,7 @@ class CartItemService
      * Thêm sản phẩm vào giỏ hàng
      *
      * @throws Exception
+     * @throws Throwable
      */
     public function addToCart(User $user, CartItemDTO $cartItemDTO): CartItem
     {
@@ -77,6 +80,7 @@ class CartItemService
      * Cập nhật số lượng sản phẩm trong giỏ hàng
      *
      * @throws Exception
+     * @throws Throwable
      */
     public function updateCartItemQuantity(User $user, CartItemDTO $cartItemDTO): CartItem
     {
@@ -107,6 +111,7 @@ class CartItemService
      * Xóa sản phẩm khỏi giỏ hàng
      *
      * @throws Exception
+     * @throws Throwable
      */
     public function removeFromCart(User $user, int $bookId): bool
     {
@@ -133,6 +138,7 @@ class CartItemService
      * Xóa toàn bộ giỏ hàng của người dùng
      *
      * @throws Exception
+     * @throws Throwable
      */
     public function clearCart(User $user): bool
     {

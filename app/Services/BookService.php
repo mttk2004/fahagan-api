@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class BookService extends BaseService
 {
@@ -74,6 +75,7 @@ class BookService extends BaseService
      *
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
     public function createBook(BookDTO $bookDTO): Book
     {
@@ -97,7 +99,7 @@ class BookService extends BaseService
      *
      * @throws ModelNotFoundException
      */
-    public function getBookById(string|int $bookId): Book
+    public function getBookById(string|int $bookId): Model
     {
         return $this->getById($bookId);
     }
@@ -108,6 +110,7 @@ class BookService extends BaseService
      * @throws ModelNotFoundException
      * @throws ValidationException
      * @throws Exception
+     * @throws Throwable
      */
     public function updateBook(string|int $bookId, BookDTO $bookDTO, array $originalRequest = []): Book
     {
@@ -131,6 +134,7 @@ class BookService extends BaseService
      * Xóa sách
      *
      * @throws ModelNotFoundException|Exception
+     * @throws Throwable
      */
     public function deleteBook(string|int $bookId): Book
     {
