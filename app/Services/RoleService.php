@@ -3,71 +3,70 @@
 namespace App\Services;
 
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class RoleService
 {
-  /**
-   * Lấy tất cả các role
-   *
-   * @return \Illuminate\Database\Eloquent\Collection
-   */
-  public function getAllRoles()
-  {
-    return Role::with('permissions')->get();
-  }
-
-  /**
-   * Thêm quyền cho role
-   *
-   * @param Role|int|string $role
-   * @param array $permissions
-   * @return Role
-   */
-  public function addPermissions($role, array $permissions)
-  {
-    if (!$role instanceof Role) {
-      $role = Role::findById($role);
+    /**
+     * Lấy tất cả các role
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAllRoles()
+    {
+        return Role::with('permissions')->get();
     }
 
-    $role->givePermissionTo($permissions);
+    /**
+     * Thêm quyền cho role
+     *
+     * @param Role|int|string $role
+     * @param array $permissions
+     * @return Role
+     */
+    public function addPermissions($role, array $permissions)
+    {
+        if (! $role instanceof Role) {
+            $role = Role::findById($role);
+        }
 
-    return $role->load('permissions');
-  }
+        $role->givePermissionTo($permissions);
 
-  /**
-   * Xóa quyền khỏi role
-   *
-   * @param Role|int|string $role
-   * @param array $permissions
-   * @return Role
-   */
-  public function removePermissions($role, array $permissions)
-  {
-    if (!$role instanceof Role) {
-      $role = Role::findById($role);
+        return $role->load('permissions');
     }
 
-    $role->revokePermissionTo($permissions);
+    /**
+     * Xóa quyền khỏi role
+     *
+     * @param Role|int|string $role
+     * @param array $permissions
+     * @return Role
+     */
+    public function removePermissions($role, array $permissions)
+    {
+        if (! $role instanceof Role) {
+            $role = Role::findById($role);
+        }
 
-    return $role->load('permissions');
-  }
+        $role->revokePermissionTo($permissions);
 
-  /**
-   * Đồng bộ quyền cho role
-   *
-   * @param Role|int|string $role
-   * @param array $permissions
-   * @return Role
-   */
-  public function syncPermissions($role, array $permissions)
-  {
-    if (!$role instanceof Role) {
-      $role = Role::findById($role);
+        return $role->load('permissions');
     }
 
-    $role->syncPermissions($permissions);
+    /**
+     * Đồng bộ quyền cho role
+     *
+     * @param Role|int|string $role
+     * @param array $permissions
+     * @return Role
+     */
+    public function syncPermissions($role, array $permissions)
+    {
+        if (! $role instanceof Role) {
+            $role = Role::findById($role);
+        }
 
-    return $role->load('permissions');
-  }
+        $role->syncPermissions($permissions);
+
+        return $role->load('permissions');
+    }
 }
