@@ -3,6 +3,7 @@
 namespace App\Actions\StockImport;
 
 use App\Actions\BaseAction;
+use App\Models\Book;
 use App\Models\StockImport;
 use App\Utils\AuthUtils;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,14 @@ class CreateStockImportAction extends BaseAction
 
       // Tạo các mục trong phiếu nhập kho
       foreach ($stockImportDTO->items as $item) {
-        $stockImport->items()->create($item);
+        $stockImport->items()->create($item->toArray());
+      }
+
+      // Cập nhật số lượng sách trong kho
+      foreach ($stockImportDTO->items as $item) {
+        $book = Book::find($item->book_id);
+        $book->available_count += $item->quantity;
+        $book->save();
       }
 
       // Lấy order với các mối quan hệ

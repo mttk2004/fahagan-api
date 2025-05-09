@@ -21,9 +21,16 @@ class StockImportStoreRequest extends BaseRequest implements HasValidationMessag
         'required',
         'exists:suppliers,id',
       ],
-      'data.relationships.items.*.id' => [
+      'data.relationships.items.*.book_id' => [
         'required',
         'exists:books,id',
+        function ($attribute, $value, $fail) {
+          $book = \App\Models\Book::find($value);
+          $suppliedBooks = \App\Models\Supplier::find($this->input('data.relationships.supplier.id'))->suppliedBooks;
+          if (! $book || ! $suppliedBooks->contains($book)) {
+            $fail('Sách không tồn tại trong danh sách sách của nhà cung cấp');
+          }
+        },
       ],
       'data.relationships.items.*.quantity' => [
         'required',
