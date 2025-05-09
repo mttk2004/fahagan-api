@@ -16,26 +16,20 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class GenreResource extends JsonResource
 {
-    public function toArray(Request $request): array
-    {
-        return [
-            'type' => 'genre',
-            'id' => $this->id,
-            'attributes' => [
-                'name' => $this->name,
-                'slug' => $this->slug,
-                'books_count' => $this->books->count(),
-                'description' => $this->when(
-                    $request->routeIs('genres.show', 'genres.store', 'genres.update'),
-                    $this->description
-                ),
-            ],
-            'relationships' => $this->when(
-                $request->routeIs('genres.show', 'genres.store', 'genres.update'),
-                [
-                    'books' => new BookCollection($this->books),
-                ]
-            ),
-        ];
-    }
+  public function toArray(Request $request): array
+  {
+    return [
+      'type' => 'genre',
+      'id' => $this->id,
+      'attributes' => [
+        'name' => $this->name,
+        'slug' => $this->slug,
+        'books_count' => $this->books->count(),
+        'description' => $this->description
+      ],
+      'relationships' => [
+        'books' => new BookCollection($this->books),
+      ]
+    ];
+  }
 }
