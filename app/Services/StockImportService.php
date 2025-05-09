@@ -12,7 +12,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Throwable;
 
-
 class StockImportService extends BaseService
 {
     /**

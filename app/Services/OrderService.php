@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Throwable;
 
-
 class OrderService extends BaseService
 {
     /**
