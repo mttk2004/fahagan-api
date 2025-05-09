@@ -15,18 +15,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PublisherResource extends JsonResource
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'type' => 'publisher',
-      'id' => $this->id,
-      'attributes' => [
-        'name' => $this->name,
-        'biography' => $this->biography
-      ],
-      'relationships' => [
-        'books' => new BookCollection($this->publishedBooks),
-      ]
-    ];
-  }
+    public function toArray(Request $request): array
+    {
+        return [
+          'type' => 'publisher',
+          'id' => $this->id,
+          'attributes' => [
+            'name' => $this->name,
+            'biography' => $this->biography,
+          ],
+          'relationships' => [
+            'books' => new BookCollection($this->publishedBooks),
+          ],
+        ];
+    }
 }
