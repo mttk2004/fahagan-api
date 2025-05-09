@@ -49,9 +49,9 @@ class BookResource extends JsonResource
         'deleted_at' => $this->deleted_at,
       ],
       'relationships' => [
-        'authors' => new AuthorCollection($this->authors),
-        'genres' => new GenreCollection($this->genres),
-        'publisher' => new PublisherResource($this->publisher),
+        'authors' => AuthorCollection::make($this->whenLoaded('authors')),
+        'genres' => GenreCollection::make($this->whenLoaded('genres')),
+        'publisher' => new PublisherResource($this->whenLoaded('publisher')),
       ]
     ];
   }
