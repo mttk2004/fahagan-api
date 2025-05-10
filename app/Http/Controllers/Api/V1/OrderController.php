@@ -20,89 +20,90 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-  use HandleExceptions;
-  use HandlePagination;
-  use HandleValidation;
+    use HandleExceptions;
+    use HandlePagination;
+    use HandleValidation;
 
-  public function __construct(
-    private readonly OrderService $orderService,
-    private readonly string $entityName = 'order'
-  ) {}
-
-  /**
-   * Get all orders
-   *
-   * @return OrderCollection|JsonResponse
-   * @group Orders
-   * @authenticated
-   */
-  public function index(Request $request)
-  {
-    if (! AuthUtils::userCan('view_orders')) {
-      return ResponseUtils::forbidden();
+    public function __construct(
+        private readonly OrderService $orderService,
+        private readonly string $entityName = 'order'
+    ) {
     }
 
-    $orders = $this->orderService->getAllOrders($request, $this->getPerPage($request));
+    /**
+     * Get all orders
+     *
+     * @return OrderCollection|JsonResponse
+     * @group Orders
+     * @authenticated
+     */
+    public function index(Request $request)
+    {
+        if (! AuthUtils::userCan('view_orders')) {
+            return ResponseUtils::forbidden();
+        }
 
-    return new OrderCollection($orders);
-  }
+        $orders = $this->orderService->getAllOrders($request, $this->getPerPage($request));
 
-  /**
-   * Get order by ID
-   *
-   * @group Orders
-   * @unauthenticated
-   */
-  public function show(int $order_id): JsonResponse
-  {
-    if (! AuthUtils::userCan('view_orders')) {
-      return ResponseUtils::forbidden();
+        return new OrderCollection($orders);
     }
 
-    try {
-      $order = $this->orderService->getOrderById($order_id);
+    /**
+     * Get order by ID
+     *
+     * @group Orders
+     * @unauthenticated
+     */
+    public function show(int $order_id): JsonResponse
+    {
+        if (! AuthUtils::userCan('view_orders')) {
+            return ResponseUtils::forbidden();
+        }
 
-      return ResponseUtils::success([
-        'order' => new OrderResource($order),
-      ]);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'order_id' => $order_id,
-      ]);
-    }
-  }
+        try {
+            $order = $this->orderService->getOrderById($order_id);
 
-  /**
-   * Update order status
-   *
-   * @param OrderStatusUpdateRequest $request
-   * @param int                      $order_id
-   * @return JsonResponse
-   * @group Orders
-   * @authenticated
-   */
-  public function updateStatus(OrderStatusUpdateRequest $request, int $order_id): JsonResponse
-  {
-    if (! AuthUtils::userCan('edit_orders')) {
-      return ResponseUtils::forbidden();
+            return ResponseUtils::success([
+              'order' => new OrderResource($order),
+            ]);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'order_id' => $order_id,
+            ]);
+        }
     }
 
-    try {
-      $validatedData = $request->validated();
-      Order::findOrFail($order_id);
+    /**
+     * Update order status
+     *
+     * @param OrderStatusUpdateRequest $request
+     * @param int                      $order_id
+     * @return JsonResponse
+     * @group Orders
+     * @authenticated
+     */
+    public function updateStatus(OrderStatusUpdateRequest $request, int $order_id): JsonResponse
+    {
+        if (! AuthUtils::userCan('edit_orders')) {
+            return ResponseUtils::forbidden();
+        }
 
-      $order = $this->orderService->updateOrderStatus(
-        $order_id,
-        $validatedData['status']
-      );
+        try {
+            $validatedData = $request->validated();
+            Order::findOrFail($order_id);
 
-      return ResponseUtils::success([
-        'order' => new OrderResource($order),
-      ], ResponseMessage::UPDATED_ORDER->value);
-    } catch (Exception $e) {
-      return $this->handleException($e, $this->entityName, [
-        'order_id' => $order_id,
-      ]);
+            $order = $this->orderService->updateOrderStatus(
+                $order_id,
+                $validatedData['status']
+            );
+
+            return ResponseUtils::success([
+              'order' => new OrderResource($order),
+            ], ResponseMessage::UPDATED_ORDER->value);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+              'order_id' => $order_id,
+            ]);
+        }
     }
-  }
 }
