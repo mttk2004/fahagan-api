@@ -24,10 +24,10 @@ use Illuminate\Support\Facades\Route;
  */
 // Public resource routes with only index and show actions
 Route::apiResources([
-  'books' => BookController::class,
-  'authors' => AuthorController::class,
-  'publishers' => PublisherController::class,
-  'genres' => GenreController::class,
+    'books' => BookController::class,
+    'authors' => AuthorController::class,
+    'publishers' => PublisherController::class,
+    'genres' => GenreController::class,
 ], ['only' => ['index', 'show']]);
 
 // Search routes
@@ -40,7 +40,7 @@ Route::get('genres/slug/{slug}', [GenreController::class, 'showBySlug'])->name('
 
 // VNPay callback route
 Route::get('/payments/vnpay-return', [PaymentController::class, 'handleVNPayReturn'])
-  ->name('vnpay.return');
+     ->name('vnpay.return');
 
 /**
  * AUTHENTICATED ROUTES
@@ -54,8 +54,11 @@ Route::middleware('auth.*')->group(function () {
         Route::prefix('cart')->controller(CustomerCartItemController::class)->group(function () {
             Route::get('/', 'index')->name('customer.cart.index');
             Route::post('/add', 'addToCart')->name('customer.cart.add');
-            Route::post('/update-quantity', 'updateCartItemQuantity')->name('customer.cart.update-quantity');
-            Route::delete('/remove/{book_id}', 'removeFromCart')->whereNumber('book_id')->name('customer.cart.remove');
+            Route::post('/update-quantity', 'updateCartItemQuantity')
+                 ->name('customer.cart.update-quantity');
+            Route::delete('/remove/{book_id}', 'removeFromCart')
+                 ->whereNumber('book_id')
+                 ->name('customer.cart.remove');
         });
 
         // Address routes
@@ -84,7 +87,7 @@ Route::middleware('auth.*')->group(function () {
 
         // Payment routes
         Route::get('/orders/{order}/pay-vnpay', [PaymentController::class, 'createVNPayPayment'])
-          ->name('customer.order.pay-vnpay');
+             ->name('customer.order.pay-vnpay');
     });
 
     /**
@@ -93,16 +96,16 @@ Route::middleware('auth.*')->group(function () {
     Route::middleware('auth.employee')->group(function () {
         // CRUD resources except index and show (which are public)
         Route::apiResources([
-          'books' => BookController::class,
-          'authors' => AuthorController::class,
-          'publishers' => PublisherController::class,
-          'genres' => GenreController::class,
+            'books' => BookController::class,
+            'authors' => AuthorController::class,
+            'publishers' => PublisherController::class,
+            'genres' => GenreController::class,
         ], ['except' => ['index', 'show']]);
 
         // Full CRUD resources (employee only)
         Route::apiResources([
-          'discounts' => DiscountController::class,
-          'suppliers' => SupplierController::class,
+            'discounts' => DiscountController::class,
+            'suppliers' => SupplierController::class,
         ]);
 
         // Additional genre routes
@@ -112,10 +115,7 @@ Route::middleware('auth.*')->group(function () {
 
         // Additional supplier routes
         Route::post('suppliers/restore/{supplier}', [SupplierController::class, 'restore'])
-          ->name('suppliers.restore');
-
-        // Full routes for users
-        Route::apiResource('users', AdminCustomerController::class)->except('store');
+             ->name('suppliers.restore');
 
         // Full routes for orders
         Route::prefix('orders')->controller(OrderController::class)->group(function () {
@@ -138,21 +138,36 @@ Route::middleware('auth.*')->group(function () {
             Route::get('/{employee}', 'show')->name('admin.employees.show');
             Route::post('/', 'store')->name('admin.employees.store');
 
-            Route::post('/{employee}/permissions/add', 'addPermissions')->name('admin.employees.permissions.add');
-            Route::post('/{employee}/permissions/remove', 'removePermissions')->name('admin.employees.permissions.remove');
-            Route::post('/{employee}/permissions/sync', 'syncPermissions')->name('admin.employees.permissions.sync');
+            Route::post('/{employee}/permissions/add', 'addPermissions')
+                 ->name('admin.employees.permissions.add');
+            Route::post('/{employee}/permissions/remove', 'removePermissions')
+                 ->name('admin.employees.permissions.remove');
+            Route::post('/{employee}/permissions/sync', 'syncPermissions')
+                 ->name('admin.employees.permissions.sync');
 
             Route::post('/{employee}/roles/add', 'addRole')->name('admin.employees.add-role');
-            Route::post('/{employee}/roles/remove', 'removeRole')->name('admin.employees.remove-role');
+            Route::post('/{employee}/roles/remove', 'removeRole')
+                 ->name('admin.employees.remove-role');
             Route::post('/{employee}/roles/sync', 'syncRoles')->name('admin.employees.sync-roles');
+        });
+
+        // Customer management routes
+        Route::prefix('customers')->controller(AdminCustomerController::class)->group(function (
+        ) {
+            Route::get('/', 'index')->name('admin.customers.index');
+            Route::get('/{customer}', 'show')->name('admin.customers.show');
+            Route::delete('/{customer}', 'destroy')->name('admin.customers.destroy');
         });
 
         // Role management routes
         Route::prefix('roles')->controller(AdminRoleController::class)->group(function () {
             Route::get('/', 'index')->name('admin.roles.index');
-            Route::post('/{role}/permissions/add', 'addPermissions')->name('admin.roles.permissions.add');
-            Route::post('/{role}/permissions/remove', 'removePermissions')->name('admin.roles.permissions.remove');
-            Route::post('/{role}/permissions/sync', 'syncPermissions')->name('admin.roles.permissions.sync');
+            Route::post('/{role}/permissions/add', 'addPermissions')
+                 ->name('admin.roles.permissions.add');
+            Route::post('/{role}/permissions/remove', 'removePermissions')
+                 ->name('admin.roles.permissions.remove');
+            Route::post('/{role}/permissions/sync', 'syncPermissions')
+                 ->name('admin.roles.permissions.sync');
         });
     });
 });
