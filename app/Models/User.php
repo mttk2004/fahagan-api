@@ -19,6 +19,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @method static findOrFail($user_id)
  * @method static create(array $array)
+ * @method static find(int $employee_id)
  */
 class User extends Authenticatable implements HasCart
 {

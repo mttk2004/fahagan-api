@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\SearchBookController;
 use App\Http\Controllers\Api\V1\StockImportController;
 use App\Http\Controllers\Api\V1\SupplierController;
-use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\AdminCustomerController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -115,7 +115,7 @@ Route::middleware('auth.*')->group(function () {
           ->name('suppliers.restore');
 
         // Full routes for users
-        Route::apiResource('users', UserController::class)->except('store');
+        Route::apiResource('users', AdminCustomerController::class)->except('store');
 
         // Full routes for orders
         Route::prefix('orders')->controller(OrderController::class)->group(function () {

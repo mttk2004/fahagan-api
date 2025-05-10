@@ -58,7 +58,7 @@ class UserControllerTest extends TestCase
     public function test_it_prevents_non_admin_from_seeing_all_users()
     {
         // Trong môi trường test, tất cả người dùng đều có quyền truy cập
-        // Vì đã bỏ qua kiểm tra quyền trong UserController
+        // Vì đã bỏ qua kiểm tra quyền trong AdminCustomerController
         $this->markTestSkipped(
             'Bỏ qua test này vì đã bypass kiểm tra quyền trong môi trường testing'
         );
@@ -234,7 +234,7 @@ class UserControllerTest extends TestCase
     public function test_it_prevents_unauthorized_user_deletion()
     {
         // Trong môi trường test, tất cả người dùng đều có quyền truy cập
-        // Vì đã bỏ qua kiểm tra quyền trong UserController
+        // Vì đã bỏ qua kiểm tra quyền trong AdminCustomerController
         $this->markTestSkipped(
             'Bỏ qua test này vì đã bypass kiểm tra quyền trong môi trường testing'
         );

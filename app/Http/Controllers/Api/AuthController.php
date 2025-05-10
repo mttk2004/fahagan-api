@@ -11,7 +11,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
-use App\Services\UserService;
+use App\Services\CustomerService;
 use App\Traits\HandleExceptions;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
@@ -27,7 +27,7 @@ class AuthController extends Controller
     use HandleExceptions;
 
     public function __construct(
-        private readonly UserService $userService,
+        private readonly CustomerService $userService,
         private readonly string $entityName = 'user'
     ) {
     }

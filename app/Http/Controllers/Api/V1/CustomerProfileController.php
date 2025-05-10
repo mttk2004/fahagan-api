@@ -7,7 +7,7 @@ use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserResource;
-use App\Services\UserService;
+use App\Services\CustomerService;
 use App\Traits\HandleExceptions;
 use App\Traits\HandleValidation;
 use App\Utils\AuthUtils;
@@ -21,7 +21,7 @@ class CustomerProfileController extends Controller
     use HandleValidation;
 
     public function __construct(
-        private readonly UserService $userService,
+        private readonly CustomerService $userService,
         private readonly string $entityName = 'user'
     ) {
     }

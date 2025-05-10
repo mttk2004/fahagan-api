@@ -10,9 +10,11 @@ use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Services\EmployeeService;
+use App\Services\UserService;
 use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
 use App\Traits\HandleValidation;
+use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +28,7 @@ class AdminEmployeeController extends Controller
 
     public function __construct(
         private readonly EmployeeService $employeeService,
+        private readonly UserService $userService,
         private readonly string $entityName = 'user'
     ) {
     }
@@ -33,13 +36,17 @@ class AdminEmployeeController extends Controller
     /**
      * Get all employees
      *
-     * @return UserCollection
+     * @return UserCollection|JsonResponse
      * @group Admin.Employees
      * @authenticated
      */
     public function index(Request $request)
     {
-        $users = $this->employeeService->getAllEmployees($request, $this->getPerPage($request));
+        if (! AuthUtils::userCan('view_users')) {
+            return ResponseUtils::forbidden();
+        }
+
+        $users = $this->userService->getAllUsers($request, $this->getPerPage($request), false);
 
         return new UserCollection($users);
     }
@@ -47,27 +54,32 @@ class AdminEmployeeController extends Controller
     /**
      * Get a employee
      *
-     * @param int $employee_id
-     *
      * @return JsonResponse
      * @group Admin.Employees
      * @authenticated
      */
-    public function show(int $employee_id)
+    public function show(int $user_id)
     {
+        if (
+            ! AuthUtils::userCan('view_users') &&
+            AuthUtils::user()->id != $user_id
+        ) {
+            return ResponseUtils::forbidden();
+        }
+
         try {
-            $employee = $this->employeeService->getEmployeeById($employee_id);
+            $user = $this->userService->getUserById($user_id);
 
             return ResponseUtils::success([
-              'employee' => new UserResource($employee),
+                'user' => new UserResource($user),
             ]);
         } catch (Exception $e) {
             return $this->handleException(
                 $e,
                 $this->entityName,
                 [
-                'employee_id' => $employee_id,
-        ]
+                    'user_id' => $user_id,
+                ]
             );
         }
     }
@@ -82,6 +94,10 @@ class AdminEmployeeController extends Controller
      */
     public function store(EmployeeStoreRequest $request)
     {
+        if (! AuthUtils::userCan('create_users')) {
+            return ResponseUtils::forbidden();
+        }
+
         try {
             $employee = $this->employeeService->createEmployee($request);
 

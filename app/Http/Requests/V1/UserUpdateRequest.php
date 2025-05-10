@@ -61,7 +61,7 @@ class UserUpdateRequest extends BaseRequest implements HasValidationMessages
             return true;
         }
 
-        // Với các route khác (UserController) thì kiểm tra quyền edit_users hoặc là chính người dùng đó
+        // Với các route khác (AdminCustomerController) thì kiểm tra quyền edit_users hoặc là chính người dùng đó
         return AuthUtils::userCan('edit_users') || $user->id == $request->route('user');
     }
 

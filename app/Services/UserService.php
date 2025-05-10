@@ -13,13 +13,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class UserService extends BaseService
 {
     /**
-     * UserService constructor.
+     * CustomerService constructor.
      */
     public function __construct()
     {
@@ -30,46 +29,45 @@ class UserService extends BaseService
     }
 
     /**
-     * Lấy danh sách người dùng với filter và sort
-     */
-    public function getAllUsers(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
-    {
-        return $this->getAll($request, $perPage);
-    }
-
-    /**
-     * Tạo người dùng mới
+     * Lấy danh sách user với filter và sort
      *
-     * @throws ValidationException
-     * @throws Exception
-     * @throws Throwable
+     * @param Request $request
+     * @param int     $perPage
+     * @param bool $is_customer
+     * @return LengthAwarePaginator
      */
-    public function createUser(UserDTO $userDTO): User
+    public function getAllUsers(Request $request, int $perPage =
+    ApplicationConstants::PER_PAGE, bool $is_customer = true): LengthAwarePaginator
     {
-        return $this->create($userDTO);
+        $query = $this->model::where('is_customer', $is_customer);
+
+        if ($this->filterClass && class_exists($this->filterClass)) {
+            $filter = new $this->filterClass($request);
+            $query = $filter->apply($query);
+        }
+
+        if ($this->sortClass && class_exists($this->sortClass)) {
+            $sort = new $this->sortClass($request);
+            $query = $sort->apply($query);
+        }
+
+        // Eager load relations
+        if (! empty($this->with)) {
+            $query->with($this->with);
+        }
+
+        // Paginate results
+        return $query->paginate($perPage);
     }
 
     /**
-     * Lấy thông tin chi tiết người dùng
+     * Lấy thông tin chi tiết user
      *
      * @throws ModelNotFoundException
      */
     public function getUserById(string|int $userId): Model
     {
         return $this->getById($userId);
-    }
-
-    /**
-     * Cập nhật người dùng
-     *
-     * @throws ModelNotFoundException
-     * @throws ValidationException
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function updateUser(string|int $userId, UserDTO $userDTO): Model
-    {
-        return $this->update($userId, $userDTO);
     }
 
     /**
@@ -95,8 +93,8 @@ class UserService extends BaseService
         }
 
         return User::withTrashed()
-            ->where('email', $dto->email)
-            ->onlyTrashed()
-            ->first();
+                   ->where('email', $dto->email)
+                   ->onlyTrashed()
+                   ->first();
     }
 }

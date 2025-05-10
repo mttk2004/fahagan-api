@@ -4,7 +4,7 @@ namespace Tests\Feature\Api\V1\User;
 
 use App\DTOs\UserDTO;
 use App\Models\User;
-use App\Services\UserService;
+use App\Services\CustomerService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -14,12 +14,12 @@ class UserServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private UserService $userService;
+    private CustomerService $userService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->userService = new UserService;
+        $this->userService = new CustomerService;
     }
 
     public function test_it_can_get_all_users()
