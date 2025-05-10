@@ -11,25 +11,23 @@ use App\Http\Resources\V1\DiscountCollection;
 use App\Http\Resources\V1\DiscountResource;
 use App\Models\Discount;
 use App\Services\DiscountService;
+use App\Traits\HandleExceptions;
 use App\Traits\HandlePagination;
 use App\Utils\AuthUtils;
 use App\Utils\ResponseUtils;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class DiscountController extends Controller
 {
   use HandlePagination;
+  use HandleExceptions;
 
-  private DiscountService $discountService;
-
-  public function __construct(DiscountService $discountService)
-  {
-    $this->discountService = $discountService;
-  }
+  public function __construct(
+    private readonly DiscountService $discountService,
+    private readonly string $entityName = 'discount'
+  ) {}
 
   /**
    * Get all discounts
@@ -67,10 +65,10 @@ class DiscountController extends Controller
       return ResponseUtils::created([
         'discount' => new DiscountResource($discount),
       ], ResponseMessage::CREATED_DISCOUNT->value);
-    } catch (ValidationException $e) {
-      return ResponseUtils::validationError($e->validator->errors());
     } catch (Exception $e) {
-      return ResponseUtils::serverError($e->getMessage());
+      return $this->handleException($e, $this->entityName, [
+        'data' => $request->all(),
+      ]);
     }
   }
 
@@ -93,8 +91,10 @@ class DiscountController extends Controller
       return ResponseUtils::success([
         'discount' => new DiscountResource($discount),
       ]);
-    } catch (ModelNotFoundException) {
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'discount_id' => $discount_id,
+      ]);
     }
   }
 
@@ -116,12 +116,11 @@ class DiscountController extends Controller
       return ResponseUtils::success([
         'discount' => new DiscountResource($discount),
       ], ResponseMessage::UPDATED_DISCOUNT->value);
-    } catch (ModelNotFoundException) {
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
-    } catch (ValidationException $e) {
-      return ResponseUtils::validationError($e->validator->errors());
     } catch (Exception $e) {
-      return ResponseUtils::serverError($e->getMessage());
+      return $this->handleException($e, $this->entityName, [
+        'discount_id' => $discount_id,
+        'data' => $request->all(),
+      ]);
     }
   }
 
@@ -145,12 +144,10 @@ class DiscountController extends Controller
 
       // Nếu không có lỗi, trả về 204 No Content
       return ResponseUtils::noContent(ResponseMessage::DELETED_DISCOUNT->value);
-    } catch (ModelNotFoundException) {
-      // Nếu không tìm thấy discount, trả về 404 Not Found
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
     } catch (Exception $e) {
-      // Bắt các lỗi khác và trả về lỗi server 500
-      return ResponseUtils::serverError($e->getMessage());
+      return $this->handleException($e, $this->entityName, [
+        'discount_id' => $discount_id,
+      ]);
     }
   }
 
@@ -177,10 +174,10 @@ class DiscountController extends Controller
       return ResponseUtils::success([
         'discount' => new DiscountResource($discount),
       ], ResponseMessage::UPDATED_DISCOUNT->value);
-    } catch (ModelNotFoundException) {
-      return ResponseUtils::notFound(ResponseMessage::NOT_FOUND_DISCOUNT->value);
     } catch (Exception $e) {
-      return ResponseUtils::serverError($e->getMessage());
+      return $this->handleException($e, $this->entityName, [
+        'discount_id' => $discount_id,
+      ]);
     }
   }
 }
