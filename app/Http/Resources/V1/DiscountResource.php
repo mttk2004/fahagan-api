@@ -24,37 +24,37 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class DiscountResource extends JsonResource
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'type' => 'discount',
-      'id' => $this->id,
-      'attributes' => [
-        'name' => $this->name,
-        'discount_type' => $this->discount_type,
-        'discount_value' => $this->discount_value,
-        'target_type' => $this->target_type,
-        'min_purchase_amount' => $this->min_purchase_amount,
-        'max_discount_amount' => $this->max_discount_amount,
-        'start_date' => $this->start_date,
-        'end_date' => $this->end_date,
-        'is_active' => (bool) $this->is_active,
-        'description' => $this->description,
-        'created_at' => $this->created_at,
-        'updated_at' => $this->updated_at,
-      ],
-      'relationships' => $this->when(
-        $this->target_type === 'book',
-        [
-          'targets' => $this->whenLoaded('targets', function () {
-            return BookCollection::make(
-              $this->targets->map(function ($target) {
-                return $target->book;
-              })
-            )->isDirectResponse(false);
-          }),
+    public function toArray(Request $request): array
+    {
+        return [
+          'type' => 'discount',
+          'id' => $this->id,
+          'attributes' => [
+            'name' => $this->name,
+            'discount_type' => $this->discount_type,
+            'discount_value' => $this->discount_value,
+            'target_type' => $this->target_type,
+            'min_purchase_amount' => $this->min_purchase_amount,
+            'max_discount_amount' => $this->max_discount_amount,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            'is_active' => (bool) $this->is_active,
+            'description' => $this->description,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+          ],
+          'relationships' => $this->when(
+              $this->target_type === 'book',
+              [
+              'targets' => $this->whenLoaded('targets', function () {
+                  return BookCollection::make(
+                      $this->targets->map(function ($target) {
+                          return $target->book;
+                      })
+                  )->isDirectResponse(false);
+              }),
         ]
-      ),
-    ];
-  }
+          ),
+        ];
+    }
 }

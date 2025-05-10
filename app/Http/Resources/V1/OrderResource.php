@@ -31,34 +31,34 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class OrderResource extends JsonResource
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'type' => 'order',
-      'id' => $this->id,
-      'attributes' => [
-        'status' => $this->status,
-        'shopping_name' => $this->shopping_name,
-        'shopping_phone' => $this->shopping_phone,
-        'shopping_city' => $this->shopping_city,
-        'shopping_district' => $this->shopping_district,
-        'shopping_ward' => $this->shopping_ward,
-        'shopping_address_line' => $this->shopping_address_line,
-        'ordered_at' => $this->ordered_at,
-        'approved_at' => $this->approved_at,
-        'delivering_at' => $this->delivering_at,
-        'delivered_at' => $this->delivered_at,
-        'completed_at' => $this->completed_at,
-        'canceled_at' => $this->canceled_at,
-        'created_at' => $this->created_at,
-        'updated_at' => $this->updated_at,
-      ],
-      'relationships' => [
-        'customer' => UserResource::make($this->whenLoaded('customer')),
-        'employee' => UserResource::make($this->whenLoaded('employee')),
-        'items' => OrderItemCollection::make($this->whenLoaded('items')),
-        'payment' => PaymentResource::make($this->whenLoaded('payment')),
-      ],
-    ];
-  }
+    public function toArray(Request $request): array
+    {
+        return [
+          'type' => 'order',
+          'id' => $this->id,
+          'attributes' => [
+            'status' => $this->status,
+            'shopping_name' => $this->shopping_name,
+            'shopping_phone' => $this->shopping_phone,
+            'shopping_city' => $this->shopping_city,
+            'shopping_district' => $this->shopping_district,
+            'shopping_ward' => $this->shopping_ward,
+            'shopping_address_line' => $this->shopping_address_line,
+            'ordered_at' => $this->ordered_at,
+            'approved_at' => $this->approved_at,
+            'delivering_at' => $this->delivering_at,
+            'delivered_at' => $this->delivered_at,
+            'completed_at' => $this->completed_at,
+            'canceled_at' => $this->canceled_at,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+          ],
+          'relationships' => [
+            'customer' => UserResource::make($this->whenLoaded('customer')),
+            'employee' => UserResource::make($this->whenLoaded('employee')),
+            'items' => OrderItemCollection::make($this->whenLoaded('items')),
+            'payment' => PaymentResource::make($this->whenLoaded('payment')),
+          ],
+        ];
+    }
 }

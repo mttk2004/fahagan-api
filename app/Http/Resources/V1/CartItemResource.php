@@ -13,17 +13,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class CartItemResource extends JsonResource
 {
-  public function toArray(Request $request): array
-  {
-    return [
-      'type' => 'cart_item',
-      'id' => $this->id,
-      'attributes' => [
-        'quantity' => $this->quantity,
-      ],
-      'relationships' => [
-        'book' => BookResource::make($this->whenLoaded('book')),
-      ],
-    ];
-  }
+    public function toArray(Request $request): array
+    {
+        return [
+          'type' => 'cart_item',
+          'id' => $this->id,
+          'attributes' => [
+            'quantity' => $this->quantity,
+          ],
+          'relationships' => [
+            'book' => BookResource::make($this->whenLoaded('book')),
+          ],
+        ];
+    }
 }
