@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
-
 class CustomerService extends BaseService
 {
     /**

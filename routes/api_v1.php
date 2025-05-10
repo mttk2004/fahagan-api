@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AdminCustomerController;
 use App\Http\Controllers\Api\V1\AdminEmployeeController;
 use App\Http\Controllers\Api\V1\AdminRoleController;
 use App\Http\Controllers\Api\V1\AuthorController;
@@ -16,7 +17,6 @@ use App\Http\Controllers\Api\V1\PublisherController;
 use App\Http\Controllers\Api\V1\SearchBookController;
 use App\Http\Controllers\Api\V1\StockImportController;
 use App\Http\Controllers\Api\V1\SupplierController;
-use App\Http\Controllers\Api\V1\AdminCustomerController;
 use Illuminate\Support\Facades\Route;
 
 /**
