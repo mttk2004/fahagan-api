@@ -9,28 +9,28 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class OrderFactory extends Factory
 {
-    protected $model = Order::class;
+  protected $model = Order::class;
 
-    public function definition(): array
-    {
-        $fakeCreatedAt = fake()->dateTimeBetween('-1 week');
+  public function definition(): array
+  {
+    $fakeCreatedAt = fake()->dateTimeBetween('-3 months');
 
-        return [
-            'status' => 'pending',
-            'shopping_name' => fake('vi_VN')->name(),
-            'shopping_phone' => fake()->regexify('0[35789][0-9]{8}'),
-            'shopping_city' => AddressNames::CITY_NAMES[array_rand(AddressNames::CITY_NAMES)],
-            'shopping_district' => AddressNames::DISTRICT_NAMES[array_rand(AddressNames::DISTRICT_NAMES)],
-            'shopping_ward' => AddressNames::WARD_NAMES[array_rand(AddressNames::WARD_NAMES)],
-            'shopping_address_line' => fake('vi_VN')->streetAddress(),
-            'ordered_at' => $fakeCreatedAt,
-            'approved_at' => null,
-            'canceled_at' => null,
-            'delivered_at' => null,
-            'created_at' => $fakeCreatedAt,
-            'updated_at' => null,
+    return [
+      'status' => 'pending',
+      'shopping_name' => fake('vi_VN')->name(),
+      'shopping_phone' => fake()->regexify('0[35789][0-9]{8}'),
+      'shopping_city' => AddressNames::CITY_NAMES[array_rand(AddressNames::CITY_NAMES)],
+      'shopping_district' => AddressNames::DISTRICT_NAMES[array_rand(AddressNames::DISTRICT_NAMES)],
+      'shopping_ward' => AddressNames::WARD_NAMES[array_rand(AddressNames::WARD_NAMES)],
+      'shopping_address_line' => fake('vi_VN')->streetAddress(),
+      'ordered_at' => $fakeCreatedAt,
+      'approved_at' => null,
+      'canceled_at' => null,
+      'delivered_at' => null,
+      'created_at' => $fakeCreatedAt,
+      'updated_at' => null,
 
-            'customer_id' => User::factory(),
-        ];
-    }
+      'customer_id' => User::factory(),
+    ];
+  }
 }
