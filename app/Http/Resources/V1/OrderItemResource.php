@@ -15,19 +15,19 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class OrderItemResource extends JsonResource
 {
-    public function toArray(Request $request): array
-    {
-        return [
-          'type' => 'order_item',
-          'id' => $this->id,
-          'attributes' => [
-            'quantity' => $this->quantity,
-              'price_at_time' => $this->price_at_time,
-              'discount_value' => $this->discount_value,
-          ],
-          'relationships' => [
-            'book' => new BookResource($this->book),
-          ],
-        ];
-    }
+  public function toArray(Request $request): array
+  {
+    return [
+      'type' => 'order_item',
+      'id' => $this->id,
+      'attributes' => [
+        'quantity' => $this->quantity,
+        'price_at_time' => $this->price_at_time,
+        'discount_value' => $this->discount_value,
+      ],
+      'relationships' => [
+        'book' => BookResource::make($this->whenLoaded('book')),
+      ],
+    ];
+  }
 }
