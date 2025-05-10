@@ -44,7 +44,7 @@ class UserResource extends JsonResource
         ]),
       ],
       'relationships' => [
-        'cart_items' => CartItemResource::collection($this->whenLoaded('cartItems')),
+        'cart_items' => CartItemCollection::make($this->whenLoaded('cartItems'))->isDirectResponse(false),
       ],
     ];
   }

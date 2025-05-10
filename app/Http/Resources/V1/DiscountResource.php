@@ -47,11 +47,11 @@ class DiscountResource extends JsonResource
         $this->target_type === 'book',
         [
           'targets' => $this->whenLoaded('targets', function () {
-            return BookResource::collection(
+            return BookCollection::make(
               $this->targets->map(function ($target) {
                 return $target->book;
               })
-            );
+            )->isDirectResponse(false);
           }),
         ]
       ),
