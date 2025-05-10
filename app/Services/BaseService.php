@@ -15,276 +15,280 @@ use Throwable;
 
 abstract class BaseService
 {
-    /**
-     * Model class instance
-     */
-    protected Model $model;
+  /**
+   * Model class instance
+   */
+  protected Model $model;
 
-    /**
-     * Filter class name
-     */
-    protected string $filterClass;
+  /**
+   * Filter class name
+   */
+  protected string $filterClass;
 
-    /**
-     * Sort class name
-     */
-    protected string $sortClass;
+  /**
+   * Sort class name
+   */
+  protected string $sortClass;
 
-    /**
-     * Relations to eager load when retrieving a resource
-     */
-    protected array $with = [];
+  /**
+   * Relations to eager load when retrieving a resource
+   */
+  protected array $with = [];
 
-    /**
-     * Get all resources with pagination, filtering, and sorting
-     */
-    public function getAll(Request $request, int $perPage = ApplicationConstants::PER_PAGE): LengthAwarePaginator
-    {
-        $query = $this->model::query();
+  /**
+   * Get all resources with pagination, filtering, and sorting
+   */
+  public function getAll(Request $request, int $perPage = ApplicationConstants::PER_PAGE, bool $trashed = false): LengthAwarePaginator
+  {
+    $query = $this->model::query();
 
-        // Apply filters if filter class is set
-        if ($this->filterClass && class_exists($this->filterClass)) {
-            $filter = new $this->filterClass($request);
-            $query = $filter->apply($query);
+    if ($trashed) {
+      $query->withTrashed();
+    }
+
+    // Apply filters if filter class is set
+    if ($this->filterClass && class_exists($this->filterClass)) {
+      $filter = new $this->filterClass($request);
+      $query = $filter->apply($query);
+    }
+
+    // Apply sorting if sort class is set
+    if ($this->sortClass && class_exists($this->sortClass)) {
+      $sort = new $this->sortClass($request);
+      $query = $sort->apply($query);
+    }
+
+    // Eager load relations
+    if (! empty($this->with)) {
+      $query->with($this->with);
+    }
+
+    // Paginate results
+    return $query->paginate($perPage);
+  }
+
+  /**
+   * Create a new resource
+   *
+   * @param  BaseDTO  $dto  Data transfer object containing the resource data
+   * @param  array|null  $relations  Optional relations to sync
+   * @return Model The created resource
+   *
+   * @throws ValidationException
+   * @throws Exception|Throwable
+   */
+  public function create(BaseDTO $dto, ?array $relations = null): Model
+  {
+    try {
+      DB::beginTransaction();
+
+      // Check if the resource has soft deletes and is already trashed
+      if (method_exists($this->model, 'withTrashed')) {
+        $existingTrashed = $this->findTrashed($dto);
+
+        if ($existingTrashed) {
+          // Restore and update trashed resource
+          $existingTrashed->restore();
+          $existingTrashed->update($dto->toArray());
+          $resource = $existingTrashed;
+
+          // Handle any relationships if needed
+          if ($relations) {
+            $this->syncRelations($resource, $relations);
+          }
+
+          DB::commit();
+
+          return $this->fresh($resource);
         }
+      }
 
-        // Apply sorting if sort class is set
-        if ($this->sortClass && class_exists($this->sortClass)) {
-            $sort = new $this->sortClass($request);
-            $query = $sort->apply($query);
-        }
+      // Create new resource
+      $resource = $this->model::create($dto->toArray());
 
-        // Eager load relations
-        if (! empty($this->with)) {
-            $query->with($this->with);
-        }
+      // Handle any relationships if needed
+      if ($relations) {
+        $this->syncRelations($resource, $relations);
+      }
 
-        // Paginate results
-        return $query->paginate($perPage);
+      DB::commit();
+
+      return $this->fresh($resource);
+    } catch (Exception $e) {
+      DB::rollBack();
+
+      throw $e;
     }
+  }
 
-    /**
-     * Create a new resource
-     *
-     * @param  BaseDTO  $dto  Data transfer object containing the resource data
-     * @param  array|null  $relations  Optional relations to sync
-     * @return Model The created resource
-     *
-     * @throws ValidationException
-     * @throws Exception|Throwable
-     */
-    public function create(BaseDTO $dto, ?array $relations = null): Model
-    {
-        try {
-            DB::beginTransaction();
+  /**
+   * Get a specific resource by ID
+   *
+   * @throws ModelNotFoundException
+   */
+  public function getById(string|int $id): Model
+  {
+    return $this->model::with($this->with)->findOrFail($id);
+  }
 
-            // Check if the resource has soft deletes and is already trashed
-            if (method_exists($this->model, 'withTrashed')) {
-                $existingTrashed = $this->findTrashed($dto);
+  /**
+   * Update an existing resource
+   *
+   * @param  array|null  $relations  Optional relations to sync
+   * @return Model The updated resource
+   *
+   * @throws ModelNotFoundException
+   * @throws ValidationException
+   * @throws Exception|Throwable
+   */
+  public function update(string|int $id, BaseDTO $dto, ?array $relations = null): Model
+  {
+    try {
+      // Find the resource
+      $resource = $this->model::findOrFail($id);
 
-                if ($existingTrashed) {
-                    // Restore and update trashed resource
-                    $existingTrashed->restore();
-                    $existingTrashed->update($dto->toArray());
-                    $resource = $existingTrashed;
+      DB::beginTransaction();
 
-                    // Handle any relationships if needed
-                    if ($relations) {
-                        $this->syncRelations($resource, $relations);
-                    }
+      // Update the resource
+      $resource->update($dto->toArray());
 
-                    DB::commit();
+      // Handle any relationships if needed
+      if ($relations) {
+        $this->syncRelations($resource, $relations);
+      }
 
-                    return $this->fresh($resource);
-                }
-            }
+      DB::commit();
 
-            // Create new resource
-            $resource = $this->model::create($dto->toArray());
+      return $this->fresh($resource);
+    } catch (Exception $e) {
+      DB::rollBack();
 
-            // Handle any relationships if needed
-            if ($relations) {
-                $this->syncRelations($resource, $relations);
-            }
-
-            DB::commit();
-
-            return $this->fresh($resource);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
+      throw $e;
     }
+  }
 
-    /**
-     * Get a specific resource by ID
-     *
-     * @throws ModelNotFoundException
-     */
-    public function getById(string|int $id): Model
-    {
-        return $this->model::with($this->with)->findOrFail($id);
+  /**
+   * Delete a resource
+   *
+   *
+   * @return Model|void The deleted resource or void
+   *
+   * @throws ModelNotFoundException
+   * @throws Exception|Throwable
+   */
+  public function delete(string|int $id)
+  {
+    try {
+      $resource = $this->model::findOrFail($id);
+
+      DB::beginTransaction();
+
+      // Handle any necessary cleanup before deletion
+      $this->beforeDelete($resource);
+
+      // Delete the resource
+      $resource->delete();
+
+      DB::commit();
+
+      // Some services return the deleted resource, this makes it optional
+      if (method_exists($this, 'returnDeletedResource') && $this->returnDeletedResource()) {
+        return $resource;
+      }
+    } catch (Exception $e) {
+      DB::rollBack();
+
+      throw $e;
     }
+  }
 
-    /**
-     * Update an existing resource
-     *
-     * @param  array|null  $relations  Optional relations to sync
-     * @return Model The updated resource
-     *
-     * @throws ModelNotFoundException
-     * @throws ValidationException
-     * @throws Exception|Throwable
-     */
-    public function update(string|int $id, BaseDTO $dto, ?array $relations = null): Model
-    {
-        try {
-            // Find the resource
-            $resource = $this->model::findOrFail($id);
+  /**
+   * Restore a soft-deleted resource
+   *
+   *
+   * @return Model The restored resource
+   *
+   * @throws ModelNotFoundException
+   * @throws Exception*@throws Throwable
+   * @throws Throwable
+   */
+  public function restore(string|int $id): Model
+  {
+    try {
+      $resource = $this->model::withTrashed()->findOrFail($id);
 
-            DB::beginTransaction();
+      if (! $resource->trashed()) {
+        throw new Exception($this->getResourceNotDeletedMessage());
+      }
 
-            // Update the resource
-            $resource->update($dto->toArray());
+      DB::beginTransaction();
 
-            // Handle any relationships if needed
-            if ($relations) {
-                $this->syncRelations($resource, $relations);
-            }
+      // Restore the resource
+      $resource->restore();
 
-            DB::commit();
+      DB::commit();
 
-            return $this->fresh($resource);
-        } catch (Exception $e) {
-            DB::rollBack();
+      return $this->fresh($resource);
+    } catch (Exception $e) {
+      DB::rollBack();
 
-            throw $e;
-        }
+      throw $e;
     }
+  }
 
-    /**
-     * Delete a resource
-     *
-     *
-     * @return Model|void The deleted resource or void
-     *
-     * @throws ModelNotFoundException
-     * @throws Exception|Throwable
-     */
-    public function delete(string|int $id)
-    {
-        try {
-            $resource = $this->model::findOrFail($id);
+  /**
+   * Get the message when trying to restore a resource that is not deleted
+   */
+  protected function getResourceNotDeletedMessage(): string
+  {
+    return 'This resource is not deleted.';
+  }
 
-            DB::beginTransaction();
+  /**
+   * Refresh a model with its relations
+   */
+  protected function fresh(Model $resource): Model
+  {
+    return $resource->fresh($this->with);
+  }
 
-            // Handle any necessary cleanup before deletion
-            $this->beforeDelete($resource);
+  /**
+   * Find a trashed resource based on unique attributes
+   */
+  protected function findTrashed(BaseDTO $dto): ?Model
+  {
+    // This method should be overridden by child classes
+    // to implement logic for finding trashed resources
+    return null;
+  }
 
-            // Delete the resource
-            $resource->delete();
-
-            DB::commit();
-
-            // Some services return the deleted resource, this makes it optional
-            if (method_exists($this, 'returnDeletedResource') && $this->returnDeletedResource()) {
-                return $resource;
-            }
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
+  /**
+   * Sync relations for a resource
+   */
+  protected function syncRelations(Model $resource, array $relations): void
+  {
+    foreach ($relations as $relation => $ids) {
+      if (method_exists($resource, $relation)) {
+        // Even if ids is an empty array, sync should be called
+        // to clear the relationships
+        $resource->$relation()->sync($ids);
+      }
     }
+  }
 
-    /**
-     * Restore a soft-deleted resource
-     *
-     *
-     * @return Model The restored resource
-     *
-     * @throws ModelNotFoundException
-     * @throws Exception*@throws Throwable
-     * @throws Throwable
-     */
-    public function restore(string|int $id): Model
-    {
-        try {
-            $resource = $this->model::withTrashed()->findOrFail($id);
+  /**
+   * Actions to perform before deleting a resource
+   */
+  protected function beforeDelete(Model $resource): void
+  {
+    // Override in child classes if needed
+  }
 
-            if (! $resource->trashed()) {
-                throw new Exception($this->getResourceNotDeletedMessage());
-            }
-
-            DB::beginTransaction();
-
-            // Restore the resource
-            $resource->restore();
-
-            DB::commit();
-
-            return $this->fresh($resource);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Get the message when trying to restore a resource that is not deleted
-     */
-    protected function getResourceNotDeletedMessage(): string
-    {
-        return 'This resource is not deleted.';
-    }
-
-    /**
-     * Refresh a model with its relations
-     */
-    protected function fresh(Model $resource): Model
-    {
-        return $resource->fresh($this->with);
-    }
-
-    /**
-     * Find a trashed resource based on unique attributes
-     */
-    protected function findTrashed(BaseDTO $dto): ?Model
-    {
-        // This method should be overridden by child classes
-        // to implement logic for finding trashed resources
-        return null;
-    }
-
-    /**
-     * Sync relations for a resource
-     */
-    protected function syncRelations(Model $resource, array $relations): void
-    {
-        foreach ($relations as $relation => $ids) {
-            if (method_exists($resource, $relation)) {
-                // Even if ids is an empty array, sync should be called
-                // to clear the relationships
-                $resource->$relation()->sync($ids);
-            }
-        }
-    }
-
-    /**
-     * Actions to perform before deleting a resource
-     */
-    protected function beforeDelete(Model $resource): void
-    {
-        // Override in child classes if needed
-    }
-
-    /**
-     * Whether to return the deleted resource
-     */
-    protected function returnDeletedResource(): bool
-    {
-        return false;
-    }
+  /**
+   * Whether to return the deleted resource
+   */
+  protected function returnDeletedResource(): bool
+  {
+    return false;
+  }
 }
