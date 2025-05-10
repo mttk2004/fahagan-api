@@ -21,150 +21,139 @@ use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
-    use HandleExceptions;
-    use HandlePagination;
-    use HandleValidation;
+  use HandleExceptions;
+  use HandlePagination;
+  use HandleValidation;
 
-    public function __construct(
-        private readonly PublisherService $publisherService,
-        private readonly string $entityName = 'publisher'
-    ) {
+  public function __construct(
+    private readonly PublisherService $publisherService,
+    private readonly string $entityName = 'publisher'
+  ) {}
+
+  /**
+   * Get all publishers
+   *
+   * @return PublisherCollection
+   * @group Publishers
+   * @unauthenticated
+   */
+  public function index(Request $request)
+  {
+    $publishers = $this->publisherService->getAllPublishers(
+      $request,
+      $this->getPerPage($request)
+    );
+
+    return new PublisherCollection($publishers);
+  }
+
+  /**
+   * Create a new publisher
+   *
+   * @return JsonResponse
+   * @group Publishers
+   */
+  public function store(PublisherStoreRequest $request)
+  {
+    if (! AuthUtils::userCan('create_publishers')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get all publishers
-     *
-     *
-     * @return PublisherCollection
-     *
-     * @group Publishers
-     *
-     * @unauthenticated
-     */
-    public function index(Request $request)
-    {
-        $publishers = $this->publisherService->getAllPublishers(
-            $request,
-            $this->getPerPage($request)
-        );
+    try {
+      $publisher = $this->publisherService->createPublisher(
+        PublisherDTO::fromRequest($request->validated())
+      );
 
-        return new PublisherCollection($publishers);
+      return ResponseUtils::created([
+        'publisher' => new PublisherResource($publisher),
+      ], ResponseMessage::CREATED_PUBLISHER->value);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'request_data' => $request->validated(),
+      ]);
+    }
+  }
+
+  /**
+   * Get a publisher
+   *
+   * @return JsonResponse
+   * @group Publishers
+   * @unauthenticated
+   */
+  public function show(int $publisherId)
+  {
+    try {
+      $publisher = $this->publisherService->getPublisherById($publisherId);
+
+      return ResponseUtils::success([
+        'publisher' => new PublisherResource($publisher),
+      ]);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'publisher_id' => $publisherId,
+      ]);
+    }
+  }
+
+  /**
+   * Update a publisher
+   *
+   * @return JsonResponse
+   * @group Publishers
+   * @authenticated
+   */
+  public function update(PublisherUpdateRequest $request, int $publisherId)
+  {
+    if (! AuthUtils::userCan('edit_publishers')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Create a new publisher
-     *
-     *
-     * @return JsonResponse
-     *
-     * @group Publishers
-     */
-    public function store(PublisherStoreRequest $request)
-    {
-        if (! AuthUtils::userCan('create_publishers')) {
-            return ResponseUtils::forbidden();
-        }
+    try {
+      $validatedData = $request->validated();
 
-        try {
-            $publisher = $this->publisherService->createPublisher(
-                PublisherDTO::fromRequest($request->validated())
-            );
+      $emptyCheckResponse = $this->validateUpdateData($validatedData);
+      if ($emptyCheckResponse) {
+        return $emptyCheckResponse;
+      }
 
-            return ResponseUtils::created([
-                'publisher' => new PublisherResource($publisher),
-            ], ResponseMessage::CREATED_PUBLISHER->value);
-        } catch (Exception $e) {
-            return $this->handleException($e, $this->entityName, [
-                'request_data' => $request->validated(),
-            ]);
-        }
+      $publisher = $this->publisherService->updatePublisher(
+        $publisherId,
+        PublisherDTO::fromRequest($validatedData)
+      );
+
+      return ResponseUtils::success([
+        'publisher' => new PublisherResource($publisher),
+      ], ResponseMessage::UPDATED_PUBLISHER->value);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'publisher_id' => $publisherId,
+        'request_data' => $request->validated(),
+      ]);
+    }
+  }
+
+  /**
+   * Delete a publisher
+   *
+   * @return JsonResponse
+   * @group Publishers
+   * @authenticated
+   */
+  public function destroy(int $publisherId)
+  {
+    if (! AuthUtils::userCan('delete_publishers')) {
+      return ResponseUtils::forbidden();
     }
 
-    /**
-     * Get a publisher
-     *
-     *
-     * @return JsonResponse
-     *
-     * @group Publishers
-     *
-     * @unauthenticated
-     */
-    public function show(int $publisherId)
-    {
-        try {
-            $publisher = $this->publisherService->getPublisherById($publisherId);
+    try {
+      $this->publisherService->deletePublisher($publisherId);
 
-            return ResponseUtils::success([
-                'publisher' => new PublisherResource($publisher),
-            ]);
-        } catch (Exception $e) {
-            return $this->handleException($e, $this->entityName, [
-                'publisher_id' => $publisherId,
-            ]);
-        }
+      return ResponseUtils::noContent(ResponseMessage::DELETED_PUBLISHER->value);
+    } catch (Exception $e) {
+      return $this->handleException($e, $this->entityName, [
+        'publisher_id' => $publisherId,
+      ]);
     }
-
-    /**
-     * Update a publisher
-     *
-     *
-     * @return JsonResponse
-     *
-     * @group Publishers
-     */
-    public function update(PublisherUpdateRequest $request, int $publisherId)
-    {
-        if (! AuthUtils::userCan('edit_publishers')) {
-            return ResponseUtils::forbidden();
-        }
-
-        try {
-            $validatedData = $request->validated();
-
-            $emptyCheckResponse = $this->validateUpdateData($validatedData);
-            if ($emptyCheckResponse) {
-                return $emptyCheckResponse;
-            }
-
-            $publisher = $this->publisherService->updatePublisher(
-                $publisherId,
-                PublisherDTO::fromRequest($validatedData)
-            );
-
-            return ResponseUtils::success([
-                'publisher' => new PublisherResource($publisher),
-            ], ResponseMessage::UPDATED_PUBLISHER->value);
-        } catch (Exception $e) {
-            return $this->handleException($e, $this->entityName, [
-                'publisher_id' => $publisherId,
-                'request_data' => $request->validated(),
-            ]);
-        }
-    }
-
-    /**
-     * Delete a publisher
-     *
-     *
-     * @return JsonResponse
-     *
-     * @group Publishers
-     */
-    public function destroy(int $publisherId)
-    {
-        if (! AuthUtils::userCan('delete_publishers')) {
-            return ResponseUtils::forbidden();
-        }
-
-        try {
-            $this->publisherService->deletePublisher($publisherId);
-
-            return ResponseUtils::noContent(ResponseMessage::DELETED_PUBLISHER->value);
-        } catch (Exception $e) {
-            return $this->handleException($e, $this->entityName, [
-                'publisher_id' => $publisherId,
-            ]);
-        }
-    }
+  }
 }
