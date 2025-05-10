@@ -7,7 +7,6 @@ use App\Services\StatsService;
 use App\Traits\HandleExceptions;
 use App\Utils\ResponseUtils;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class AdminStatsController extends Controller
 {
