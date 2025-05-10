@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\OrderCollection;
 use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
@@ -80,6 +81,27 @@ class AdminCustomerController extends Controller
                     'user_id' => $user_id,
                 ]
             );
+        }
+    }
+
+    /**
+     * Show orders belong to the customer
+     */
+    public function showOrders(int $user_id)
+    {
+        if (! AuthUtils::userCan('view_orders')) {
+            return ResponseUtils::forbidden();
+        }
+
+        try {
+            $orders = User::findOrFail($user_id)->orders;
+
+            return new OrderCollection($orders);
+        } catch (Exception $e) {
+            return $this->handleException($e, $this->entityName, [
+                'user_id' => $user_id,
+                'action' => 'showOrders',
+            ]);
         }
     }
 
