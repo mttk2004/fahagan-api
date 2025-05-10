@@ -159,6 +159,7 @@ Route::middleware('auth.*')->group(function () {
       Route::get('/{customer}', 'show')->name('admin.customers.show');
       Route::delete('/{customer}', 'destroy')->name('admin.customers.destroy');
       Route::get('/{customer}/orders', 'showOrders')->name('admin.customers.show-orders');
+      Route::post('/{customer}/restore', 'restore')->name('admin.customers.restore');
     });
 
     // Role management routes

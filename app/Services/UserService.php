@@ -17,84 +17,96 @@ use Throwable;
 
 class UserService extends BaseService
 {
-    /**
-     * CustomerService constructor.
-     */
-    public function __construct()
-    {
-        $this->model = new User;
-        $this->filterClass = UserFilter::class;
-        $this->sortClass = UserSort::class;
-        $this->with = [];
+  /**
+   * CustomerService constructor.
+   */
+  public function __construct()
+  {
+    $this->model = new User;
+    $this->filterClass = UserFilter::class;
+    $this->sortClass = UserSort::class;
+    $this->with = [];
+  }
+
+  /**
+   * Lấy danh sách user với filter và sort
+   *
+   * @param Request $request
+   * @param int     $perPage
+   * @param bool $is_customer
+   * @return LengthAwarePaginator
+   */
+  public function getAllUsers(Request $request, int $perPage =
+  ApplicationConstants::PER_PAGE, bool $is_customer = true): LengthAwarePaginator
+  {
+    $query = $this->model::where('is_customer', $is_customer);
+
+    if ($this->filterClass && class_exists($this->filterClass)) {
+      $filter = new $this->filterClass($request);
+      $query = $filter->apply($query);
     }
 
-    /**
-     * Lấy danh sách user với filter và sort
-     *
-     * @param Request $request
-     * @param int     $perPage
-     * @param bool $is_customer
-     * @return LengthAwarePaginator
-     */
-    public function getAllUsers(Request $request, int $perPage =
-    ApplicationConstants::PER_PAGE, bool $is_customer = true): LengthAwarePaginator
-    {
-        $query = $this->model::where('is_customer', $is_customer);
-
-        if ($this->filterClass && class_exists($this->filterClass)) {
-            $filter = new $this->filterClass($request);
-            $query = $filter->apply($query);
-        }
-
-        if ($this->sortClass && class_exists($this->sortClass)) {
-            $sort = new $this->sortClass($request);
-            $query = $sort->apply($query);
-        }
-
-        // Eager load relations
-        if (! empty($this->with)) {
-            $query->with($this->with);
-        }
-
-        // Paginate results
-        return $query->paginate($perPage);
+    if ($this->sortClass && class_exists($this->sortClass)) {
+      $sort = new $this->sortClass($request);
+      $query = $sort->apply($query);
     }
 
-    /**
-     * Lấy thông tin chi tiết user
-     *
-     * @throws ModelNotFoundException
-     */
-    public function getUserById(string|int $userId): Model
-    {
-        return $this->getById($userId);
+    // Eager load relations
+    if (! empty($this->with)) {
+      $query->with($this->with);
     }
 
-    /**
-     * Xóa người dùng
-     *
-     * @throws ModelNotFoundException
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function deleteUser(string|int $userId): void
-    {
-        $this->delete($userId);
+    // Paginate results
+    return $query->paginate($perPage);
+  }
+
+  /**
+   * Lấy thông tin chi tiết user
+   *
+   * @throws ModelNotFoundException
+   */
+  public function getUserById(string|int $userId): Model
+  {
+    return $this->getById($userId);
+  }
+
+  /**
+   * Xóa người dùng
+   *
+   * @throws ModelNotFoundException
+   * @throws Exception
+   * @throws Throwable
+   */
+  public function deleteUser(string|int $userId): void
+  {
+    $this->delete($userId);
+  }
+
+  /**
+   * Khôi phục người dùng
+   *
+   * @throws ModelNotFoundException
+   * @throws Exception
+   * @throws Throwable
+   */
+  public function restoreUser(string|int $userId): void
+  {
+    $this->restore($userId);
+  }
+
+  /**
+   * Find a trashed resource based on unique attributes
+   */
+  protected function findTrashed(BaseDTO $dto): ?Model
+  {
+    // Đảm bảo DTO là kiểu UserDTO trước khi tiếp tục
+    if (! ($dto instanceof UserDTO) || ! isset($dto->email)) {
+      return null;
     }
 
-    /**
-     * Find a trashed resource based on unique attributes
-     */
-    protected function findTrashed(BaseDTO $dto): ?Model
-    {
-        // Đảm bảo DTO là kiểu UserDTO trước khi tiếp tục
-        if (! ($dto instanceof UserDTO) || ! isset($dto->email)) {
-            return null;
-        }
-
-        return User::withTrashed()
-                   ->where('email', $dto->email)
-                   ->onlyTrashed()
-                   ->first();
-    }
+    return User::withTrashed()
+      ->where('email', $dto->email)
+      ->onlyTrashed()
+      ->first();
+  }
 }
