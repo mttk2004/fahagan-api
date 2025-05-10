@@ -43,9 +43,18 @@ class DiscountResource extends JsonResource
         'created_at' => $this->created_at,
         'updated_at' => $this->updated_at,
       ],
-      'relationships' => [
-        'targets' => BookCollection::make($this->whenLoaded('targets')),
-      ],
+      'relationships' => $this->when(
+        $this->target_type === 'book',
+        [
+          'targets' => $this->whenLoaded('targets', function () {
+            return BookResource::collection(
+              $this->targets->map(function ($target) {
+                return $target->book;
+              })
+            );
+          }),
+        ]
+      ),
     ];
   }
 }
