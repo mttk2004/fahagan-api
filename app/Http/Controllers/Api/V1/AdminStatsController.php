@@ -11,18 +11,19 @@ use Illuminate\Support\Facades\Log;
 
 class AdminStatsController extends Controller
 {
-  use HandleExceptions;
+    use HandleExceptions;
 
-  public function __construct(
-    private readonly StatsService $statsService
-  ) {}
+    public function __construct(
+        private readonly StatsService $statsService
+    ) {
+    }
 
-  public function index(Request $request)
-  {
-    Log::info('AdminStatsController: Request parameters', $request->all());
+    public function index(Request $request)
+    {
+        Log::info('AdminStatsController: Request parameters', $request->all());
 
-    $stats = $this->statsService->recentlyStats($request);
+        $stats = $this->statsService->recentlyStats($request);
 
-    return ResponseUtils::success($stats);
-  }
+        return ResponseUtils::success($stats);
+    }
 }
